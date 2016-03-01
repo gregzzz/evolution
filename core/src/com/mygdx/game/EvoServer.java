@@ -1,6 +1,11 @@
+package com.mygdx.game;
+
 /**
  * Created by kopec on 2016-03-01.
  */
+
+import java.net.*;
+import java.io.*;
 
 public class EvoServer extends Thread{
     private ServerSocket serverSocket;
@@ -60,6 +65,7 @@ public class EvoServer extends Thread{
         sendToAll("co tam?");
         sendToAll("END");
     }
+    /*
     public static void main(String [] args){
         int port = 5000;
         int number = 1;
@@ -70,4 +76,6 @@ public class EvoServer extends Thread{
             e.printStackTrace();
         }
     }
+
+    */
 }
