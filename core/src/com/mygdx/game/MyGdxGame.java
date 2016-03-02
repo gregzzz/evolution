@@ -1,8 +1,6 @@
 package com.mygdx.game;
 
 import com.mygdx.game.GameManager;
-import com.mygdx.game.EvoServer;
-import com.mygdx.game.Client;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -16,28 +14,17 @@ import java.io.IOException;
 
 
 public class MyGdxGame implements ApplicationListener {
-	int screenWidth=640;
-	int screenHeight=480;
+	int screenWidth=1200;
+	int screenHeight=800;
 	SpriteBatch batch;
-	Texture img;
+	Texture background;
 	Sprite sprite;
 	BitmapFont font;
 	int mouseClick[]=new int[2];
-	boolean chmuraToKutas=false;
+	GameManager gameManager=new GameManager();
 
 
-
-	//dopasowywuje pixelowy input do rozdzielczosci okna
-	private int normalizeW(double x){
-		return (int)(x*((double)Gdx.graphics.getWidth()/screenWidth));
-
-	}
-	private int normalizeH(double y){
-		int ya;
-		ya =(int)(y*((double)Gdx.graphics.getHeight()/screenHeight));
-		return ya;
-	}
-
+	//uzupelnia tablice mouseInput wspolrzednymi myszki
 	private boolean getMouseInput(){
 		if(Gdx.input.isTouched()){
 			mouseClick[0]=(int)(((double)Gdx.input.getX())/((double)Gdx.graphics.getWidth()/screenWidth));
@@ -47,59 +34,60 @@ public class MyGdxGame implements ApplicationListener {
 		return true;
 	}
 
-	public void game(){
+	//wybieranie connect lub host
+	public boolean menu(){
+		batch.begin();
+		font.draw(batch, "Host", 10, screenHeight-10);
+		font.draw(batch, "Connect", 10, screenHeight-30);
+		getMouseInput();
+		if (mouseClick[0] < 40 && mouseClick[1] > (screenHeight - 25)) {
+			font.draw(batch, "Waiting for clients", 10, screenHeight - 50);
+			gameManager.startServer();
+			batch.end();
+			return true;
+		} else if (mouseClick[0] < 80 && mouseClick[1] > (screenHeight - 50) && mouseClick[1] < (screenHeight - 25)) {
+			font.draw(batch, "Connecting", 10, screenHeight - 50);
+			gameManager.startClient();
+			batch.end();
+			return true;
+		}
+		batch.end();
+		return false;
+	}
 
+	public boolean drawGame(){
+		batch.begin();
+		background=new Texture("core/assets/bg.png");
+		batch.draw(background, 0, 0);
+		background=new Texture("core/assets/bg2.png");
+		batch.draw(background, 0, 0);
+		batch.end();
+		return true;
 	}
 	
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		img = new Texture("badlogic.jpg");
-		sprite = new Sprite(img, 0, 0, 32, 32);
 		font = new BitmapFont();
-		font.setColor(Color.WHITE);
+		font.setColor(Color.GREEN);
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClearColor(255, 255, 255, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		batch.begin();
-		//batch.draw(img, 0, 0);
-		font.draw(batch, "Host", 10, screenHeight-10);
-		font.draw(batch, "Connect", 10, screenHeight-30);
-		sprite.setPosition(mouseClick[0]-16,mouseClick[1]-16);
-		sprite.draw(batch);
+		if(menu()) {
+			if(drawGame()){
+				
+			}
+		}
 
-		while(true) {
-			if(getMouseInput())break;
-		}
-		if(mouseClick[0]<50&&mouseClick[1]>(screenHeight-25)) {
-			font.draw(batch, "Ht", 10, screenHeight - 50);
-			if(!chmuraToKutas) {
-				try {
-					Thread t = new EvoServer(5000, 1);
-					t.start();
-					chmuraToKutas=true;
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		if(mouseClick[0]<50&&mouseClick[1]>(screenHeight-50)&&mouseClick[1]<(screenHeight-25)) {
-			font.draw(batch, "Chmura to kutas", 10, screenHeight - 50);
-			if(!chmuraToKutas) {
-				Client client = new Client("localhost",5000);
-				chmuraToKutas=true;
-			}
-		}
-		batch.end();
 	}
 
 	@Override
 	public void dispose() {
 		batch.dispose();
-		img.dispose();
+		background.dispose();
 		font.dispose();
 	}
 	@Override

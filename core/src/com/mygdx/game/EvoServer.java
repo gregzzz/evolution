@@ -65,17 +65,4 @@ public class EvoServer extends Thread{
         sendToAll("co tam?");
         sendToAll("END");
     }
-    /*
-    public static void main(String [] args){
-        int port = 5000;
-        int number = 1;
-        try{
-            Thread t = new EvoServer(port,number);
-            t.start();
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    */
 }
