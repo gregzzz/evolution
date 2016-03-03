@@ -1,26 +1,34 @@
-package com.mygdx.game; /**
+/**
  * Created by kopec on 2016-03-01.
  */
 import java.net.*;
 import java.io.*;
+import java.util.*;
 
+// klasa tworzona w watku obslugujaca odbieranie danych od serwera
 public class ClientRecv extends Thread{
+    Queue recvQueue;
     String recv;
     Socket client;
-    public ClientRecv(Socket c,String s){
+    public ClientRecv(Socket c,Queue s){
+        // przypisanie referencji do obiektow klasy client
         client = c;
-        recv = s;
+        recvQueue = s;
     }
+    // funckja wykonywana po odpaleniu watku
     public void run(){
-        // Odbiernie danych i przekazywanie ich do obiektu Data
+        // petala odbierajaca dane
         while(true) {
             try {
+                //odbieranie danych
                 DataInputStream in = new DataInputStream(client.getInputStream());
                 recv = in.readUTF();
-                DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                out.writeUTF("ACK");
+                //dodanie danych do kolejki
+                recvQueue.add(recv);
+                //zamykanie gniazdka na zadanie serwera
                 if(recv.equals("END")){
-                    out = new DataOutputStream(client.getOutputStream());
+                    // informujemy serwer ze juz sie nie bawimy
+                    DataOutputStream out = new DataOutputStream(client.getOutputStream());
                     out.writeUTF("END");
                     client.close();
                     break;

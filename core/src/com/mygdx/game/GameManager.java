@@ -1,8 +1,5 @@
 package com.mygdx.game;
 
-import com.mygdx.game.Animal;
-import com.mygdx.game.EvoServer;
-import com.mygdx.game.Client;
 import java.io.IOException;
 
 /**
