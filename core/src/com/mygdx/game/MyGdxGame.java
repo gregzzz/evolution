@@ -18,10 +18,12 @@ public class MyGdxGame implements ApplicationListener {
 	int screenHeight=800;
 	SpriteBatch batch;
 	Texture background;
+	Texture card;
 	Sprite sprite;
 	BitmapFont font;
 	int mouseClick[]=new int[2];
 	GameManager gameManager=new GameManager();
+	Player player;
 
 
 	//uzupelnia tablice mouseInput wspolrzednymi myszki
@@ -47,7 +49,7 @@ public class MyGdxGame implements ApplicationListener {
 			return true;
 		} else if (mouseClick[0] < 80 && mouseClick[1] > (screenHeight - 50) && mouseClick[1] < (screenHeight - 25)) {
 			font.draw(batch, "Connecting", 10, screenHeight - 50);
-			gameManager.startClient();
+			player=gameManager.startClient();
 			batch.end();
 			return true;
 		}
@@ -57,10 +59,18 @@ public class MyGdxGame implements ApplicationListener {
 
 	public boolean drawGame(){
 		batch.begin();
-
+		background=new Texture("core/assets/bg.png");
 		batch.draw(background, 0, 0);
 		background=new Texture("core/assets/bg2.png");
 		batch.draw(background, 0, 0);
+		for(int i=0; i<20;i++){
+			if(player.getCards(i)=="NULL"){
+				break;
+			}else{
+				card=new Texture("core/assets/"+player.getCards(i)+".bmp");
+				batch.draw(card, i*100, 0);
+			}
+		}
 		batch.end();
 		return true;
 	}

@@ -50,18 +50,19 @@ public class GameManager{
     public void setGame()
     {
         // popros wszystkich o imiona
+
         sendToAll("GET NAME");
         // wyslij wszystkim ze zaczynamy gre
+        /*
         sendToAll("PHASE BEGIN");
         // wyslij wszystkim ich karty
-        String setOfCards = "";
+        */
         for(int num = 0 ; num < clients.length ; num++){
+            sendToOne("STARTING CARDS",num);
             for(int card = 0; card < 6 ; card++){
-                setOfCards = setOfCards + getCardFromDeck() + " ";
+                sendToOne(getCardFromDeck(),num);
             }
             // CARDS [karta] [karta]
-            sendToOne("CARDS " + setOfCards, num);
-            setOfCards = "";
         }
         // czekamy az wszyscy sie przedstawia i rozsylamy wiesci o tym kto jest kto to jest numer porzatkowy i imie
         String name;
@@ -72,7 +73,9 @@ public class GameManager{
                         break;
                     }
                 }
+
             sendToAll("NAME "+ name + " " + Integer.toString(num));
+
             name = "";
         }
         // przechodzimy do rozgrywki

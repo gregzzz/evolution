@@ -58,22 +58,4 @@ public class Client extends Thread {
             return "";
         }
     }
-
-    public static void main(String args[])
-    {
-	//serwer ustawiony na jednego gracza
-        Client c = new Client("localhost",5005);
-        String recv = "";
-        // w kazdej petli obdlugujacej gre wolasz metode readRecv na obiekcie clienta i jesli nie jest rowna ""
-        // obslugujesz jej zawartosc
-        while(!recv.equals("END")){
-		//chca imie
-            if(recv.equals("GET NAME"))
-		// wysylam im
-                c.send("TOBI");
-            recv = c.readRecv();
-            if(!recv.equals(""))
-                System.out.println(recv);
-        }
-    }
 }
