@@ -1,6 +1,6 @@
 package com.mygdx.game;
 
-import com.mygdx.game.GameManager;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -57,7 +57,7 @@ public class MyGdxGame implements ApplicationListener {
 
 	public boolean drawGame(){
 		batch.begin();
-		background=new Texture("core/assets/bg.png");
+
 		batch.draw(background, 0, 0);
 		background=new Texture("core/assets/bg2.png");
 		batch.draw(background, 0, 0);
@@ -70,6 +70,7 @@ public class MyGdxGame implements ApplicationListener {
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		font.setColor(Color.GREEN);
+		background=new Texture("core/assets/bg.png");
 	}
 
 	@Override
