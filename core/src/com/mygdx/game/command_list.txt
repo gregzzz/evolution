@@ -1,0 +1,23 @@
+to wszystko jest do ustalenia ale trzeba to uzgadniac
+co komu potrzebne i dlaczego to jest moja propozyja nieskonczoona jeszcze
+
+wysyla serwer:
+    do wszystkich:
+    GET NAME    - oczekuje niku gracza
+    NAME [nick] [numer gracza] - info o nikach graczy i numerach graczy
+    PHASE BEGIN  - no ze rozpoczynanie rozgrywki rozdanie kart co tam bedzie trzeb
+    CARDS [numer gracza] [ilosc kart] - ktory gracz i ile kart dostal
+    TURN [numer gracza] - info o tym czyja teraz kolej
+    PHASE EVOLUTION - zmiana fazy gry na ewolucje
+    ADD [numer gracza] - gracz dodal zwierze
+    EVOLUTION [numer gracza] [id zwierzaka] [nazwa cechy] - gracz dodal ceche jakiemus zwierzakowi
+    PASS [numer gracza] - numer gracza ktory spasowal w tej kolejce
+
+    pojedynczo:
+    CARDS [numer gracza] [karta] [karta] ... - jesli to Twoj numer gracza to karty dla Ciebie
+    BAD - wysyla do gracza ktory wyslal nieobslugiwana komende
+
+wysyla gracz:
+    PASS  - jak pasuje w fazie ewolucji
+    NAME [nik] - jak podaje swoj nik
+    ADD -
