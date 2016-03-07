@@ -23,6 +23,7 @@ public class MyGdxGame implements ApplicationListener {
 	BitmapFont font;
 	int mouseClick[]=new int[2];
 	GameManager gameManager=new GameManager();
+	//jak dla mnie player powinien  byc w gameManagerze
 	Player player;
 
 
@@ -42,21 +43,18 @@ public class MyGdxGame implements ApplicationListener {
 		font.draw(batch, "Host", 10, screenHeight-10);
 		font.draw(batch, "Connect", 10, screenHeight-30);
 		getMouseInput();
-		if (mouseClick[0] < 40 && mouseClick[1] > (screenHeight - 25)) {
-			font.draw(batch, "Waiting for clients", 10, screenHeight - 50);
-			gameManager.startServer();
-			batch.end();
-			return true;
-		} else if (mouseClick[0] < 80 && mouseClick[1] > (screenHeight - 50) && mouseClick[1] < (screenHeight - 25)) {
+		// wyjebalem stawianie serwera bo inne byly zalozenia projektowe
+		if (mouseClick[0] < 80 && mouseClick[1] > (screenHeight - 50) && mouseClick[1] < (screenHeight - 25)) {
 			font.draw(batch, "Connecting", 10, screenHeight - 50);
-			player=gameManager.startClient();
+			gameManager.startClient();
 			batch.end();
 			return true;
 		}
 		batch.end();
 		return false;
 	}
-
+	// zrob tak zbey od razy sie resizowala wzgledem wielkosci ekranu i ilosci graczy nie sztywno
+	// i rozmiar kart
 	public boolean drawGame(){
 		batch.begin();
 		background=new Texture("core/assets/bg.png");
@@ -64,10 +62,11 @@ public class MyGdxGame implements ApplicationListener {
 		background=new Texture("core/assets/bg2.png");
 		batch.draw(background, 0, 0);
 		for(int i=0; i<20;i++){
-			if(player.getCards(i)=="NULL"){
+			if(gameManager.player.getCards(i)=="NULL"){
 				break;
 			}else{
 				card=new Texture("core/assets/"+player.getCards(i)+".bmp");
+				// nie pisz i*100 tylko i*odlegloscJakasTam bo potem jest wchuj zmieniania
 				batch.draw(card, i*100, 0);
 			}
 		}

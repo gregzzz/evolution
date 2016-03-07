@@ -9,17 +9,20 @@ import java.io.*;
 public class Client extends Thread {
     private String serverName;
     private int port;
-    private String recv = ""; // dane odebrane od serwera
     Socket client;
-    Queue recvQueue = new LinkedList();
+    GameManager manager;
+    //gameManager
 
-    public Client(String s,int p){
+    public Client(String s,int p, GameManager m){
         serverName = s;
         port = p;
+        manager = m;
         // Nawiazanie polaczenia
         connect();
         // Watek odbierajacy dane od serwera i zapisujacy je w recv
-        Thread t = new ClientRecv(client,recvQueue);
+        Thread t = new ClientRecv();
+
+
         t.start();
     }
     // laczenie z serwerem
@@ -44,18 +47,38 @@ public class Client extends Thread {
             e.printStackTrace();
         }
     }
-    // zwraca dane aktualnie przechowywane w bufforze
-    public String readRecv(){
-        String r;
-        // wyciagamy stringa z kolejki
-        r = (String) recvQueue.poll();
-        // jesli nie jest to null zwracamy go
-        if(r!=null){
-            return r;
-        }
-        // a jesli jest to pusty string
-        else{
-            return "";
+
+    // tutaj zmiana koncepcji. po odebraniu danych wykonywana jest raz funkcja ktora dodalem do
+    // gameManagera na tym stringu
+    public void handleData(String recv){
+        manager.handleData(recv);
+    }
+
+    public class ClientRecv extends Thread{
+        // funckja wykonywana po odpaleniu watku
+        public void run(){
+            // petala odbierajaca dane
+            String r;
+            while(true) {
+                try {
+                    //odbieranie danych
+                    DataInputStream in = new DataInputStream(client.getInputStream());
+                    r = in.readUTF();
+                    handleData(r);
+
+                    //zamykanie gniazdka na zadanie serwera
+                    if(r.equals("END")){
+                        // informujemy serwer ze juz sie nie bawimy
+                        DataOutputStream out = new DataOutputStream(client.getOutputStream());
+                        out.writeUTF("END");
+                        client.close();
+                        break;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    break;
+                }
+            }
         }
     }
 }
