@@ -64,6 +64,7 @@ public class Client extends Thread {
                     //odbieranie danych
                     DataInputStream in = new DataInputStream(client.getInputStream());
                     r = in.readUTF();
+                    System.out.println(r);
                     handleData(r);
 
                     //zamykanie gniazdka na zadanie serwera

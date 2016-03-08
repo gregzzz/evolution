@@ -1,36 +1,26 @@
 package com.mygdx.game;
 
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Created by Woronko on 2016-03-04.
  */
 public class Player {
-    // wez sie nie wyglupiaj i uzyj vectora ladniej sie iteruje po nim
-    // i elastyczniej pracuje
-    private String cards[];
+    public int number;
+    public String name;
 
-    public Player(){
-        // serio unikaj wypisywania gdziekolwiek stalych tak jak tutaj 20
-        // bo sie nie da nic zmienic potem
-        // daltego uzywaj wektora
-        cards=new String[20];
-        for(int i=0; i<20; i++){
-            cards[i]="NULL";
-        }
-    }
+    public int numberOfCards = 0;
+    public Vector cards = new Vector();
+    public Vector animals = new Vector();
 
     public void addCard(String card){
-        for(int i=0; i<20;i++){
-            // bardzo pieknie to wyglada ziom xd
-            if(cards[i]=="NULL") {
-                cards[i] = card;
-                break;
-            }
-        }
+        cards.addElement(card);
+    }
+    public void addAnimal(){
+        animals.addElement(new Animal());
     }
 
-    public String getCards(int i) {
-        return cards[i];
+    public String getCards(int i){
+        return (String)cards.elementAt(i);
     }
 }

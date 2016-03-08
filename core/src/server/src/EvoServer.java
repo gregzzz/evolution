@@ -65,6 +65,12 @@ public class EvoServer extends Thread{
 
         game.setGame();
         while(true){
+            // jesli ktos tam juz wykonal swoj ruch przekaz kolejke dalej
+            if(game.nowTurn != game.turn){
+                game.nowTurn = game.turn;
+                send("TURN "+game.turn, ALL);
+            }
+
             if(game.phase.equals("EVOLUTION")){
                 game.evolutionPhase();
             }
