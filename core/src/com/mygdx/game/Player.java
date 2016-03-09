@@ -9,6 +9,7 @@ public class Player {
     // wez sie nie wyglupiaj i uzyj vectora ladniej sie iteruje po nim
     // i elastyczniej pracuje
     private String cards[];
+    public boolean alive;
 
     public Player(){
         // serio unikaj wypisywania gdziekolwiek stalych tak jak tutaj 20
@@ -26,6 +27,18 @@ public class Player {
             if(cards[i]=="NULL") {
                 cards[i] = card;
                 break;
+            }
+        }
+    }
+    public void setStartingCards(String s){
+        String [] card= s.split(" ");
+        for(int j=3; j<3+Integer.parseInt(card[2]); j++) {
+            for (int i = 0; i < 20; i++) {
+                if (cards[i] == "NULL") {
+                    cards[i] = card[j];
+                    System.out.println(card[j]);
+                    break;
+                }
             }
         }
     }

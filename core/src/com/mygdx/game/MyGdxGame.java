@@ -36,7 +36,7 @@ public class MyGdxGame implements ApplicationListener {
 
 		return true;
 	}
-
+/*
 	//wybieranie connect lub host
 	public boolean menu(){
 		batch.begin();
@@ -52,7 +52,7 @@ public class MyGdxGame implements ApplicationListener {
 		}
 		batch.end();
 		return false;
-	}
+	}*/
 	// zrob tak zbey od razy sie resizowala wzgledem wielkosci ekranu i ilosci graczy nie sztywno
 	// i rozmiar kart
 	public boolean drawGame(){
@@ -63,7 +63,7 @@ public class MyGdxGame implements ApplicationListener {
 		batch.draw(background, 0, 0);
 		for(int i=0; i<20;i++){
 			if(gameManager.player.getCards(i)=="NULL"){
-				break;
+				continue;
 			}else{
 				card=new Texture("core/assets/"+player.getCards(i)+".bmp");
 				// nie pisz i*100 tylko i*odlegloscJakasTam bo potem jest wchuj zmieniania
@@ -73,7 +73,7 @@ public class MyGdxGame implements ApplicationListener {
 		batch.end();
 		return true;
 	}
-	
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
@@ -86,12 +86,8 @@ public class MyGdxGame implements ApplicationListener {
 	public void render () {
 		Gdx.gl.glClearColor(255, 255, 255, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		if(menu()) {
-			if(drawGame()){
-				
-			}
-		}
-
+		player=gameManager.startClient();
+		drawGame();
 	}
 
 	@Override

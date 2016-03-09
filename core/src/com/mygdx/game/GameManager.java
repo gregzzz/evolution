@@ -11,11 +11,13 @@ public class GameManager {
     public Player player=new Player();
     Client c;
 
-    public void startClient(){
+    public Player startClient(){
         if(!clientConnected) {
             clientConnected = true;
             c = new Client("localhost", 5055, this);
+
         }
+        return player;
     }
     public void handleData(String recvData){
             // jesli chcesz sprawdzic caly napis uzywasz recvData
@@ -26,7 +28,8 @@ public class GameManager {
                 c.send("TOBI");
             //dostanie poczatkowych kart
             else if(recv[0].equals("CARDS")) {
-
+                player.setStartingCards(recvData);
+                player.alive=true;
             }
 
             else if(recvData.equals("PHASE EVOLUTION")){
