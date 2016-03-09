@@ -1,0 +1,1 @@
+This animal can steal one food token from an animal not yet fed each turn.

@@ -10,12 +10,17 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Color;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
 
 public class MyGdxGame implements ApplicationListener {
 	int screenWidth=1200;
 	int screenHeight=800;
+	String line;
+	BufferedReader in;
 	SpriteBatch batch;
 	Texture background;
 	Texture card;
@@ -25,6 +30,38 @@ public class MyGdxGame implements ApplicationListener {
 	GameManager gameManager=new GameManager();
 	//jak dla mnie player powinien  byc w gameManagerze
 	Player player;
+
+	@Override
+	public void render () {
+		Gdx.gl.glClearColor(0, 0, 0, 0);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		player=gameManager.startClient();
+		drawGame();
+		getMouseInput();
+		chooseCardFromHand();
+	}
+
+	public void chooseCardFromHand(){
+		for(int i=0;i<player.cardsNumber();i++){
+			if(mouseClick[1]<card.getHeight() && mouseClick[0]>i*card.getWidth() && mouseClick[0]<(i+1)*card.getWidth()){
+				batch.begin();
+				card=new Texture("core/assets/"+player.getCards(i)+".png");
+				try{
+					in = new BufferedReader(new FileReader("core/assets/"+player.getCards(i)+".txt"));
+				}catch(FileNotFoundException e){
+					e.printStackTrace();
+				}
+				try{
+					line = in.readLine();
+				}catch(IOException e) {
+					e.printStackTrace();
+				}
+				font.draw(batch, line, 50, screenHeight/2);
+				batch.draw(card, screenWidth-2*card.getWidth(), screenHeight-card.getHeight());
+				batch.end();
+			}
+		}
+	}
 
 
 	//uzupelnia tablice mouseInput wspolrzednymi myszki
@@ -36,23 +73,6 @@ public class MyGdxGame implements ApplicationListener {
 
 		return true;
 	}
-/*
-	//wybieranie connect lub host
-	public boolean menu(){
-		batch.begin();
-		font.draw(batch, "Host", 10, screenHeight-10);
-		font.draw(batch, "Connect", 10, screenHeight-30);
-		getMouseInput();
-		// wyjebalem stawianie serwera bo inne byly zalozenia projektowe
-		if (mouseClick[0] < 80 && mouseClick[1] > (screenHeight - 50) && mouseClick[1] < (screenHeight - 25)) {
-			font.draw(batch, "Connecting", 10, screenHeight - 50);
-			gameManager.startClient();
-			batch.end();
-			return true;
-		}
-		batch.end();
-		return false;
-	}*/
 	// zrob tak zbey od razy sie resizowala wzgledem wielkosci ekranu i ilosci graczy nie sztywno
 	// i rozmiar kart
 	public boolean drawGame(){
@@ -61,14 +81,9 @@ public class MyGdxGame implements ApplicationListener {
 		batch.draw(background, 0, 0);
 		background=new Texture("core/assets/bg2.png");
 		batch.draw(background, 0, 0);
-		for(int i=0; i<20;i++){
-			if(gameManager.player.getCards(i)=="NULL"){
-				continue;
-			}else{
-				card=new Texture("core/assets/"+player.getCards(i)+".bmp");
-				// nie pisz i*100 tylko i*odlegloscJakasTam bo potem jest wchuj zmieniania
-				batch.draw(card, i*100, 0);
-			}
+		for(int i=0; i<player.cardsNumber();i++){
+			card=new Texture("core/assets/"+player.getCards(i)+".png");
+			batch.draw(card, i*card.getWidth(), 0);
 		}
 		batch.end();
 		return true;
@@ -80,21 +95,17 @@ public class MyGdxGame implements ApplicationListener {
 		font = new BitmapFont();
 		font.setColor(Color.GREEN);
 		background=new Texture("core/assets/bg.png");
+		card=new Texture("core/assets/animal.png");
 	}
 
-	@Override
-	public void render () {
-		Gdx.gl.glClearColor(255, 255, 255, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		player=gameManager.startClient();
-		drawGame();
-	}
+
 
 	@Override
 	public void dispose() {
 		batch.dispose();
 		background.dispose();
 		font.dispose();
+		card.dispose();
 	}
 	@Override
 	public void resize(int width, int height) {}

@@ -2,9 +2,6 @@ package com.mygdx.game;
 
 import java.io.IOException;
 
-/**
- * Created by Woronko on 2016-02-28.
- */
 public class GameManager {
     boolean serverIsUp=false;
     boolean clientConnected=false;
