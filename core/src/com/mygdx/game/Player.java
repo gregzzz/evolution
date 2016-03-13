@@ -5,11 +5,12 @@ import java.util.Vector;
 
 public class Player {
     private Vector cards;
-    public boolean alive;
+    int playerNumber;
+    String playerName;
 
     public Player(){
         cards=new Vector();
-        alive=false;
+        playerName="Tobi";
     }
 
     public void setStartingCards(String s){
@@ -18,7 +19,6 @@ public class Player {
             cards.addElement(card[j]);
             System.out.println(card[j]);
         }
-        alive=true;
     }
 
     public Object getCards(int i) {

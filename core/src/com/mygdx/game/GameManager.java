@@ -3,7 +3,6 @@ package com.mygdx.game;
 import java.io.IOException;
 
 public class GameManager {
-    boolean serverIsUp=false;
     boolean clientConnected=false;
     public Player player=new Player();
     Client c;
@@ -22,15 +21,18 @@ public class GameManager {
             String [] recv = recvData.split(" ");
             if(recvData.equals("GET NAME"))
                 // wysylam im
-                c.send("TOBI");
+                c.send(player.playerName);
             //dostanie poczatkowych kart
             else if(recv[0].equals("CARDS")) {
                 player.setStartingCards(recvData);
-                player.alive=true;
+            }else if(recv[0].equals("NAME")){
+                if(recv[1].equals(player.playerName)){
+                    player.playerNumber=Integer.parseInt(recv[2]);
+                }
+                System.out.println(player.playerName+" "+player.playerNumber);
             }
 
             else if(recvData.equals("PHASE EVOLUTION")){
-                //return player;
             }
 
     }

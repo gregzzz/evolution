@@ -48,8 +48,7 @@ public class Client extends Thread {
         }
     }
 
-    // tutaj zmiana koncepcji. po odebraniu danych wykonywana jest raz funkcja ktora dodalem do
-    // gameManagera na tym stringu
+
     public void handleData(String recv){
         manager.handleData(recv);
     }

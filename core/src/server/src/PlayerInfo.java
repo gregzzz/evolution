@@ -1,6 +1,4 @@
-package server.src; /**
- * Created by kopec on 2016-03-06.
- */
+package server.src;
 import java.util.*;
 
 public class PlayerInfo {

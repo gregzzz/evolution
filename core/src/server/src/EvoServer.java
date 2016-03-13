@@ -1,6 +1,4 @@
-package server.src; /**
- * Created by kopec on 2016-03-01.
- */
+package server.src;
 import java.net.*;
 import java.io.*;
 import java.util.*;
@@ -77,7 +75,6 @@ public class EvoServer extends Thread{
                 game.setFoodAndPrepareFeedingPhase();
             }
             // usypiaj watek za kazdym razem gdy sprawdzasz czy nowe dane sie pojawily
-            // bo inaczej sie wszystko spierdoli
             // generaleni w kazdej petli
             try {
                 Thread.sleep(10);                 //1000 milliseconds is one second.

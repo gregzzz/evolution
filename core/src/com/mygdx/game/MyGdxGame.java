@@ -46,6 +46,9 @@ public class MyGdxGame implements ApplicationListener {
 			if(mouseClick[1]<card.getHeight() && mouseClick[0]>i*card.getWidth() && mouseClick[0]<(i+1)*card.getWidth()){
 				batch.begin();
 				card=new Texture("core/assets/"+player.getCards(i)+".png");
+				batch.draw(card, (screenWidth-card.getWidth())/2, card.getHeight()+(screenHeight-card.getHeight())/2);
+				card=new Texture("core/assets/ramka.png");
+				batch.draw(card,(screenWidth-card.getWidth())/2 , (screenHeight-card.getHeight())/2);
 				try{
 					in = new BufferedReader(new FileReader("core/assets/"+player.getCards(i)+".txt"));
 				}catch(FileNotFoundException e){
@@ -56,8 +59,14 @@ public class MyGdxGame implements ApplicationListener {
 				}catch(IOException e) {
 					e.printStackTrace();
 				}
-				font.draw(batch, line, 50, screenHeight/2);
-				batch.draw(card, screenWidth-2*card.getWidth(), screenHeight-card.getHeight());
+				font.draw(batch, line, 600-3*line.length(), 5+screenHeight/2);
+				card=new Texture("core/assets/choice.png");
+				for(int j=-1;j<2;j++){
+					batch.draw(card, ((screenWidth-card.getWidth())/2)-j*card.getWidth(), (screenHeight-card.getHeight())/2-50);
+				}
+				font.draw(batch, "Add Animal", ((screenWidth-card.getWidth())/2)-card.getWidth()+10, ((screenHeight-card.getHeight())/2)-20);
+				font.draw(batch, "Add Perk 1", ((screenWidth-card.getWidth())/2)+10, ((screenHeight-card.getHeight())/2)-20);
+				font.draw(batch, "Add Perk 2", ((screenWidth-card.getWidth())/2)+card.getWidth()+10, ((screenHeight-card.getHeight())/2)-20);
 				batch.end();
 			}
 		}
