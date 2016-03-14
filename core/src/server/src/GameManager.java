@@ -87,7 +87,6 @@ public class GameManager{
                 }
             }
             server.send("NAME "+ name + " " + Integer.toString(num),ALL);
-            name = "";
         }
         // wyslij wszystkim ze zaczynamy gre
         server.send("PHASE BEGIN",ALL);

@@ -28,9 +28,10 @@ public class MyGdxGame implements ApplicationListener {
 	BitmapFont font;
 	int mouseClick[]=new int[2];
 	GameManager gameManager=new GameManager();
-	//jak dla mnie player powinien  byc w gameManagerze
 	Player player;
 
+
+	//glowna petla
 	@Override
 	public void render () {
 		Gdx.gl.glClearColor(0, 0, 0, 0);
@@ -42,13 +43,17 @@ public class MyGdxGame implements ApplicationListener {
 	}
 
 	public void chooseCardFromHand(){
+		//wybor karty
 		for(int i=0;i<player.cardsNumber();i++){
 			if(mouseClick[1]<card.getHeight() && mouseClick[0]>i*card.getWidth() && mouseClick[0]<(i+1)*card.getWidth()){
 				batch.begin();
+				//narysowanie wybranej karty
 				card=new Texture("core/assets/"+player.getCards(i)+".png");
 				batch.draw(card, (screenWidth-card.getWidth())/2, card.getHeight()+(screenHeight-card.getHeight())/2);
+				//narysowanie ramki do tekstu
 				card=new Texture("core/assets/ramka.png");
 				batch.draw(card,(screenWidth-card.getWidth())/2 , (screenHeight-card.getHeight())/2);
+				//pobranie opisu musi byc w try-catchu
 				try{
 					in = new BufferedReader(new FileReader("core/assets/"+player.getCards(i)+".txt"));
 				}catch(FileNotFoundException e){
@@ -59,8 +64,10 @@ public class MyGdxGame implements ApplicationListener {
 				}catch(IOException e) {
 					e.printStackTrace();
 				}
+				//tekst mniej wiecej na srodku
 				font.draw(batch, line, 600-3*line.length(), 5+screenHeight/2);
 				card=new Texture("core/assets/choice.png");
+				//rysowanie wyborow
 				for(int j=-1;j<2;j++){
 					batch.draw(card, ((screenWidth-card.getWidth())/2)-j*card.getWidth(), (screenHeight-card.getHeight())/2-50);
 				}
@@ -82,14 +89,15 @@ public class MyGdxGame implements ApplicationListener {
 
 		return true;
 	}
-	// zrob tak zbey od razy sie resizowala wzgledem wielkosci ekranu i ilosci graczy nie sztywno
-	// i rozmiar kart
+
 	public boolean drawGame(){
+		//najpierw tlo
 		batch.begin();
 		background=new Texture("core/assets/bg.png");
 		batch.draw(background, 0, 0);
 		background=new Texture("core/assets/bg2.png");
 		batch.draw(background, 0, 0);
+		//karty gracza
 		for(int i=0; i<player.cardsNumber();i++){
 			card=new Texture("core/assets/"+player.getCards(i)+".png");
 			batch.draw(card, i*card.getWidth(), 0);

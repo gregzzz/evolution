@@ -11,7 +11,6 @@ public class GameManager {
         if(!clientConnected) {
             clientConnected = true;
             c = new Client("localhost", 5055, this);
-
         }
         return player;
     }
