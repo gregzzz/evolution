@@ -4,8 +4,7 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
-// tworze nowa klase do obslugi gry
-// zeby byl mniejszy burdel
+
 public class GameManager{
     private EvoServer server;
 
@@ -27,8 +26,6 @@ public class GameManager{
     private int amountOfFood;
 
     public GameManager(EvoServer s, int n, Queue [] r){
-        // przepisuje referencje
-        // nie chce mi sie kminic jak sie dziedziczy
         server = s;
         numberOfPlayers = n;
         recv = r;

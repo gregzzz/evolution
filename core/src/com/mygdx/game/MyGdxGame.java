@@ -24,6 +24,27 @@ public class MyGdxGame implements ApplicationListener {
 	SpriteBatch batch;
 	Texture background;
 	Texture card;
+	Texture aquatic;
+	Texture camouflage;
+	Texture communication;
+	Texture coopc;
+	Texture coopf;
+	Texture fat;
+	Texture hibernation;
+	Texture massivec;
+	Texture massivef;
+	Texture mimicry;
+	Texture parasitec;
+	Texture parasitef;
+	Texture pasturage;
+	Texture piracy;
+	Texture roar;
+	Texture scavenger;
+	Texture sharp;
+	Texture speed;
+	Texture symbiosis;
+	Texture tail;
+	Texture toxic;
 	Sprite sprite;
 	BitmapFont font;
 	int mouseClick[]=new int[2];
@@ -48,7 +69,7 @@ public class MyGdxGame implements ApplicationListener {
 			if(mouseClick[1]<card.getHeight() && mouseClick[0]>i*card.getWidth() && mouseClick[0]<(i+1)*card.getWidth()){
 				batch.begin();
 				//narysowanie wybranej karty
-				card=new Texture("core/assets/"+player.getCards(i)+".png");
+				card=getCardTexture(player.getCards(i));
 				batch.draw(card, (screenWidth-card.getWidth())/2, card.getHeight()+(screenHeight-card.getHeight())/2);
 				//narysowanie ramki do tekstu
 				card=new Texture("core/assets/ramka.png");
@@ -99,11 +120,57 @@ public class MyGdxGame implements ApplicationListener {
 		batch.draw(background, 0, 0);
 		//karty gracza
 		for(int i=0; i<player.cardsNumber();i++){
-			card=new Texture("core/assets/"+player.getCards(i)+".png");
+			card=getCardTexture(player.getCards(i));
 			batch.draw(card, i*card.getWidth(), 0);
 		}
 		batch.end();
 		return true;
+	}
+
+	private Texture getCardTexture(Object cardName){
+		if(cardName.equals("aquatic")){
+			return aquatic;
+		}else if(cardName.equals("camouflage")){
+			return camouflage;
+		}else if(cardName.equals("communication")){
+			return communication;
+		}else if(cardName.equals("coopc")){
+			return coopc;
+		}else if(cardName.equals("coopf")){
+			return coopf;
+		}else if(cardName.equals("hibernation")){
+			return hibernation;
+		}else if(cardName.equals("fat")){
+			return fat;
+		}else if(cardName.equals("massivec")){
+			return massivec;
+		}else if(cardName.equals("massivef")){
+			return massivef;
+		}else if(cardName.equals("mimicry")){
+			return mimicry;
+		}else if(cardName.equals("parasitef")){
+			return parasitef;
+		}else if(cardName.equals("parasitec")){
+			return parasitec;
+		}else if(cardName.equals("pasturage")){
+			return pasturage;
+		}else if(cardName.equals("piracy")){
+			return piracy;
+		}else if(cardName.equals("roar")){
+			return roar;
+		}else if(cardName.equals("scavenger")){
+			return scavenger;
+		}else if(cardName.equals("sharp")){
+			return sharp;
+		}else if(cardName.equals("speed")){
+			return speed;
+		}else if(cardName.equals("symbiosis")){
+			return symbiosis;
+		}else if(cardName.equals("tail")){
+			return tail;
+		}else{
+			return toxic;
+		}
 	}
 
 	@Override
@@ -113,6 +180,29 @@ public class MyGdxGame implements ApplicationListener {
 		font.setColor(Color.GREEN);
 		background=new Texture("core/assets/bg.png");
 		card=new Texture("core/assets/animal.png");
+		aquatic=new Texture("core/assets/aquatic.png");
+		camouflage=new Texture("core/assets/camouflage.png");
+		communication=new Texture("core/assets/communication.png");
+		coopc=new Texture("core/assets/coopc.png");
+		coopf=new Texture("core/assets/coopf.png");
+		hibernation=new Texture("core/assets/hibernation.png");
+		fat=new Texture("core/assets/fat.png");
+		massivec=new Texture("core/assets/massivec.png");
+		massivef=new Texture("core/assets/massivef.png");
+		mimicry=new Texture("core/assets/mimicry.png");
+		parasitef=new Texture("core/assets/parasitef.png");
+		parasitec=new Texture("core/assets/parasitec.png");
+		pasturage=new Texture("core/assets/pasturage.png");
+		piracy=new Texture("core/assets/piracy.png");
+		roar=new Texture("core/assets/roar.png");
+		scavenger=new Texture("core/assets/scavenger.png");
+		sharp=new Texture("core/assets/sharp.png");
+		speed=new Texture("core/assets/speed.png");
+		symbiosis=new Texture("core/assets/symbiosis.png");
+		tail=new Texture("core/assets/tail.png");
+		toxic=new Texture("core/assets/toxic.png");
+
+
 	}
 
 
@@ -123,6 +213,27 @@ public class MyGdxGame implements ApplicationListener {
 		background.dispose();
 		font.dispose();
 		card.dispose();
+		aquatic.dispose();
+		camouflage.dispose();
+		communication.dispose();
+		coopc.dispose();
+		coopf.dispose();
+		hibernation.dispose();
+		fat.dispose();
+		massivec.dispose();
+		massivef.dispose();
+		mimicry.dispose();
+		parasitef.dispose();
+		parasitec.dispose();
+		pasturage.dispose();
+		piracy.dispose();
+		roar.dispose();
+		scavenger.dispose();
+		sharp.dispose();
+		speed.dispose();
+		symbiosis.dispose();
+		tail.dispose();
+		toxic.dispose();
 	}
 	@Override
 	public void resize(int width, int height) {}

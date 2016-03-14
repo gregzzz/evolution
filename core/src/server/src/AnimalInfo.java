@@ -1,6 +1,4 @@
-package server.src; /**
- * Created by kopec on 2016-03-07.
- */
+package server.src;
 import java.util.*;
 
 public class AnimalInfo {
