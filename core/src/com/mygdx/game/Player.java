@@ -1,5 +1,7 @@
 package com.mygdx.game;
 
+import server.src.AnimalInfo;
+
 import java.util.*;
 
 /**
@@ -10,8 +12,8 @@ public class Player {
     public String name;
 
     public int numberOfCards = 0;
-    public Vector cards = new Vector();
-    public Vector animals = new Vector();
+    public Vector<String> cards = new Vector();
+    public Vector<Animal> animals = new Vector();
 
     public void addCard(String card){
         cards.addElement(card);
