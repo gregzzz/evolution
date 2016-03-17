@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package components;
 
 import java.util.Vector;
 
@@ -16,7 +16,7 @@ public class Player {
     }
 
     public void addAnimal(){
-        animals.addElement(new Animal());
+        animals.addElement(new Animal(number));
     }
 
     public Object getCards(int i) {

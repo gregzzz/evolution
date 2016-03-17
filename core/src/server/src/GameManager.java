@@ -1,9 +1,8 @@
 package server.src;
 
-import java.net.*;
-import java.io.*;
 import java.util.*;
-
+import components.enums.*;
+import components.*;
 
 public class GameManager{
     private EvoServer server;
@@ -17,8 +16,9 @@ public class GameManager{
     private Vector deck = new Vector(numberOfCards);
     private Random randomGenerator = new Random();
 
-    private PlayerInfo [] players;
-    public String phase = "BEGIN";
+    private Player[] players;
+    public GameState state = GameState.BEGIN;
+    private Commands command = Commands.NONE;
     private int whoBeginPhase;
     private int turn;
     public int nowTurn;
@@ -26,11 +26,13 @@ public class GameManager{
 
     private int amountOfFood;
 
+    private int commandId = 0;
+
     public GameManager(EvoServer s, int n, Queue [] r){
         server = s;
         numberOfPlayers = n;
         recv = r;
-        players = new PlayerInfo[n];
+        players = new Player[n];
 
         whoPassed = new boolean[n];
         for(int i = 0; i < n; i++){
@@ -66,16 +68,17 @@ public class GameManager{
     public void setGame()
     {
         for(int num = 0 ; num < numberOfPlayers; num++){
-            server.send("NUMBER "+num,num);
+            server.send(Commands.NUMBER.getId()+" "+num,num);
         }
         // popros wszystkich o imiona
-        server.send("GET NAME",ALL);
+        server.send(Commands.GET.getId()+" NAME",ALL);
+
         String name;
         for(int num = 0 ; num < numberOfPlayers; num++){
             while(true){
                 if(recv[num].peek()!=null){
                     System.out.println(recv[num].peek());
-                    players[num] = new PlayerInfo();
+                    players[num] = new Player();
                     players[num].name = (String) recv[num].peek();
                     players[num].number = num;
                     name = (String) recv[num].poll();
@@ -87,11 +90,11 @@ public class GameManager{
                     Thread.currentThread().interrupt();
                 }
             }
-            server.send("NAME "+Integer.toString(num)+" "+name,ALL);
+            server.send(Commands.NAME.getId()+" "+Integer.toString(num)+" "+name,ALL);
             name = "";
         }
         // wyslij wszystkim ze zaczynamy gre
-        server.send("PHASE BEGIN",ALL);
+        server.send(Commands.PHASE.getId()+" BEGIN",ALL);
         // wyslij wszystkim ich karty
         String setOfCards = "";
         for(int num = 0 ; num < numberOfPlayers ; num++){
@@ -99,20 +102,19 @@ public class GameManager{
                 setOfCards = setOfCards + getCardFromDeck() + " ";
             }
             // CARDS [karta] [karta]
-            server.send("CARDS " + num + " "+setOfCards,num);
+            server.send(Commands.CARDS.getId()+" " + num + " "+setOfCards,num);
             setOfCards = "";
         }
         // czekamy az wszyscy sie przedstawia i rozsylamy wiesci o tym kto jest kto to jest numer porzatkowy i imie
 
         // ustalamy kto zaczyna
         // TURN [numer porzatkowy gracza]
-        server.send("TURN 0",ALL);
+        server.send(Commands.TURN.getId()+" 0",ALL);
         turn = 0;
         whoBeginPhase = turn;
         nowTurn = turn;
         // przechodzimy do rozgrywki
-        server.send("PHASE EVOLUTION",ALL);
-        phase = "EVOLUTION";
+        server.send(Commands.PHASE.getId()+" EVOLUTION",ALL);
     }
     public void evolutionPhase(){
         // jesli ten czyja tura przyslal dane
@@ -123,23 +125,27 @@ public class GameManager{
             else{
                 //tablica stringow do obslugi danych przychodzacych
                 String [] data = ((String)recv[turn].poll()).split(" ");
-                if(data[0].equals("ADD")){
+                command = Commands.fromInt(Integer.parseInt(data[0]));
+                if(command == Commands.ADD){
                     //dodaj zwierze
-                    server.send("ADD "+turn,ALL);
+                    server.send(Commands.ADD.getId() + " " + turn,ALL);
                     nextOneTakeTurn();
                 }
-                else if(data[0].equals("EVOLUTION")){
+
+                else if(command == Commands.EVOLUTION){
                     //dodaj ceche
-                    server.send("EVOLUTION "+turn,ALL);
+                    server.send(Commands.ADD.getId() + " " + turn,ALL);
                 }
-                else if(data[0].equals("PASS")){
+
+                else if(command == Commands.PASS){
                     //ktos pasuje
                     whoPassed[turn]=true;
-                    server.send("PASS "+turn,ALL);
+                    server.send(Commands.PASS.getId() + " " + turn,ALL);
                 }
+
                 else{
                     //jak ktos przysle chujowe dane to mu o tym piszemy
-                    server.send("BAD "+turn,turn);
+                    server.send(Commands.NONE.getId()+" "+turn,turn);
                 }
             }
         }
@@ -150,7 +156,7 @@ public class GameManager{
 
     //funckja ustawiajaca ilosc jedzenia i przygotowujemy faze zywienia
     public void setFoodAndPrepareFeedingPhase(){
-        server.send("FOOD "+Integer.toString(numberOfPlayers+6),ALL);
+        server.send(Commands.FOOD+" "+Integer.toString(numberOfPlayers+6),ALL);
         amountOfFood = numberOfPlayers;
 
         // zerujemy tablice passow
@@ -160,7 +166,7 @@ public class GameManager{
         }
         // i ustawiamy kolejke na tego kto zaczyna faze
         turn = whoBeginPhase;
-        server.send("TURN " + Integer.toString(turn),ALL);
+        server.send(Commands.TURN+" " + Integer.toString(turn),ALL);
     }
     // sprawdza czy juz wszyscy spasowali
     public boolean everyonePassed(){

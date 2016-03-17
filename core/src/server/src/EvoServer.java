@@ -1,4 +1,7 @@
 package server.src;
+
+import components.enums.GameState;
+
 import java.net.*;
 import java.io.*;
 import java.util.*;
@@ -7,6 +10,7 @@ public class EvoServer extends Thread{
     private ServerSocket serverSocket;
     private Socket [] clients;
     private int numberOfPlayers;
+
     private Queue [] recvFromClients;
 
     private static final int ALL = -1;
@@ -14,7 +18,6 @@ public class EvoServer extends Thread{
     public EvoServer(int p, int n) throws IOException {
         serverSocket = new ServerSocket(p);
         serverSocket.setSoTimeout(100000);
-
         numberOfPlayers = n;
         clients = new Socket[numberOfPlayers];
 
@@ -63,15 +66,15 @@ public class EvoServer extends Thread{
 
         game.setGame();
         while(true){
-            if(game.phase.equals("EVOLUTION")){
+            if(game.state == GameState.EVOLUTION){
                 game.evolutionPhase();
             }
-            else if(game.phase.equals("FEEDING")){
+            else if(game.state == GameState.FEEDING){
                 game.feedingPhase();
             }
 
             //jesli skonczy sie faza ewolucji
-            if(game.everyonePassed() && game.phase.equals("EVOLUTION")){
+            if(game.everyonePassed() && game.state == GameState.EVOLUTION){
                 game.setFoodAndPrepareFeedingPhase();
             }
             // usypiaj watek za kazdym razem gdy sprawdzasz czy nowe dane sie pojawily
@@ -85,6 +88,7 @@ public class EvoServer extends Thread{
     }
     // wysyla w zaleznosci od zmiennej n jesli -1( zdefiniowana stala ALL) wysyla do wzystkich jesli numer gracza wysyla do gracza
     public void send(String s, int n){
+        System.out.println(s);
         if(n<0) {
             for (int i = 0; i < numberOfPlayers; i++) {
                 try {
@@ -122,6 +126,7 @@ public class EvoServer extends Thread{
                     DataInputStream in = new DataInputStream(clients[playerNumber].getInputStream());
                     recv = in.readUTF();
                     // dodanie stringa do kolejki jesli jest rozny od null
+                    System.out.println(recv);
                     recvFromClients[playerNumber].offer(recv);
 
                     // zamykanie gniazdka na zadanie clienta

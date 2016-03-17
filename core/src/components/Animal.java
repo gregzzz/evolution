@@ -1,11 +1,21 @@
-package com.mygdx.game;
+package components;
 
-import java.lang.String;
+import java.util.Vector;
 
 /**
  * Created by Woronko on 2016-02-27.
  */
 public class Animal {
+    public int owner;
+    public Vector features;
+    public boolean feeded = false;
+    public int foodNeeded = 1;
+    public boolean alive = true;
+
+    public Animal(int o){
+        owner = o;
+    }
+
         int eatenFood;
         boolean full;
         boolean dead;
@@ -27,30 +37,6 @@ public class Animal {
         boolean rycie;
         boolean kamuflaz;
         boolean mimikra;
-
-    public Animal(){
-        eatenFood=0;
-        dead=false;
-        full=false;
-        tkanki=0;
-
-        //cechy
-        poisoned=false;
-        duzaMasa=false;
-        jad=false;
-        wypas=false;
-        piractwo=false;
-        drapieznik=false;
-        ostryWzrok=false;
-        padlinozerca=false;
-        szybkosc=false;
-        zdolnoscHibernacji=false;
-        odrzucenieOgona=false;
-        pasozyt=false;
-        rycie=false;
-        kamuflaz=false;
-        mimikra=false;
-    }
 
 };
 
