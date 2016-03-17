@@ -6,7 +6,6 @@ import java.lang.String;
  * Created by Woronko on 2016-02-27.
  */
 public class Animal {
-    // booze cos z tym trzeba zrobic
         int eatenFood;
         boolean full;
         boolean dead;

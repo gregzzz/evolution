@@ -4,8 +4,7 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
-// tworze nowa klase do obslugi gry
-// zeby byl mniejszy burdel
+
 public class GameManager{
     private EvoServer server;
 
@@ -19,18 +18,15 @@ public class GameManager{
     private Random randomGenerator = new Random();
 
     private PlayerInfo [] players;
-
     public String phase = "BEGIN";
     private int whoBeginPhase;
-    public int turn;
+    private int turn;
     public int nowTurn;
     private boolean [] whoPassed;
 
     private int amountOfFood;
 
     public GameManager(EvoServer s, int n, Queue [] r){
-        // przepisuje referencje
-        // nie chce mi sie kminic jak sie dziedziczy
         server = s;
         numberOfPlayers = n;
         recv = r;
@@ -69,7 +65,6 @@ public class GameManager{
     // funkcja wywolana po polaczeniu sie wszystkich graczy
     public void setGame()
     {
-        //wysyla informacje z numerem gracza
         for(int num = 0 ; num < numberOfPlayers; num++){
             server.send("NUMBER "+num,num);
         }
@@ -104,7 +99,7 @@ public class GameManager{
                 setOfCards = setOfCards + getCardFromDeck() + " ";
             }
             // CARDS [karta] [karta]
-            server.send("CARDS " + num + " " + setOfCards,num);
+            server.send("CARDS " + num + " "+setOfCards,num);
             setOfCards = "";
         }
         // czekamy az wszyscy sie przedstawia i rozsylamy wiesci o tym kto jest kto to jest numer porzatkowy i imie
@@ -119,7 +114,6 @@ public class GameManager{
         server.send("PHASE EVOLUTION",ALL);
         phase = "EVOLUTION";
     }
-
     public void evolutionPhase(){
         // jesli ten czyja tura przyslal dane
         if(recv[turn].peek()!=null){
@@ -131,15 +125,12 @@ public class GameManager{
                 String [] data = ((String)recv[turn].poll()).split(" ");
                 if(data[0].equals("ADD")){
                     //dodaj zwierze
-                    players[turn].animals.addElement(new AnimalInfo());
                     server.send("ADD "+turn,ALL);
                     nextOneTakeTurn();
                 }
                 else if(data[0].equals("EVOLUTION")){
                     //dodaj ceche
-                    // EVOLUTION [numer gracza] [id zwierzaka] [nazwa cechy]
-                    server.send("EVOLUTION "+turn+" "+data[1]+" "+data[2],ALL);
-                    nextOneTakeTurn();
+                    server.send("EVOLUTION "+turn,ALL);
                 }
                 else if(data[0].equals("PASS")){
                     //ktos pasuje
@@ -148,22 +139,13 @@ public class GameManager{
                 }
                 else{
                     //jak ktos przysle chujowe dane to mu o tym piszemy
-                    server.send("BAD",turn);
+                    server.send("BAD "+turn,turn);
                 }
             }
         }
     }
     public void feedingPhase(){
-        if(recv[turn].peek()!=null) {
-            if (whoPassed[turn]) {
-                nextOneTakeTurn();
-            } else {
-                String [] data = ((String)recv[turn].poll()).split(" ");
-                if(data[0].equals("FEED")){
-                    amountOfFood -= 1;
-                }
-            }
-        }
+
     }
 
     //funckja ustawiajaca ilosc jedzenia i przygotowujemy faze zywienia

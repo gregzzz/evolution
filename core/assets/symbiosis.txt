@@ -1,0 +1,1 @@
+The protected animal may only be attacked if the other one is dead, however it can only eat once the other one is fed.

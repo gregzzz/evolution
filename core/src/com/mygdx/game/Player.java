@@ -1,10 +1,8 @@
 package com.mygdx.game;
 
-import java.util.*;
+import java.util.Vector;
 
-/**
- * Created by Woronko on 2016-03-04.
- */
+
 public class Player {
     public int number;
     public String name;
@@ -16,11 +14,16 @@ public class Player {
     public void addCard(String card){
         cards.addElement(card);
     }
+
     public void addAnimal(){
         animals.addElement(new Animal());
     }
 
-    public String getCards(int i){
-        return (String)cards.elementAt(i);
+    public Object getCards(int i) {
+        return cards.get(i);
+    }
+
+    public int cardsNumber(){
+        return cards.size();
     }
 }

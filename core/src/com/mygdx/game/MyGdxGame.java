@@ -10,23 +10,100 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Color;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 
 
 public class MyGdxGame implements ApplicationListener {
 	int screenWidth=1200;
 	int screenHeight=800;
+
+	String line;
+	BufferedReader in;
 	SpriteBatch batch;
 	Texture background;
 	Texture card;
+	Texture aquatic;
+	Texture camouflage;
+	Texture communication;
+	Texture coopc;
+	Texture coopf;
+	Texture fat;
+	Texture hibernation;
+	Texture massivec;
+	Texture massivef;
+	Texture mimicry;
+	Texture parasitec;
+	Texture parasitef;
+	Texture pasturage;
+	Texture piracy;
+	Texture roar;
+	Texture scavenger;
+	Texture sharp;
+	Texture speed;
+	Texture symbiosis;
+	Texture tail;
+	Texture toxic;
 	Sprite sprite;
 	BitmapFont font;
 	int mouseClick[]=new int[2];
-
-
-	GameManager game =new GameManager();
-	//jak dla mnie player powinien  byc w gameManagerze
+	GameManager gameManager=new GameManager();
 	Player player;
+
+	public MyGdxGame(){
+		gameManager.startClient();
+		player = gameManager.player;
+	}
+
+	//glowna petla
+	@Override
+	public void render () {
+		Gdx.gl.glClearColor(0, 0, 0, 0);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+		drawGame();
+		getMouseInput();
+		chooseCardFromHand();
+	}
+
+	public void chooseCardFromHand(){
+		//wybor karty
+		for(int i=0;i<player.cardsNumber();i++){
+			if(mouseClick[1]<card.getHeight() && mouseClick[0]>i*card.getWidth() && mouseClick[0]<(i+1)*card.getWidth()){
+				batch.begin();
+				//narysowanie wybranej karty
+				card=getCardTexture(player.getCards(i));
+				batch.draw(card, (screenWidth-card.getWidth())/2, card.getHeight()+(screenHeight-card.getHeight())/2);
+				//narysowanie ramki do tekstu
+				card=new Texture("core/assets/ramka.png");
+				batch.draw(card,(screenWidth-card.getWidth())/2 , (screenHeight-card.getHeight())/2);
+				//pobranie opisu musi byc w try-catchu
+				try{
+					in = new BufferedReader(new FileReader("core/assets/"+player.getCards(i)+".txt"));
+				}catch(FileNotFoundException e){
+					e.printStackTrace();
+				}
+				try{
+					line = in.readLine();
+				}catch(IOException e) {
+					e.printStackTrace();
+				}
+				//tekst mniej wiecej na srodku
+				font.draw(batch, line, 600-3*line.length(), 5+screenHeight/2);
+				card=new Texture("core/assets/choice.png");
+				//rysowanie wyborow
+				for(int j=-1;j<2;j++){
+					batch.draw(card, ((screenWidth-card.getWidth())/2)-j*card.getWidth(), (screenHeight-card.getHeight())/2-50);
+				}
+				font.draw(batch, "Add Animal", ((screenWidth-card.getWidth())/2)-card.getWidth()+10, ((screenHeight-card.getHeight())/2)-20);
+				font.draw(batch, "Add Perk 1", ((screenWidth-card.getWidth())/2)+10, ((screenHeight-card.getHeight())/2)-20);
+				font.draw(batch, "Add Perk 2", ((screenWidth-card.getWidth())/2)+card.getWidth()+10, ((screenHeight-card.getHeight())/2)-20);
+				batch.end();
+			}
+		}
+	}
 
 
 	//uzupelnia tablice mouseInput wspolrzednymi myszki
@@ -39,75 +116,129 @@ public class MyGdxGame implements ApplicationListener {
 		return true;
 	}
 
-	//wybieranie connect lub host
-	public void menu(){
+	public boolean drawGame(){
+		//najpierw tlo
 		batch.begin();
-		font.draw(batch, "Host", 10, screenHeight-10);
-		font.draw(batch, "Connect", 10, screenHeight-30);
-		getMouseInput();
-		// wyjebalem stawianie serwera bo inne byly zalozenia projektowe
-		if (mouseClick[0] < 80 && mouseClick[1] > (screenHeight - 50) && mouseClick[1] < (screenHeight - 25)) {
-			font.draw(batch, "Connecting", 10, screenHeight - 50);
-			game.startClient();
-			game.screen = "game";
-			batch.end();
-		}
-		else {
-			batch.end();
-		}
-	}
-	// zrob tak zbey od razy sie resizowala wzgledem wielkosci ekranu i ilosci graczy nie sztywno
-	// i rozmiar kart
-	public void drawGame(){
-		batch.begin();
-		// jestem za zmiana tesktur bo tlo jest paskudne xd
 		background=new Texture("core/assets/bg.png");
 		batch.draw(background, 0, 0);
 		background=new Texture("core/assets/bg2.png");
 		batch.draw(background, 0, 0);
-		// wypisuje imiona graczy
-		int spaceForName = 300;
-		for (Object obj : game.otherPlayers){
-			Player otherPlayer =(Player) obj;
-			font.draw(batch, otherPlayer.name , screenWidth/2-game.otherPlayers.size()*spaceForName+spaceForName*game.otherPlayers.indexOf(obj), screenHeight-50);
-		}
-		// rysowanie kart
-		// ladna zmienna reprezentujaca rozmiar karty
-		int cardSize = 100;
-		for(int i = 0; i < game.player.numberOfCards; i++){
-				card=new Texture("core/assets/"+game.player.getCards(i)+".bmp");
-				// jebnalem tak zeby je drukowalo mniej wiecej na srodku
-				batch.draw(card, screenWidth/2-game.player.numberOfCards*cardSize/2+i*cardSize, 0);
+		//karty gracza
+		for(int i=0; i<player.cardsNumber();i++){
+			card=getCardTexture(player.getCards(i));
+			batch.draw(card, i*card.getWidth(), 0);
 		}
 		batch.end();
+		return true;
 	}
-	
+
+	private Texture getCardTexture(Object cardName){
+		if(cardName.equals("aquatic")){
+			return aquatic;
+		}else if(cardName.equals("camouflage")){
+			return camouflage;
+		}else if(cardName.equals("communication")){
+			return communication;
+		}else if(cardName.equals("coopc")){
+			return coopc;
+		}else if(cardName.equals("coopf")){
+			return coopf;
+		}else if(cardName.equals("hibernation")){
+			return hibernation;
+		}else if(cardName.equals("fat")){
+			return fat;
+		}else if(cardName.equals("massivec")){
+			return massivec;
+		}else if(cardName.equals("massivef")){
+			return massivef;
+		}else if(cardName.equals("mimicry")){
+			return mimicry;
+		}else if(cardName.equals("parasitef")){
+			return parasitef;
+		}else if(cardName.equals("parasitec")){
+			return parasitec;
+		}else if(cardName.equals("pasturage")){
+			return pasturage;
+		}else if(cardName.equals("piracy")){
+			return piracy;
+		}else if(cardName.equals("roar")){
+			return roar;
+		}else if(cardName.equals("scavenger")){
+			return scavenger;
+		}else if(cardName.equals("sharp")){
+			return sharp;
+		}else if(cardName.equals("speed")){
+			return speed;
+		}else if(cardName.equals("symbiosis")){
+			return symbiosis;
+		}else if(cardName.equals("tail")){
+			return tail;
+		}else{
+			return toxic;
+		}
+	}
+
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
 		font = new BitmapFont();
 		font.setColor(Color.GREEN);
 		background=new Texture("core/assets/bg.png");
+		card=new Texture("core/assets/animal.png");
+		aquatic=new Texture("core/assets/aquatic.png");
+		camouflage=new Texture("core/assets/camouflage.png");
+		communication=new Texture("core/assets/communication.png");
+		coopc=new Texture("core/assets/coopc.png");
+		coopf=new Texture("core/assets/coopf.png");
+		hibernation=new Texture("core/assets/hibernation.png");
+		fat=new Texture("core/assets/fat.png");
+		massivec=new Texture("core/assets/massivec.png");
+		massivef=new Texture("core/assets/massivef.png");
+		mimicry=new Texture("core/assets/mimicry.png");
+		parasitef=new Texture("core/assets/parasitef.png");
+		parasitec=new Texture("core/assets/parasitec.png");
+		pasturage=new Texture("core/assets/pasturage.png");
+		piracy=new Texture("core/assets/piracy.png");
+		roar=new Texture("core/assets/roar.png");
+		scavenger=new Texture("core/assets/scavenger.png");
+		sharp=new Texture("core/assets/sharp.png");
+		speed=new Texture("core/assets/speed.png");
+		symbiosis=new Texture("core/assets/symbiosis.png");
+		tail=new Texture("core/assets/tail.png");
+		toxic=new Texture("core/assets/toxic.png");
+
+
 	}
 
-	@Override
-	public void render () {
-		Gdx.gl.glClearColor(255, 255, 255, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		// zmienilem koncept bo byl paskudny i wykonywal menu przed kazdym wykonaniem drawGame
-		if(game.screen.equals("menu")){
-			menu();
-		}
-		else if(game.screen.equals("game")){
-			drawGame();
-		}
-	}
+
 
 	@Override
 	public void dispose() {
 		batch.dispose();
 		background.dispose();
 		font.dispose();
+		card.dispose();
+		aquatic.dispose();
+		camouflage.dispose();
+		communication.dispose();
+		coopc.dispose();
+		coopf.dispose();
+		hibernation.dispose();
+		fat.dispose();
+		massivec.dispose();
+		massivef.dispose();
+		mimicry.dispose();
+		parasitef.dispose();
+		parasitec.dispose();
+		pasturage.dispose();
+		piracy.dispose();
+		roar.dispose();
+		scavenger.dispose();
+		sharp.dispose();
+		speed.dispose();
+		symbiosis.dispose();
+		tail.dispose();
+		toxic.dispose();
 	}
 	@Override
 	public void resize(int width, int height) {}
