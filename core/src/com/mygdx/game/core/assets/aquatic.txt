@@ -1,0 +1,1 @@
+This animal can only attack and be attacked by animals with this perk.
