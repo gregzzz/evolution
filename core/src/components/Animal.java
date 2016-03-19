@@ -12,8 +12,7 @@ public class Animal {
     public boolean feeded = false;
     public int foodNeeded = 1;
 
-    // moim zdaniem wektor z cechami to lepsza opcja
-    // sprawdzasz czy zawiera dany element i juz
+
     public Vector<Feature> features = new Vector<Feature>();
 
     public Animal(int owner){

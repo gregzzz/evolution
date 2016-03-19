@@ -23,6 +23,10 @@ public class Player {
         return cards.get(i);
     }
 
+    public void removeCard(int i){
+        cards.remove(i);
+    }
+
     public int cardsNumber(){
         return cards.size();
     }

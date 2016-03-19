@@ -9,9 +9,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Color;
-/**
- * Created by kopec on 2016-03-17.
- */
+
 public class TextureManager {
     public Map<String,Texture> textures;
 
@@ -38,6 +36,9 @@ public class TextureManager {
         textures.put("symbiosis",new Texture("core/assets/symbiosis.png"));
         textures.put("tail",new Texture("core/assets/tail.png"));
         textures.put("toxic",new Texture("core/assets/toxic.png"));
+        textures.put("space",new Texture("core/assets/space.png"));
+        textures.put("animal",new Texture("core/assets/animal.png"));
+        textures.put("choice",new Texture("core/assets/choice.png"));
     }
 
     public Texture getTexture(String textureName){
