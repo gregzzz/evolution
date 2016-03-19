@@ -11,7 +11,8 @@ import java.util.Map;
 
 public enum Feature {
     DEAD(1),
-
+    //...
+    
     NONE(-1);
 
     private final int id;

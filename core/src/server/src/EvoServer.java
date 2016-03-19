@@ -1,7 +1,8 @@
 package server.src;
 
+import components.enums.Feature;
 import components.enums.GameState;
-
+import components.*;
 import java.net.*;
 import java.io.*;
 import java.util.*;

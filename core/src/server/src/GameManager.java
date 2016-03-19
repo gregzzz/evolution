@@ -13,7 +13,7 @@ public class GameManager{
     private static final int ALL = -1;
 
     private int numberOfCards;
-    private Vector deck = new Vector(numberOfCards);
+
     private Random randomGenerator = new Random();
 
     private Player[] players;
@@ -23,6 +23,8 @@ public class GameManager{
     private int turn;
     public int nowTurn;
     private boolean [] whoPassed;
+
+    Deck deck = new Deck();
 
     private int amountOfFood;
 
@@ -38,32 +40,10 @@ public class GameManager{
         for(int i = 0; i < n; i++){
             whoPassed[i] = false;
         }
-        setDeck();
     }
 
     // ustawianie kart w talli
-    public void setDeck(){
-        String c = new String("pasturage pasturage pasturage pasturage parasitec parasitec parasitec parasitec"+
-                " tail tail tail tail symbiosis symbiosis symbiosis symbiosis parasitef parasitef parasitef parasitef"+
-                " massivef massivef massivef massivef massivec massivec massivec massivec"+
-                " aquatic aquatic aquatic aquatic aquatic aquatic aquatic aquatic"+
-                " speed speed speed speed toxic toxic toxic toxic coopc coopc coopc coopc coopf coopf coopf coopf"+
-                " camouflage camouflage camouflage camouflage communication communication communication communication"+
-                " roar roar roar roar scavenger scavenger scavenger scavenger piracy piracy piracy piracy"+
-                " hibernation hibernation hibernation hibernation sharp sharp sharp sharp mimicry mimicry mimicry mimicry");
-        String [] cards = c.split(" ");
-        numberOfCards = cards.length;
-        for(String card : cards) {
-            deck.addElement(card);
-        }
-    }
-    // zwraca randomowa pozycje z deck i ja usuwa
-    public String getCardFromDeck(){
-        int randInt = randomGenerator.nextInt(deck.size()-1);
-        String s = (String) deck.get(randInt);
-        deck.removeElementAt(randInt);
-        return s;
-    }
+
     // funkcja wywolana po polaczeniu sie wszystkich graczy
     public void setGame()
     {
@@ -99,7 +79,7 @@ public class GameManager{
         String setOfCards = "";
         for(int num = 0 ; num < numberOfPlayers ; num++){
             for(int card = 0; card < 6 ; card++){
-                setOfCards = setOfCards + getCardFromDeck() + " ";
+                setOfCards = setOfCards + deck.getCardFromDeck() + " ";
             }
             // CARDS [karta] [karta]
             server.send(Command.CARDS.getId()+" " + num + " "+setOfCards,num);
@@ -192,4 +172,31 @@ public class GameManager{
     public void test(){
 
     }
+    // do przerobienia
+    public class Deck{
+        Vector<String> deck = new Vector<String>();
+        public Deck(){
+            String c = new String("pasturage pasturage pasturage pasturage parasitec parasitec parasitec parasitec"+
+                    " tail tail tail tail symbiosis symbiosis symbiosis symbiosis parasitef parasitef parasitef parasitef"+
+                    " massivef massivef massivef massivef massivec massivec massivec massivec"+
+                    " aquatic aquatic aquatic aquatic aquatic aquatic aquatic aquatic"+
+                    " speed speed speed speed toxic toxic toxic toxic coopc coopc coopc coopc coopf coopf coopf coopf"+
+                    " camouflage camouflage camouflage camouflage communication communication communication communication"+
+                    " roar roar roar roar scavenger scavenger scavenger scavenger piracy piracy piracy piracy"+
+                    " hibernation hibernation hibernation hibernation sharp sharp sharp sharp mimicry mimicry mimicry mimicry");
+            String [] cards = c.split(" ");
+            numberOfCards = cards.length;
+            for(String card : cards) {
+                deck.addElement(card);
+            }
+        }
+        // zwraca randomowa pozycje z deck i ja usuwa
+        public String getCardFromDeck(){
+            int randInt = randomGenerator.nextInt(deck.size()-1);
+            String s = (String) deck.get(randInt);
+            deck.removeElementAt(randInt);
+            return s;
+        }
+    }
 }
+

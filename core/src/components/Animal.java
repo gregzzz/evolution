@@ -21,6 +21,22 @@ public class Animal {
     }
 
 
+    public void addFeature(Feature feature){
+        features.addElement(feature);
+    }
+
+    public boolean have(Feature feature){
+        if(features.contains(feature)){
+            return true;
+        }
+        return false;
+    }
+
+    public void removeFeature(Feature feature){
+        features.remove(feature);
+    }
+
+
 };
 
 

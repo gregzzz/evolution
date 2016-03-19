@@ -9,7 +9,7 @@ public class GameManager {
     boolean clientConnected=false;
     Client c;
     public Player player = new Player();
-    public Vector otherPlayers = new Vector();
+    public Vector<Player> otherPlayers = new Vector<Player>();
 
     public GameState state = GameState.BEGIN;
     public Command command = Command.NONE;
@@ -29,6 +29,7 @@ public class GameManager {
         String [] recv = recvData.split(" ");
         command = Command.fromInt(Integer.parseInt(recv[0]));
         System.out.println(command);
+
         if(command == Command.GET) {
             if(recv[1].equals("NAME")) {
                 // wysylam im
@@ -57,10 +58,9 @@ public class GameManager {
                 for(int i=2;i<recv.length;i++){
                     player.addCard(recv[i]);
                 }
-                player.numberOfCards = 6;
+                player.numberOfCards += recv.length-1;
             } else {
-                // tu tez przejebane luskanie xd
-                Player otherPlayer = (Player) otherPlayers.elementAt(Integer.parseInt(recv[1]));
+                Player otherPlayer = otherPlayers.elementAt(Integer.parseInt(recv[1]));
                 otherPlayer.numberOfCards += Integer.parseInt(recv[2]);
             }
         }
