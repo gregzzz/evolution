@@ -136,7 +136,7 @@ public class EvoServer extends Thread{
                     }
 
                 }catch(IOException e){
-                    e.printStackTrace();
+                    // obsluga wyjatkow
                     break;
                 }
             }

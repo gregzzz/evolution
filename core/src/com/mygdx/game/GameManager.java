@@ -12,7 +12,7 @@ public class GameManager {
     public Vector otherPlayers = new Vector();
 
     public GameState state = GameState.BEGIN;
-    public Commands command = Commands.NONE;
+    public Command command = Command.NONE;
     // zeby nie byl to null
     public int turn = -1;
 
@@ -27,20 +27,20 @@ public class GameManager {
         // jesli jego czesc uzywasz recv
 
         String [] recv = recvData.split(" ");
-        command = Commands.fromInt(Integer.parseInt(recv[0]));
+        command = Command.fromInt(Integer.parseInt(recv[0]));
         System.out.println(command);
-        if(command == Commands.GET) {
+        if(command == Command.GET) {
             if(recv[1].equals("NAME")) {
                 // wysylam im
-                c.send(Commands.NAME+" TOBI");
+                c.send(Command.NAME+" TOBI");
             }
         }
 
-        else if(command == Commands.NUMBER){
+        else if(command == Command.NUMBER){
             player.number = Integer.parseInt(recv[1]);
         }
 
-        else if(command == Commands.NAME){
+        else if(command == Command.NAME){
             if(recv[1].equals(Integer.toString(player.number))){
                 player.name = recv[2];
             } else{
@@ -52,7 +52,7 @@ public class GameManager {
             }
         }
 
-        else if(command == Commands.CARDS) {
+        else if(command == Command.CARDS) {
             if(Integer.parseInt(recv[1]) == player.number){
                 for(int i=2;i<recv.length;i++){
                     player.addCard(recv[i]);
@@ -65,7 +65,7 @@ public class GameManager {
             }
         }
 
-        else if(command == Commands.PHASE) {
+        else if(command == Command.PHASE) {
             if (recv[1].equals("EVOLUTION")) {
                 state = GameState.EVOLUTION;
             } else if (recv[1].equals("FEEDING")) {
@@ -83,10 +83,10 @@ public class GameManager {
             }
         }
         // ustawia czyja tura
-        else if(command == Commands.TURN){
+        else if(command == Command.TURN){
             turn = Integer.parseInt(recv[1]);
         }
-        else if(command == Commands.ADD){
+        else if(command == Command.ADD){
             // przejebane luskanie xd
             Player otherPlayer = (Player)otherPlayers.elementAt(Integer.parseInt(recv[1]));
             // bo dodal zwierze

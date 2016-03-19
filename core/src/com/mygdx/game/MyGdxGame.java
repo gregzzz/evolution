@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Color;
 import components.Player;
+import components.enums.GameState;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -46,8 +47,10 @@ public class MyGdxGame implements ApplicationListener {
 	public void render () {
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		drawGame();
+		// piekne stany prosze z nich korzystac
+		if(gameManager.state != GameState.WAIT) {
+			drawGame();
+		}
 		getMouseInput();
 		chooseCardFromHand();
 	}

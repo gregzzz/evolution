@@ -18,7 +18,7 @@ public class GameManager{
 
     private Player[] players;
     public GameState state = GameState.BEGIN;
-    private Commands command = Commands.NONE;
+    private Command command = Command.NONE;
     private int whoBeginPhase;
     private int turn;
     public int nowTurn;
@@ -68,10 +68,10 @@ public class GameManager{
     public void setGame()
     {
         for(int num = 0 ; num < numberOfPlayers; num++){
-            server.send(Commands.NUMBER.getId()+" "+num,num);
+            server.send(Command.NUMBER.getId()+" "+num,num);
         }
         // popros wszystkich o imiona
-        server.send(Commands.GET.getId()+" NAME",ALL);
+        server.send(Command.GET.getId()+" NAME",ALL);
 
         String name;
         for(int num = 0 ; num < numberOfPlayers; num++){
@@ -90,11 +90,11 @@ public class GameManager{
                     Thread.currentThread().interrupt();
                 }
             }
-            server.send(Commands.NAME.getId()+" "+Integer.toString(num)+" "+name,ALL);
+            server.send(Command.NAME.getId()+" "+Integer.toString(num)+" "+name,ALL);
             name = "";
         }
         // wyslij wszystkim ze zaczynamy gre
-        server.send(Commands.PHASE.getId()+" BEGIN",ALL);
+        server.send(Command.PHASE.getId()+" BEGIN",ALL);
         // wyslij wszystkim ich karty
         String setOfCards = "";
         for(int num = 0 ; num < numberOfPlayers ; num++){
@@ -102,19 +102,19 @@ public class GameManager{
                 setOfCards = setOfCards + getCardFromDeck() + " ";
             }
             // CARDS [karta] [karta]
-            server.send(Commands.CARDS.getId()+" " + num + " "+setOfCards,num);
+            server.send(Command.CARDS.getId()+" " + num + " "+setOfCards,num);
             setOfCards = "";
         }
         // czekamy az wszyscy sie przedstawia i rozsylamy wiesci o tym kto jest kto to jest numer porzatkowy i imie
 
         // ustalamy kto zaczyna
         // TURN [numer porzatkowy gracza]
-        server.send(Commands.TURN.getId()+" 0",ALL);
+        server.send(Command.TURN.getId()+" 0",ALL);
         turn = 0;
         whoBeginPhase = turn;
         nowTurn = turn;
         // przechodzimy do rozgrywki
-        server.send(Commands.PHASE.getId()+" EVOLUTION",ALL);
+        server.send(Command.PHASE.getId()+" EVOLUTION",ALL);
     }
     public void evolutionPhase(){
         // jesli ten czyja tura przyslal dane
@@ -125,27 +125,27 @@ public class GameManager{
             else{
                 //tablica stringow do obslugi danych przychodzacych
                 String [] data = ((String)recv[turn].poll()).split(" ");
-                command = Commands.fromInt(Integer.parseInt(data[0]));
-                if(command == Commands.ADD){
+                command = Command.fromInt(Integer.parseInt(data[0]));
+                if(command == Command.ADD){
                     //dodaj zwierze
-                    server.send(Commands.ADD.getId() + " " + turn,ALL);
+                    server.send(Command.ADD.getId() + " " + turn,ALL);
                     nextOneTakeTurn();
                 }
 
-                else if(command == Commands.EVOLUTION){
+                else if(command == Command.EVOLUTION){
                     //dodaj ceche
-                    server.send(Commands.ADD.getId() + " " + turn,ALL);
+                    server.send(Command.ADD.getId() + " " + turn,ALL);
                 }
 
-                else if(command == Commands.PASS){
+                else if(command == Command.PASS){
                     //ktos pasuje
                     whoPassed[turn]=true;
-                    server.send(Commands.PASS.getId() + " " + turn,ALL);
+                    server.send(Command.PASS.getId() + " " + turn,ALL);
                 }
 
                 else{
                     //jak ktos przysle chujowe dane to mu o tym piszemy
-                    server.send(Commands.NONE.getId()+" "+turn,turn);
+                    server.send(Command.NONE.getId()+" "+turn,turn);
                 }
             }
         }
@@ -156,7 +156,7 @@ public class GameManager{
 
     //funckja ustawiajaca ilosc jedzenia i przygotowujemy faze zywienia
     public void setFoodAndPrepareFeedingPhase(){
-        server.send(Commands.FOOD+" "+Integer.toString(numberOfPlayers+6),ALL);
+        server.send(Command.FOOD+" "+Integer.toString(numberOfPlayers+6),ALL);
         amountOfFood = numberOfPlayers;
 
         // zerujemy tablice passow
@@ -166,7 +166,7 @@ public class GameManager{
         }
         // i ustawiamy kolejke na tego kto zaczyna faze
         turn = whoBeginPhase;
-        server.send(Commands.TURN+" " + Integer.toString(turn),ALL);
+        server.send(Command.TURN+" " + Integer.toString(turn),ALL);
     }
     // sprawdza czy juz wszyscy spasowali
     public boolean everyonePassed(){
@@ -184,6 +184,12 @@ public class GameManager{
             turn = 0;
         }
     }
-    // kopiuje funkcje wysylajaca bo nie chce mi sie kminic jak sie dziedziczy
 
+    public void setGameState(){
+
+    }
+
+    public void test(){
+
+    }
 }

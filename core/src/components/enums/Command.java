@@ -4,7 +4,7 @@ package components.enums;
  * Created by kopec on 2016-03-17.
  */
 import java.util.*;
-public enum Commands {
+public enum Command {
     GET(0),
     NAME(1),
     PHASE(2),
@@ -20,14 +20,14 @@ public enum Commands {
 
     private final int id;
 
-    private Commands(int id){
+    private Command(int id){
         this.id = id;
     }
 
-    private static final Map<Integer, Commands> intToTypeMap = new HashMap<Integer, Commands>();
+    private static final Map<Integer, Command> intToTypeMap = new HashMap<Integer, Command>();
 
     static {
-        for (Commands type : Commands.values()) {
+        for (Command type : Command.values()) {
             intToTypeMap.put(type.id, type);
         }
     }
@@ -36,10 +36,10 @@ public enum Commands {
         return this.id;
     }
 
-    public static Commands fromInt(int i) {
-        Commands type = intToTypeMap.get(Integer.valueOf(i));
+    public static Command fromInt(int i) {
+        Command type = intToTypeMap.get(Integer.valueOf(i));
         if (type == null)
-            return Commands.NONE;
+            return Command.NONE;
         return type;
     }
 }
