@@ -1,4 +1,4 @@
-package com.mygdx.game;
+package com.mygdx.game.managers;
 
 import java.util.*;
 import com.badlogic.gdx.ApplicationListener;
@@ -15,6 +15,10 @@ public class TextureManager {
 
     public TextureManager(){
         textures = new HashMap<String,Texture>();
+        // tla
+        textures.put("background-1",new Texture("core/assets/bg.png"));
+        textures.put("background-2",new Texture("core/assets/bg2.png"));
+        // cechy
         textures.put("aquatic",new Texture("core/assets/aquatic.png"));
         textures.put("camouflage",new Texture("core/assets/camouflage.png"));
         textures.put("communication",new Texture("core/assets/communication.png"));
@@ -36,9 +40,14 @@ public class TextureManager {
         textures.put("symbiosis",new Texture("core/assets/symbiosis.png"));
         textures.put("tail",new Texture("core/assets/tail.png"));
         textures.put("toxic",new Texture("core/assets/toxic.png"));
+        // cos tam
         textures.put("space",new Texture("core/assets/space.png"));
         textures.put("animal",new Texture("core/assets/animal.png"));
         textures.put("choice",new Texture("core/assets/choice.png"));
+        // inne cos tam
+        textures.put("ramka" ,new Texture("core/assets/ramka.png"));
+        textures.put("textbackground",new Texture("core/assets/choice.png"));
+        textures.put("card",new Texture("core/assets/animal.png"));
     }
 
     public Texture getTexture(String textureName){

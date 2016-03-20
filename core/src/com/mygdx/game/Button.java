@@ -4,16 +4,25 @@ import com.badlogic.gdx.graphics.Texture;
 
 public class Button {
     Texture graphic;
+
     int positionX;
     int positionY;
-    public Button (Texture texture, int x, int y){
+
+    int mouseX;
+    int mouseY;
+
+    public Button (Texture texture, int x, int y, int mx, int my){
         graphic = texture;
+
         positionX=x;
         positionY=y;
+
+        mouseX = mx;
+        mouseY = my;
     }
 
-    public boolean isTouched (int x, int y){
-        if(x>positionX && x<positionX+graphic.getWidth() && y>positionY && y<positionY+graphic.getHeight()){
+    public boolean isTouched (){
+        if(mouseX>positionX && mouseX<positionX+graphic.getWidth() && mouseY>positionY && mouseY<positionY+graphic.getHeight()){
             return true;
         }else{
             return false;

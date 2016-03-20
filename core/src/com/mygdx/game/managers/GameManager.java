@@ -1,5 +1,6 @@
-package com.mygdx.game;
+package com.mygdx.game.managers;
 
+import com.mygdx.game.Client;
 import components.Player;
 import components.enums.*;
 
