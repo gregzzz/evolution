@@ -8,21 +8,16 @@ public class Button {
     int positionX;
     int positionY;
 
-    int mouseX;
-    int mouseY;
 
     public Button (Texture texture, int x, int y, int mx, int my){
         graphic = texture;
 
         positionX=x;
         positionY=y;
-
-        mouseX = mx;
-        mouseY = my;
     }
 
-    public boolean isTouched (){
-        if(mouseX>positionX && mouseX<positionX+graphic.getWidth() && mouseY>positionY && mouseY<positionY+graphic.getHeight()){
+    public boolean isTouched (int [] mouse){
+        if(mouse[0]>positionX && mouse[0]<positionX+graphic.getWidth() && mouse[1]>positionY && mouse[1]<positionY+graphic.getHeight()){
             return true;
         }else{
             return false;
