@@ -108,8 +108,9 @@ public class MyGdxGame implements ApplicationListener {
 			for (int i = 0; i < 5; i++) {
 				if (animalPlaces[i].isTouched(mouseClick)) {
 					//akcja guzika add animal
-					player.addAnimal();
+					player.addAnimal(i);
 					player.removeCard(chosenCard);
+
 					chooseAction=true;
 					chooseAnimalPlace=true;
 					chooseCardFromHand=false;
@@ -123,7 +124,7 @@ public class MyGdxGame implements ApplicationListener {
 	public void chooseAction(){
 		// 99?
 		if(chosenCard!=99 && !chooseAction) {
-			if (cardChoices[0].isTouched(mouseClick) && player.animals.size()<5) {
+			if (cardChoices[0].isTouched(mouseClick) && player.animalsNumber()<=5) {
 				chooseCardFromHand=true;
 				chooseAnimalPlace=false;
 
@@ -131,6 +132,10 @@ public class MyGdxGame implements ApplicationListener {
 				printAnimalsSlots = true;
 			}
 			else if (cardChoices[1].isTouched(mouseClick)){
+
+				printChoosenCard = false;
+			}
+			else if (cardChoices[2].isTouched(mouseClick)){
 
 			}
 		}
@@ -225,8 +230,12 @@ public class MyGdxGame implements ApplicationListener {
 		}
 			//zwierzeta
 		card = textures.getTexture("animal");
-		for (int i = -2; i < player.animals.size()-2; i++) {
-			batch.draw(card,((screenWidth - card.getWidth()) / 2) + i * card.getWidth(), 100);
+		for (int i = 0; i < 5; i++) {
+			if(player.animals[i] != null) {
+				batch.draw(card, ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth(), 100);
+
+
+			}
 		}
 		batch.end();
 	}

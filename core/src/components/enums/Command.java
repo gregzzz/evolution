@@ -7,7 +7,7 @@ import java.util.*;
 public enum Command {
     GET(0),
     NAME(1),
-    PHASE(2),
+    STATE(2),
     CARDS(3),
     TURN(4),
     ADD(5),

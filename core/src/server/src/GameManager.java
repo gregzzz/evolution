@@ -74,7 +74,7 @@ public class GameManager{
             name = "";
         }
         // wyslij wszystkim ze zaczynamy gre
-        server.send(Command.PHASE.getId()+" BEGIN",ALL);
+        server.send(Command.STATE.getId()+" BEGIN",ALL);
         // wyslij wszystkim ich karty
         String setOfCards = "";
         for(int num = 0 ; num < numberOfPlayers ; num++){
@@ -94,7 +94,7 @@ public class GameManager{
         whoBeginPhase = turn;
         nowTurn = turn;
         // przechodzimy do rozgrywki
-        server.send(Command.PHASE.getId()+" EVOLUTION",ALL);
+        server.send(Command.STATE.getId()+" EVOLUTION",ALL);
     }
     public void evolutionPhase(){
         // jesli ten czyja tura przyslal dane
@@ -162,6 +162,33 @@ public class GameManager{
         turn += 1;
         if (turn >= numberOfPlayers) {
             turn = 0;
+        }
+    }
+    public void handleMassages()
+    {
+        for(int i=0; i<numberOfPlayers;i++){
+            try{
+                if(recv[i].peek().equals("RECOVER")){
+                    recover(i);
+                    recv[i].poll();
+                }
+            } catch (NullPointerException e){
+               // System.out.println("SOMEONE IS OUT");
+            }
+        }
+    }
+    //
+    //  prace trwaja
+    //
+    public void recover(int num){
+        for(int i=0; i<numberOfPlayers; i++){
+            if(num == i){
+                String cardsSet = "";
+                for(String card: players[num].cards){
+                    cardsSet = cardsSet + " " + card;
+                }
+                server.send(Command.CARDS.getId() + " " + num + " " +cardsSet, num);
+            }
         }
     }
 

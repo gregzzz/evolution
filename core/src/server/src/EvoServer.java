@@ -1,11 +1,12 @@
 package server.src;
 
-import components.enums.Feature;
-import components.enums.GameState;
-import components.*;
+import components.enums.Command;
+
 import java.net.*;
 import java.io.*;
 import java.util.*;
+
+import static components.enums.GameState.*;
 
 public class EvoServer extends Thread{
     private ServerSocket serverSocket;
@@ -18,7 +19,7 @@ public class EvoServer extends Thread{
 
     public EvoServer(int p, int n) throws IOException {
         serverSocket = new ServerSocket(p);
-        serverSocket.setSoTimeout(100000);
+        serverSocket.setSoTimeout(1000000);
         numberOfPlayers = n;
         clients = new Socket[numberOfPlayers];
 
@@ -67,15 +68,18 @@ public class EvoServer extends Thread{
 
         game.setGame();
         while(true){
-            if(game.state == GameState.EVOLUTION){
+            // odbieranie czatu i info niezaleznego od kollejki
+            game.handleMassages();
+
+            if(game.state == EVOLUTION){
                 game.evolutionPhase();
             }
-            else if(game.state == GameState.FEEDING){
+            else if(game.state == FEEDING){
                 game.feedingPhase();
             }
 
             //jesli skonczy sie faza ewolucji
-            if(game.everyonePassed() && game.state == GameState.EVOLUTION){
+            if(game.everyonePassed() && game.state == EVOLUTION){
                 game.setFoodAndPrepareFeedingPhase();
             }
             // usypiaj watek za kazdym razem gdy sprawdzasz czy nowe dane sie pojawily
@@ -138,8 +142,29 @@ public class EvoServer extends Thread{
 
                 }catch(IOException e){
                     // obsluga wyjatkow
+                    reconnect();
                     break;
                 }
+            }
+
+        }
+        public void reconnect(){
+            try {
+                // oczekiwanie na polaczenie
+                clients[playerNumber] = serverSocket.accept();
+                System.out.println("Just connected to " +
+                        clients[playerNumber].getRemoteSocketAddress());
+                // tworzenie watku odbierajacego dane od wlasnie polaczonego clienta
+                Thread t = new ClientHandler(playerNumber);
+
+                send(Command.STATE.getId()+" RECOVER",playerNumber);
+                t.start();
+                System.out.println("All players connected");
+            } catch (SocketTimeoutException s) {
+                System.out.println("Socket timed out!");
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
         }

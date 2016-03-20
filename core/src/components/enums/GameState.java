@@ -11,6 +11,7 @@ public enum GameState {
     ERROR,
     WAIT,
     PLAYEROUT,
+    RECOVER,
     MENU,
     OPTIONS;
 }

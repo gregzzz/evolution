@@ -8,15 +8,21 @@ public class Player {
     public String name;
 
     public int numberOfCards = 0;
-    public Vector cards = new Vector();
-    public Vector animals = new Vector();
+    public Vector<String> cards = new Vector<String>();
+    public Animal [] animals = new Animal[5];
+
+    private int animalsNumber = 0;
 
     public void addCard(String card){
         cards.addElement(card);
     }
 
-    public void addAnimal(){
-        animals.addElement(new Animal(number));
+    public void addAnimal(int slot){
+        animals[slot] = new Animal(number);
+        animalsNumber ++;
+    }
+    public void killAnimal(int slot){
+        animalsNumber --;
     }
 
     public Object getCards(int i) {
@@ -27,6 +33,7 @@ public class Player {
         cards.remove(i);
     }
 
+    public int animalsNumber() { return animalsNumber;}
     public int cardsNumber(){
         return cards.size();
     }

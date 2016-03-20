@@ -66,7 +66,7 @@ public class GameManager {
             }
         }
 
-        else if(command == Command.PHASE) {
+        else if(command == Command.STATE) {
             if (recv[1].equals("EVOLUTION")) {
                 state = GameState.EVOLUTION;
             } else if (recv[1].equals("FEEDING")) {
@@ -81,6 +81,9 @@ public class GameManager {
                 state = GameState.WAIT;
             } else if (recv[1].equals("ERROR")) {
                 state = GameState.ERROR;
+            } else if (recv[1].equals("RECOVER")){
+                state = GameState.RECOVER;
+                c.send("RECOVER");
             }
         }
         // ustawia czyja tura
@@ -93,7 +96,7 @@ public class GameManager {
             // bo dodal zwierze
             otherPlayer.numberOfCards -= 1;
             // dodajemy zwierze
-            otherPlayer.addAnimal();
+
 
         }
 
