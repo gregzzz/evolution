@@ -23,6 +23,11 @@ public class GameManager {
             c = new Client("localhost", 5055, this);
         }
     }
+
+    public void addAnimal(int place){
+        c.send(command.ADD.getId()+" "+Integer.toString(place));
+    }
+
     public void handleData(String recvData){
         // jesli chcesz sprawdzic caly napis uzywasz recvData
         // jesli jego czesc uzywasz recv
@@ -92,10 +97,12 @@ public class GameManager {
         }
         else if(command == Command.ADD){
             // przejebane luskanie xd
-            Player otherPlayer = (Player)otherPlayers.elementAt(Integer.parseInt(recv[1]));
+            Player otherPlayer = (Player)otherPlayers.elementAt(Integer.parseInt(recv[3]));
             // bo dodal zwierze
             otherPlayer.numberOfCards -= 1;
             // dodajemy zwierze
+            otherPlayer.addAnimal(Integer.parseInt(recv[2]));
+
 
 
         }

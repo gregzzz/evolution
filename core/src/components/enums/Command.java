@@ -1,8 +1,6 @@
 package components.enums;
 
-/**
- * Created by kopec on 2016-03-17.
- */
+
 import java.util.*;
 public enum Command {
     GET(0),

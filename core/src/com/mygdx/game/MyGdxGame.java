@@ -33,6 +33,8 @@ public class MyGdxGame implements ApplicationListener {
 	Button cardButtons[]=new Button[12];
 	Button cardChoices[]=new Button[3];
 	Button animalPlaces[]=new Button[5];
+	Button endRound;
+	Button pass;
 
 
 
@@ -88,6 +90,7 @@ public class MyGdxGame implements ApplicationListener {
 		chooseAction();
 		chooseAnimalPlace();
 	}
+
 	public void createButtons(){
 		card = textures.getTexture("choice");
 		for (int i = 0; i < 3; i++) {
@@ -106,10 +109,11 @@ public class MyGdxGame implements ApplicationListener {
 	public void chooseAnimalPlace(){
 		if(!chooseAnimalPlace) {
 			for (int i = 0; i < 5; i++) {
-				if (animalPlaces[i].isTouched(mouseClick)) {
+				if (animalPlaces[i].isTouched(mouseClick) && player.animals[i]==null) {
 					//akcja guzika add animal
 					player.addAnimal(i);
 					player.removeCard(chosenCard);
+					gameManager.addAnimal(i);
 
 					chooseAction=true;
 					chooseAnimalPlace=true;
@@ -124,7 +128,7 @@ public class MyGdxGame implements ApplicationListener {
 	public void chooseAction(){
 		// 99?
 		if(chosenCard!=99 && !chooseAction) {
-			if (cardChoices[0].isTouched(mouseClick) && player.animalsNumber()<=5) {
+			if (cardChoices[0].isTouched(mouseClick) && player.animalsNumber()<5) {
 				chooseCardFromHand=true;
 				chooseAnimalPlace=false;
 
@@ -152,6 +156,10 @@ public class MyGdxGame implements ApplicationListener {
 					printChoosenCard = true;
 				}
 			}
+			if(endRound.isTouched(mouseClick)&&player.animalsNumber()>0){
+
+				chosenCard=99;
+			}
 		}
 	}
 
@@ -175,11 +183,11 @@ public class MyGdxGame implements ApplicationListener {
 		batch.draw(textures.getTexture("background-1"), 0, 0);
 		batch.draw(textures.getTexture("background-2"), 0, 0);
 
-		// guzik pass
-		card = textures.getTexture("choice");
-		Button pass=new Button(card,0,screenHeight-card.getHeight(),mouseClick[0],mouseClick[1]);
+
 		batch.draw(pass.getGraphic(), pass.getPositionX(), pass.getPositionY());
 		font.draw(batch, "Pass", 35, 5 + screenHeight-25);
+		batch.draw(endRound.getGraphic(), endRound.getPositionX(), endRound.getPositionY());
+		font.draw(batch, "End Round", screenWidth-card.getWidth()+15, 5 + screenHeight-25);
 		// rysuj wybor
 		if(printChoosenCard) {
 			for (int i = 0; i < player.cardsNumber(); i++) {
@@ -248,6 +256,9 @@ public class MyGdxGame implements ApplicationListener {
 		font = new BitmapFont();
 		font.setColor(Color.GREEN);
 		textures  = new TextureManager();
+		card = textures.getTexture("choice");
+		endRound=new Button(card,screenWidth-card.getWidth(),screenHeight-card.getHeight(),mouseClick[0],mouseClick[1]);
+		pass=new Button(card,0,screenHeight-card.getHeight(),mouseClick[0],mouseClick[1]);
 
 		createButtons();
 

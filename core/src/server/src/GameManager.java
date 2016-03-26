@@ -107,10 +107,12 @@ public class GameManager{
                 String [] data = ((String)recv[turn].poll()).split(" ");
                 command = Command.fromInt(Integer.parseInt(data[0]));
                 if(command == Command.ADD){
+                    System.out.print("lolol");
                     //dodaj zwierze
-                    server.send(Command.ADD.getId() + " " + turn,ALL);
+                    server.send(Command.ADD.getId()+" "+data[2]+turn,ALL);
                     nextOneTakeTurn();
                 }
+
 
                 else if(command == Command.EVOLUTION){
                     //dodaj ceche

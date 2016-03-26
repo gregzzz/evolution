@@ -1,8 +1,7 @@
-/**
- * Created by kopec on 2016-03-01.
- */
+
 package com.mygdx.game;
 import com.mygdx.game.managers.GameManager;
+
 
 import java.net.*;
 import java.io.*;
