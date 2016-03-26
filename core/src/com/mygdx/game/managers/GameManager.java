@@ -28,6 +28,10 @@ public class GameManager {
         c.send(command.ADD.getId()+" "+Integer.toString(place));
     }
 
+    public void pass(){
+        c.send(command.PASS.getId()+" ");
+    }
+
     public void handleData(String recvData){
         // jesli chcesz sprawdzic caly napis uzywasz recvData
         // jesli jego czesc uzywasz recv
@@ -97,14 +101,18 @@ public class GameManager {
         }
         else if(command == Command.ADD){
             // przejebane luskanie xd
-            Player otherPlayer = (Player)otherPlayers.elementAt(Integer.parseInt(recv[3]));
-            // bo dodal zwierze
-            otherPlayer.numberOfCards -= 1;
-            // dodajemy zwierze
-            otherPlayer.addAnimal(Integer.parseInt(recv[2]));
-
-
-
+            if(Integer.parseInt(recv[2])!=player.number) {
+                Player otherPlayer=new Player();
+                //znalezienie odpowiedniego playera
+                for(int i=0;i<otherPlayers.size();i++){
+                    otherPlayer = (Player) otherPlayers.elementAt(i);
+                    if(otherPlayer.number==Integer.parseInt(recv[2]))break;
+                }
+                // bo dodal zwierze
+                otherPlayer.numberOfCards -= 1;
+                // dodajemy zwierze
+                otherPlayer.addAnimal(Integer.parseInt(recv[1]));
+            }
         }
 
     }

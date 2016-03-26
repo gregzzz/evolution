@@ -95,6 +95,7 @@ public class GameManager{
         nowTurn = turn;
         // przechodzimy do rozgrywki
         server.send(Command.STATE.getId()+" EVOLUTION",ALL);
+        state = GameState.EVOLUTION;
     }
     public void evolutionPhase(){
         // jesli ten czyja tura przyslal dane
@@ -107,9 +108,8 @@ public class GameManager{
                 String [] data = ((String)recv[turn].poll()).split(" ");
                 command = Command.fromInt(Integer.parseInt(data[0]));
                 if(command == Command.ADD){
-                    System.out.print("lolol");
                     //dodaj zwierze
-                    server.send(Command.ADD.getId()+" "+data[2]+turn,ALL);
+                    server.send(Command.ADD.getId()+" "+data[1]+" "+turn,ALL);
                     nextOneTakeTurn();
                 }
 
@@ -165,6 +165,7 @@ public class GameManager{
         if (turn >= numberOfPlayers) {
             turn = 0;
         }
+        server.send(Command.TURN.getId()+" "+Integer.toString(turn),ALL);
     }
     public void handleMassages()
     {

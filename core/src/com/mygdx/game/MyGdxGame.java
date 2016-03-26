@@ -46,6 +46,7 @@ public class MyGdxGame implements ApplicationListener {
 	LayoutManager layout = new LayoutManager(textures);
 
 	Player player;
+	Player otherPlayer;
 
 	// ??
 	int chosenCard=99;
@@ -80,7 +81,7 @@ public class MyGdxGame implements ApplicationListener {
 			drawGame();
 		}
 
-		inputHandler();
+		if(gameManager.turn==player.number)inputHandler();
 
 	}
 
@@ -156,8 +157,8 @@ public class MyGdxGame implements ApplicationListener {
 					printChoosenCard = true;
 				}
 			}
-			if(endRound.isTouched(mouseClick)&&player.animalsNumber()>0){
-
+			if(pass.isTouched(mouseClick)&&player.animalsNumber()>0){
+				gameManager.pass();
 				chosenCard=99;
 			}
 		}
@@ -183,7 +184,22 @@ public class MyGdxGame implements ApplicationListener {
 		batch.draw(textures.getTexture("background-1"), 0, 0);
 		batch.draw(textures.getTexture("background-2"), 0, 0);
 
+		//czja tura
+		if(gameManager.state==GameState.EVOLUTION || gameManager.state==GameState.FEEDING) {
+			card = textures.getTexture("choice");
+			batch.draw(card, screenWidth - 2 * card.getWidth(), screenHeight - card.getHeight());
+			if (gameManager.turn == player.number) {
+				font.draw(batch, "Your Turn", screenWidth - 2 * card.getWidth() + 15, 5 + screenHeight - 25);
+			} else {
+				for (int i = 0; i < gameManager.otherPlayers.size(); i++) {
+					otherPlayer = (Player) gameManager.otherPlayers.elementAt(i);
+					if (otherPlayer.number == gameManager.turn) break;
+				}
+				font.draw(batch, otherPlayer.name, screenWidth - 2 * card.getWidth() + 15, 5 + screenHeight - 25);
+			}
+		}
 
+		//guziki pass i end turn
 		batch.draw(pass.getGraphic(), pass.getPositionX(), pass.getPositionY());
 		font.draw(batch, "Pass", 35, 5 + screenHeight-25);
 		batch.draw(endRound.getGraphic(), endRound.getPositionX(), endRound.getPositionY());
@@ -236,13 +252,39 @@ public class MyGdxGame implements ApplicationListener {
 			cardButtons[i] = new Button(textures.getTexture((String) player.getCards(i)), i * textures.getTexture((String) player.getCards(i)).getWidth(), 0,mouseClick[0],mouseClick[1]);
 			batch.draw(cardButtons[i].getGraphic(), cardButtons[i].getPositionX(), cardButtons[i].getPositionY());
 		}
-			//zwierzeta
+
+		//zwierzęta innych graczy
+		card = textures.getTexture("animal");
+		if (gameManager.otherPlayers.size() > 0) {
+			otherPlayer=gameManager.otherPlayers.elementAt(0);
+			for (int i = 0; i < 5; i++){
+				if(otherPlayer.animals[i] != null) {
+					batch.draw(card, ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth(), screenHeight-card.getHeight());
+				}
+			}
+		}
+		if (gameManager.otherPlayers.size() > 1) {
+			otherPlayer=gameManager.otherPlayers.elementAt(1);
+			for (int i = 0; i < 5; i++){
+				if(otherPlayer.animals[i] != null) {
+					batch.draw(card, 0, (screenHeight+100-card.getHeight())/2+(i-2)*card.getHeight());
+				}
+			}
+		}
+		if (gameManager.otherPlayers.size() > 2) {
+			otherPlayer=gameManager.otherPlayers.elementAt(2);
+			for (int i = 0; i < 5; i++){
+				if(otherPlayer.animals[i] != null) {
+					batch.draw(card, screenWidth-card.getWidth(), (screenHeight+100-card.getHeight())/2+(i-2)*card.getHeight());
+				}
+			}
+		}
+
+		//zwierzeta
 		card = textures.getTexture("animal");
 		for (int i = 0; i < 5; i++) {
 			if(player.animals[i] != null) {
 				batch.draw(card, ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth(), 100);
-
-
 			}
 		}
 		batch.end();
