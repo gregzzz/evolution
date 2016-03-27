@@ -53,8 +53,9 @@ public class MyGdxGame implements ApplicationListener {
 	Player player;
 	Player otherPlayer;
 
-	// ??
+	// zmienne do do funkcji z uzyciem kart i wybranego zwierzęcia
 	int chosenCard=99;
+	int selectedAnimal=99;
 
 	boolean secondaryPerk;
 
@@ -65,6 +66,7 @@ public class MyGdxGame implements ApplicationListener {
 
 	boolean printAnimalsSlots = false;
 	boolean printChoosenCard = false;
+	boolean printSelectedAnimal=false;
 
 
 	public MyGdxGame(){
@@ -189,15 +191,18 @@ public class MyGdxGame implements ApplicationListener {
 					chosenCard = i;
 					chooseAction = false;
 					printChoosenCard = true;
+					printSelectedAnimal=false;
 				}
 			}
 			if(pass.isTouched(mouseClick)&&player.animalsNumber()>0){
 				gameManager.pass();
+				printSelectedAnimal=false;
 				chosenCard=99;
 			}
 			for(int i=0;i<5;i++) {
 				if(animalButtons[0][i]!=null && animalButtons[0][i].isTouched(mouseClick)){
-
+					printSelectedAnimal=true;
+					selectedAnimal=i;
 				}
 			}
 		}
@@ -277,12 +282,21 @@ public class MyGdxGame implements ApplicationListener {
 			}
 		}
 		//rysuj podswietlone zwierze
-		
+		if(printSelectedAnimal){
+			for(int i=0;i<player.animals[selectedAnimal].features.size();i++) {
+				card = textures.getTexture(player.animals[selectedAnimal].getFeature(i));
+				if(player.animals[selectedAnimal].features.size()%2==0) {
+					batch.draw(card, ((screenWidth - player.animals[selectedAnimal].features.size()) / 2) + card.getWidth() * (i - (player.animals[selectedAnimal].features.size()) / 2), card.getHeight() + (screenHeight - card.getHeight()) / 2);
+				}else{
+					batch.draw(card, ((screenWidth - player.animals[selectedAnimal].features.size()) / 2) + card.getWidth() * (i - (player.animals[selectedAnimal].features.size()) / 2) -card.getWidth()/2, card.getHeight() + (screenHeight - card.getHeight()) / 2);
+				}
+			}
+		}
+
 		// rysowanie pozycji na zwierzeta
 		if (printAnimalsSlots) {
 			card = textures.getTexture(Card.SPACE);
 			//rysuje miejsca na zwierzaka
-
 			for (int i = 0; i < 5; i++) {
 				animalPlaces[i]=new Button(card,((screenWidth - card.getWidth()) / 2) + (i-2) * card.getWidth(), 100,mouseClick[0],mouseClick[1]);
 				batch.draw(animalPlaces[i].getGraphic(), animalPlaces[i].getPositionX(), animalPlaces[i].getPositionY());
