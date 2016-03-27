@@ -12,7 +12,6 @@ public class GameManager{
 
     private static final int ALL = -1;
 
-    private int numberOfCards;
 
     private Random randomGenerator = new Random();
 
@@ -79,7 +78,7 @@ public class GameManager{
         String setOfCards = "";
         for(int num = 0 ; num < numberOfPlayers ; num++){
             for(int card = 0; card < 6 ; card++){
-                setOfCards = setOfCards + deck.getCardFromDeck() + " ";
+                setOfCards = setOfCards + Integer.toString(deck.getCardFromDeck().getId()) + " ";
             }
             // CARDS [karta] [karta]
             server.send(Command.CARDS.getId()+" " + num + " "+setOfCards,num);
@@ -116,7 +115,8 @@ public class GameManager{
 
                 else if(command == Command.EVOLUTION){
                     //dodaj ceche
-                    server.send(Command.ADD.getId() + " " + turn,ALL);
+                    server.send(Command.EVOLUTION.getId() + " "+ data[1] + " " + data[2] + " " + turn,ALL);
+                    nextOneTakeTurn();
                 }
 
                 else if(command == Command.PASS){
@@ -187,7 +187,7 @@ public class GameManager{
         for(int i=0; i<numberOfPlayers; i++){
             if(num == i){
                 String cardsSet = "";
-                for(String card: players[num].cards){
+                for(Card card: players[num].cards){
                     cardsSet = cardsSet + " " + card;
                 }
                 server.send(Command.CARDS.getId() + " " + num + " " +cardsSet, num);
@@ -204,26 +204,21 @@ public class GameManager{
     }
     // do przerobienia
     public class Deck{
-        Vector<String> deck = new Vector<String>();
+        public Vector<Card> deck= new Vector<Card>();
+
+
         public Deck(){
-            String c = new String("pasturage pasturage pasturage pasturage parasitec parasitec parasitec parasitec"+
-                    " tail tail tail tail symbiosis symbiosis symbiosis symbiosis parasitef parasitef parasitef parasitef"+
-                    " massivef massivef massivef massivef massivec massivec massivec massivec"+
-                    " aquatic aquatic aquatic aquatic aquatic aquatic aquatic aquatic"+
-                    " speed speed speed speed toxic toxic toxic toxic coopc coopc coopc coopc coopf coopf coopf coopf"+
-                    " camouflage camouflage camouflage camouflage communication communication communication communication"+
-                    " roar roar roar roar scavenger scavenger scavenger scavenger piracy piracy piracy piracy"+
-                    " hibernation hibernation hibernation hibernation sharp sharp sharp sharp mimicry mimicry mimicry mimicry");
-            String [] cards = c.split(" ");
-            numberOfCards = cards.length;
-            for(String card : cards) {
-                deck.addElement(card);
+            //deck
+            for(int i=1;i<=20;i++){
+                for(int j=0;j<4;j++) {
+                    deck.addElement(Card.fromInt(i));
+                }
             }
         }
         // zwraca randomowa pozycje z deck i ja usuwa
-        public String getCardFromDeck(){
+        public Card getCardFromDeck(){
             int randInt = randomGenerator.nextInt(deck.size()-1);
-            String s = (String) deck.get(randInt);
+            Card s = deck.get(randInt);
             deck.removeElementAt(randInt);
             return s;
         }

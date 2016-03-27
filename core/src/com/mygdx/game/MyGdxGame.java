@@ -1,6 +1,7 @@
 package com.mygdx.game;
 
 
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
@@ -14,6 +15,7 @@ import com.mygdx.game.managers.LayoutManager;
 import com.mygdx.game.managers.TextureManager;
 import components.Player;
 import components.enums.GameState;
+import components.enums.Card;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -21,6 +23,8 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import java.util.*;
+
+
 
 public class MyGdxGame implements ApplicationListener {
 	int screenWidth=1200;
@@ -33,6 +37,7 @@ public class MyGdxGame implements ApplicationListener {
 	Button cardButtons[]=new Button[12];
 	Button cardChoices[]=new Button[3];
 	Button animalPlaces[]=new Button[5];
+	Button animalButtons[][]=new Button[4][5];
 	Button endRound;
 	Button pass;
 
@@ -51,9 +56,12 @@ public class MyGdxGame implements ApplicationListener {
 	// ??
 	int chosenCard=99;
 
+	boolean secondaryPerk;
+
 	boolean chooseCardFromHand;
 	boolean chooseAction;
 	boolean chooseAnimalPlace;
+	boolean chooseMyAnimal;
 
 	boolean printAnimalsSlots = false;
 	boolean printChoosenCard = false;
@@ -66,6 +74,7 @@ public class MyGdxGame implements ApplicationListener {
 		chooseCardFromHand=false;
 		chooseAction=true;
 		chooseAnimalPlace=true;
+		chooseMyAnimal=true;
 
 
 	}
@@ -90,18 +99,19 @@ public class MyGdxGame implements ApplicationListener {
 		chooseCardFromHand();
 		chooseAction();
 		chooseAnimalPlace();
+		chooseMyAnimal();
 	}
 
 	public void createButtons(){
-		card = textures.getTexture("choice");
+		card = textures.getTexture(Card.CHOICE);
 		for (int i = 0; i < 3; i++) {
 			cardChoices[i] = new Button(card, ((screenWidth - card.getWidth()) / 2) + (i-1) * card.getWidth(), (screenHeight - card.getHeight()) / 2 - card.getHeight(),mouseClick[0],mouseClick[1]);
 
 		}
 		for (int i = 0; i < player.cardsNumber(); i++) {
-			cardButtons[i] = new Button(textures.getTexture((String) player.getCards(i)), i * textures.getTexture((String) player.getCards(i)).getWidth(), 0, mouseClick[0], mouseClick[1]);
+			cardButtons[i] = new Button(textures.getTexture( player.getCards(i)), i * textures.getTexture(player.getCards(i)).getWidth(), 0, mouseClick[0], mouseClick[1]);
 		}
-		card = textures.getTexture("space");
+		card = textures.getTexture(Card.SPACE);
 		for (int i = 0; i < 5; i++) {
 			animalPlaces[i]=new Button(card,((screenWidth - card.getWidth()) / 2) + (i-2) * card.getWidth(), 100,mouseClick[0],mouseClick[1]);
 		}
@@ -115,6 +125,7 @@ public class MyGdxGame implements ApplicationListener {
 					player.addAnimal(i);
 					player.removeCard(chosenCard);
 					gameManager.addAnimal(i);
+					animalButtons[0][i]=new Button(textures.getTexture(Card.ANIMAL),animalPlaces[i].getPositionX(),animalPlaces[i].getPositionY());
 
 					chooseAction=true;
 					chooseAnimalPlace=true;
@@ -126,21 +137,44 @@ public class MyGdxGame implements ApplicationListener {
 		}
 	}
 
+	public void chooseMyAnimal(){
+		if(!chooseMyAnimal){
+			for(int i=0;i<5;i++) {
+				if(animalButtons[0][i]!=null && animalButtons[0][i].isTouched(mouseClick)){
+					player.animals[i].addFeature(player.getCards(chosenCard));
+					gameManager.addFeature(i,player.getCards(chosenCard));
+					player.removeCard(chosenCard);
+
+					chooseCardFromHand=false;
+					chooseMyAnimal=true;
+
+				}
+			}
+		}
+	}
+
 	public void chooseAction(){
 		// 99?
 		if(chosenCard!=99 && !chooseAction) {
 			if (cardChoices[0].isTouched(mouseClick) && player.animalsNumber()<5) {
 				chooseCardFromHand=true;
 				chooseAnimalPlace=false;
-
+				chooseAction=true;
 				printChoosenCard = false;
 				printAnimalsSlots = true;
 			}
-			else if (cardChoices[1].isTouched(mouseClick)){
-
-				printChoosenCard = false;
+			else if (cardChoices[1].isTouched(mouseClick) && player.animalsNumber()>0){
+				chooseAction=true;
+				chooseCardFromHand=true;
+				printChoosenCard=false;
+				chooseMyAnimal=false;
 			}
-			else if (cardChoices[2].isTouched(mouseClick)){
+			else if (cardChoices[2].isTouched(mouseClick) && player.animalsNumber()>0){
+				chooseAction=true;
+				chooseCardFromHand=true;
+				printChoosenCard=false;
+				chooseMyAnimal=false;
+
 
 			}
 		}
@@ -160,6 +194,11 @@ public class MyGdxGame implements ApplicationListener {
 			if(pass.isTouched(mouseClick)&&player.animalsNumber()>0){
 				gameManager.pass();
 				chosenCard=99;
+			}
+			for(int i=0;i<5;i++) {
+				if(animalButtons[0][i]!=null && animalButtons[0][i].isTouched(mouseClick)){
+
+				}
 			}
 		}
 	}
@@ -181,12 +220,12 @@ public class MyGdxGame implements ApplicationListener {
 
 		batch.begin();
 		// rysul tlo
-		batch.draw(textures.getTexture("background-1"), 0, 0);
-		batch.draw(textures.getTexture("background-2"), 0, 0);
+		batch.draw(textures.getTexture(Card.BACKGROUND1), 0, 0);
+		batch.draw(textures.getTexture(Card.BACKGROUND2), 0, 0);
 
 		//czja tura
 		if(gameManager.state==GameState.EVOLUTION || gameManager.state==GameState.FEEDING) {
-			card = textures.getTexture("choice");
+			card = textures.getTexture(Card.CHOICE);
 			batch.draw(card, screenWidth - 2 * card.getWidth(), screenHeight - card.getHeight());
 			if (gameManager.turn == player.number) {
 				font.draw(batch, "Your Turn", screenWidth - 2 * card.getWidth() + 15, 5 + screenHeight - 25);
@@ -208,10 +247,10 @@ public class MyGdxGame implements ApplicationListener {
 		if(printChoosenCard) {
 			for (int i = 0; i < player.cardsNumber(); i++) {
 				if (cardButtons[i].isTouched(mouseClick)) {
-					card = textures.getTexture((String) player.getCards(i));
+					card = textures.getTexture(player.getCards(i));
 					batch.draw(card, (screenWidth - card.getWidth()) / 2, card.getHeight() + (screenHeight - card.getHeight()) / 2);
 					//narysowanie ramki do tekstu
-					card = textures.getTexture("ramka");
+					card = textures.getTexture(Card.RAMKA);
 					batch.draw(card, (screenWidth - card.getWidth()) / 2, (screenHeight - card.getHeight()) / 2);
 					//pobranie opisu musi byc w try-catchu
 					// no to nie moze sie wykonywac co petle
@@ -230,16 +269,18 @@ public class MyGdxGame implements ApplicationListener {
 					batch.draw(cardChoices[0].getGraphic(), cardChoices[0].getPositionX(), cardChoices[0].getPositionY());
 					batch.draw(cardChoices[1].getGraphic(), cardChoices[1].getPositionX(), cardChoices[1].getPositionY());
 					batch.draw(cardChoices[2].getGraphic(), cardChoices[2].getPositionX(), cardChoices[2].getPositionY());
-					card = textures.getTexture("choice");
+					card = textures.getTexture(Card.CHOICE);
 					font.draw(batch, "Add Animal", ((screenWidth - card.getWidth()) / 2) - card.getWidth() + 10, ((screenHeight - card.getHeight()) / 2) - 20);
 					font.draw(batch, "Add Perk 1", ((screenWidth - card.getWidth()) / 2) + 10, ((screenHeight - card.getHeight()) / 2) - 20);
 					font.draw(batch, "Add Perk 2", ((screenWidth - card.getWidth()) / 2) + card.getWidth() + 10, ((screenHeight - card.getHeight()) / 2) - 20);
 				}
 			}
 		}
+		//rysuj podswietlone zwierze
+		
 		// rysowanie pozycji na zwierzeta
 		if (printAnimalsSlots) {
-			card = textures.getTexture("space");
+			card = textures.getTexture(Card.SPACE);
 			//rysuje miejsca na zwierzaka
 
 			for (int i = 0; i < 5; i++) {
@@ -249,12 +290,12 @@ public class MyGdxGame implements ApplicationListener {
 		}
 		//karty gracza
 		for (int i = 0; i < player.cardsNumber(); i++) {
-			cardButtons[i] = new Button(textures.getTexture((String) player.getCards(i)), i * textures.getTexture((String) player.getCards(i)).getWidth(), 0,mouseClick[0],mouseClick[1]);
+			cardButtons[i] = new Button(textures.getTexture(player.getCards(i)), i * textures.getTexture(player.getCards(i)).getWidth(), 0,mouseClick[0],mouseClick[1]);
 			batch.draw(cardButtons[i].getGraphic(), cardButtons[i].getPositionX(), cardButtons[i].getPositionY());
 		}
 
 		//zwierzęta innych graczy
-		card = textures.getTexture("animal");
+		card = textures.getTexture(Card.ANIMAL);
 		if (gameManager.otherPlayers.size() > 0) {
 			otherPlayer=gameManager.otherPlayers.elementAt(0);
 			for (int i = 0; i < 5; i++){
@@ -281,7 +322,7 @@ public class MyGdxGame implements ApplicationListener {
 		}
 
 		//zwierzeta
-		card = textures.getTexture("animal");
+		card = textures.getTexture(Card.ANIMAL);
 		for (int i = 0; i < 5; i++) {
 			if(player.animals[i] != null) {
 				batch.draw(card, ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth(), 100);
@@ -298,7 +339,7 @@ public class MyGdxGame implements ApplicationListener {
 		font = new BitmapFont();
 		font.setColor(Color.GREEN);
 		textures  = new TextureManager();
-		card = textures.getTexture("choice");
+		card = textures.getTexture(Card.CHOICE);
 		endRound=new Button(card,screenWidth-card.getWidth(),screenHeight-card.getHeight(),mouseClick[0],mouseClick[1]);
 		pass=new Button(card,0,screenHeight-card.getHeight(),mouseClick[0],mouseClick[1]);
 
@@ -311,7 +352,7 @@ public class MyGdxGame implements ApplicationListener {
 		font.dispose();
 
 		// tutaj jeszcze poprawic to textures textures
-		for (Map.Entry<String, Texture> entry: textures.textures.entrySet() ){
+		for (Map.Entry<Card, Texture> entry: textures.textures.entrySet() ){
 			entry.getValue().dispose();
 		}
 	}

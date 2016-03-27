@@ -15,6 +15,12 @@ public class Button {
         positionX=x;
         positionY=y;
     }
+    public Button (Texture texture, int x, int y){
+        graphic = texture;
+
+        positionX=x;
+        positionY=y;
+    }
 
     public boolean isTouched (int [] mouse){
         if(mouse[0]>positionX && mouse[0]<positionX+graphic.getWidth() && mouse[1]>positionY && mouse[1]<positionY+graphic.getHeight()){

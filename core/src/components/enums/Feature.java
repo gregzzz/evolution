@@ -3,15 +3,27 @@ package components.enums;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by kopec on 2016-03-19.
- */
-
-// enumy takie super
 
 public enum Feature {
     DEAD(1),
-    //...
+    CARNIVORE(2),
+    SHARPSIGHT(3),
+    SCAVENGER(4),
+    SPEED(5),
+    HIBERNATION(6),
+    SYMBIOSIS(7),
+    TAILTOSS(8),
+    COMMUNICATION(9),
+    PARASITE(10),
+    ROAR(11),
+    MASSIVE(12),
+    PASTURAGE(13),
+    AQUATIC(14),
+    TOXIC(15),
+    CAMOUFLAGE(16),
+    COOPERATION(17),
+    MIMICRY(18),
+    PIRACY(19),
     
     NONE(-1);
 

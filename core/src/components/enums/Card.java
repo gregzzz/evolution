@@ -3,20 +3,39 @@ package components.enums;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by kopec on 2016-03-19.
- */
 
-/* przekonalem sie
- lepsza rozszerzalnosc i czytelnosc
- ale trzeba kod pozmieniac
- */
 
 public enum Card {
-    PASTURAGE(1),
-    PARASITEC(2),
-    TAIL(3),
-    SYMBIOSIS(4),
+
+    MASSIVEC(1),
+    COOPERATIONC(2),
+
+    SHARPSIGHT(3),
+    SCAVENGER(4),
+    SPEED(5),
+    HIBERNATION(6),
+    SYMBIOSIS(7),
+    TAILTOSS(8),
+    COMMUNICATION(9),
+    PARASITEF(10),
+    ROAR(11),
+    MASSIVEF(12),
+    PASTURAGE(13),
+    AQUATIC(14),
+    TOXIC(15),
+    CAMOUFLAGE(16),
+    COOPERATIONF(17),
+    MIMICRY(18),
+    PIRACY(19),
+    PARASITEC(20),
+
+    //kARTY NIE KARTY, DO PRZECHOWYWANIA W MAPIE TEKSTUR
+    BACKGROUND1(-2),
+    BACKGROUND2(-3),
+    SPACE(-4),
+    ANIMAL(-5),
+    CHOICE(-6),
+    RAMKA(-7),
     //...
 
     NONE(-1);

@@ -9,48 +9,46 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Color;
+import components.enums.Card;
 
 public class TextureManager {
-    public Map<String,Texture> textures;
+    public Map<Card,Texture> textures;
 
     public TextureManager(){
-        textures = new HashMap<String,Texture>();
+        textures = new HashMap<Card,Texture>();
         // tla
-        textures.put("background-1",new Texture("core/assets/bg.png"));
-        textures.put("background-2",new Texture("core/assets/bg2.png"));
+        textures.put(Card.BACKGROUND1,new Texture("core/assets/bg.png"));
+        textures.put(Card.BACKGROUND2,new Texture("core/assets/bg2.png"));
         // cechy
-        textures.put("aquatic",new Texture("core/assets/aquatic.png"));
-        textures.put("camouflage",new Texture("core/assets/camouflage.png"));
-        textures.put("communication",new Texture("core/assets/communication.png"));
-        textures.put("coopc",new Texture("core/assets/coopc.png"));
-        textures.put("coopf",new Texture("core/assets/coopf.png"));
-        textures.put("hibernation",new Texture("core/assets/hibernation.png"));
-        textures.put("fat",new Texture("core/assets/fat.png"));
-        textures.put("massivec",new Texture("core/assets/massivec.png"));
-        textures.put("massivef",new Texture("core/assets/massivef.png"));
-        textures.put(" mimicry",new Texture("core/assets/mimicry.png"));
-        textures.put("parasitef",new Texture("core/assets/parasitef.png"));
-        textures.put("parasitec",new Texture("core/assets/parasitec.png"));
-        textures.put("pasturage",new Texture("core/assets/pasturage.png"));
-        textures.put("piracy",new Texture("core/assets/piracy.png"));
-        textures.put("roar",new Texture("core/assets/roar.png"));
-        textures.put("scavenger",new Texture("core/assets/scavenger.png"));
-        textures.put("sharp",new Texture("core/assets/sharp.png"));
-        textures.put("speed",new Texture("core/assets/speed.png"));
-        textures.put("symbiosis",new Texture("core/assets/symbiosis.png"));
-        textures.put("tail",new Texture("core/assets/tail.png"));
-        textures.put("toxic",new Texture("core/assets/toxic.png"));
+        textures.put(Card.AQUATIC,new Texture("core/assets/aquatic.png"));
+        textures.put(Card.CAMOUFLAGE,new Texture("core/assets/camouflage.png"));
+        textures.put(Card.COMMUNICATION,new Texture("core/assets/communication.png"));
+        textures.put(Card.COOPERATIONC,new Texture("core/assets/coopc.png"));
+        textures.put(Card.COOPERATIONF,new Texture("core/assets/coopf.png"));
+        textures.put(Card.HIBERNATION,new Texture("core/assets/hibernation.png"));
+        //textures.put(Card.,new Texture("core/assets/fat.png"));
+        textures.put(Card.MASSIVEC,new Texture("core/assets/massivec.png"));
+        textures.put(Card.MASSIVEF,new Texture("core/assets/massivef.png"));
+        textures.put(Card.MIMICRY,new Texture("core/assets/mimicry.png"));
+        textures.put(Card.PARASITEF,new Texture("core/assets/parasitef.png"));
+        textures.put(Card.PARASITEC,new Texture("core/assets/parasitec.png"));
+        textures.put(Card.PASTURAGE,new Texture("core/assets/pasturage.png"));
+        textures.put(Card.PIRACY,new Texture("core/assets/piracy.png"));
+        textures.put(Card.ROAR,new Texture("core/assets/roar.png"));
+        textures.put(Card.SCAVENGER,new Texture("core/assets/scavenger.png"));
+        textures.put(Card.SHARPSIGHT,new Texture("core/assets/sharp.png"));
+        textures.put(Card.SPEED,new Texture("core/assets/speed.png"));
+        textures.put(Card.SYMBIOSIS,new Texture("core/assets/symbiosis.png"));
+        textures.put(Card.TAILTOSS,new Texture("core/assets/tail.png"));
+        textures.put(Card.TOXIC,new Texture("core/assets/toxic.png"));
         // cos tam
-        textures.put("space",new Texture("core/assets/space.png"));
-        textures.put("animal",new Texture("core/assets/animal.png"));
-        textures.put("choice",new Texture("core/assets/choice.png"));
-        // inne cos tam
-        textures.put("ramka" ,new Texture("core/assets/ramka.png"));
-        textures.put("textbackground",new Texture("core/assets/choice.png"));
-        textures.put("card",new Texture("core/assets/animal.png"));
+        textures.put(Card.SPACE,new Texture("core/assets/space.png"));
+        textures.put(Card.ANIMAL,new Texture("core/assets/animal.png"));
+        textures.put(Card.CHOICE,new Texture("core/assets/choice.png"));
+        textures.put(Card.RAMKA ,new Texture("core/assets/ramka.png"));
     }
 
-    public Texture getTexture(String textureName){
+    public Texture getTexture(Card textureName){
         return textures.get(textureName);
     }
 

@@ -1,5 +1,7 @@
 package components;
 
+import components.enums.Card;
+
 import java.util.Vector;
 
 
@@ -8,12 +10,12 @@ public class Player {
     public String name;
 
     public int numberOfCards = 0;
-    public Vector<String> cards = new Vector<String>();
+    public Vector<Card> cards = new Vector<Card>();
     public Animal [] animals = new Animal[5];
 
     private int animalsNumber = 0;
 
-    public void addCard(String card){
+    public void addCard(Card card){
         cards.addElement(card);
     }
 
@@ -21,11 +23,12 @@ public class Player {
         animals[slot] = new Animal(number);
         animalsNumber ++;
     }
+
     public void killAnimal(int slot){
         animalsNumber --;
     }
 
-    public Object getCards(int i) {
+    public Card getCards(int i) {
         return cards.get(i);
     }
 

@@ -28,6 +28,10 @@ public class GameManager {
         c.send(command.ADD.getId()+" "+Integer.toString(place));
     }
 
+    public void addFeature(int place, Card cardName){
+        c.send(command.EVOLUTION.getId()+" "+Integer.toString(place)+" "+Integer.toString(cardName.getId()));
+    }
+
     public void pass(){
         c.send(command.PASS.getId()+" ");
     }
@@ -66,7 +70,7 @@ public class GameManager {
         else if(command == Command.CARDS) {
             if(Integer.parseInt(recv[1]) == player.number){
                 for(int i=2;i<recv.length;i++){
-                    player.addCard(recv[i]);
+                    player.addCard(Card.fromInt(Integer.parseInt(recv[i])));
                 }
                 player.numberOfCards += recv.length-1;
             } else {
@@ -112,6 +116,21 @@ public class GameManager {
                 otherPlayer.numberOfCards -= 1;
                 // dodajemy zwierze
                 otherPlayer.addAnimal(Integer.parseInt(recv[1]));
+            }
+        }
+        else if(command == Command.EVOLUTION){
+            // przejebane luskanie xd
+            if(Integer.parseInt(recv[3])!=player.number) {
+                Player otherPlayer=new Player();
+                //znalezienie odpowiedniego playera
+                for(int i=0;i<otherPlayers.size();i++){
+                    otherPlayer = (Player) otherPlayers.elementAt(i);
+                    if(otherPlayer.number==Integer.parseInt(recv[3]))break;
+                }
+                // bo dodal zwierze
+                otherPlayer.numberOfCards -= 1;
+                // dodajemy ceche
+                otherPlayer.animals[Integer.parseInt(recv[1])].addFeature(Card.fromInt(Integer.parseInt(recv[2])));
             }
         }
 
