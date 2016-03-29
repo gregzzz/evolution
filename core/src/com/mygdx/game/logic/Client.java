@@ -1,5 +1,5 @@
 
-package com.mygdx.game;
+package com.mygdx.game.logic;
 import com.mygdx.game.managers.GameManager;
 
 
@@ -39,40 +39,30 @@ public class Client extends Thread {
         }
     }
     // wysylanie stringa do serwera
-    public void send(String s){
+    public void send(byte [] s){
         try {
             DataOutputStream out = new DataOutputStream(client.getOutputStream());
-            out.writeUTF(s);
+            out.writeInt(s.length);
+            out.write(s);
         }catch(IOException e){
             e.printStackTrace();
         }
-    }
-
-
-    public void handleData(String recv){
-        manager.handleData(recv);
     }
 
     public class ClientRecv extends Thread{
         // funckja wykonywana po odpaleniu watku
         public void run(){
             // petala odbierajaca dane
-            String r;
+            byte[] message;
             while(true) {
                 try {
                     //odbieranie danych
                     DataInputStream in = new DataInputStream(client.getInputStream());
-                    r = in.readUTF();
-                    System.out.println(r);
-                    handleData(r);
-
-                    //zamykanie gniazdka na zadanie serwera
-                    if(r.equals("END")){
-                        // informujemy serwer ze juz sie nie bawimy
-                        DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                        out.writeUTF("END");
-                        client.close();
-                        break;
+                    int length = in.readInt();
+                    if(length>0) {
+                        message = new byte[length];
+                        in.readFully(message, 0, message.length); // read the message
+                        manager.handleData(message);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();

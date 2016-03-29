@@ -11,8 +11,11 @@ public enum Command {
     ADD(5),
     EVOLUTION(6),
     PASS(7),
-    NUMBER(8),
+    ID(8),
     FOOD(9),
+    GETNAME(10),
+    GETGAME(11),
+    MSG(12),
 
     NONE(-1);
 
@@ -30,8 +33,8 @@ public enum Command {
         }
     }
 
-    public int getId(){
-        return this.id;
+    public byte getId(){
+        return (byte)this.id;
     }
 
     public static Command fromInt(int i) {

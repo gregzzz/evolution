@@ -1,6 +1,8 @@
 package server.src;
 
 import components.enums.Command;
+import server.src.logic.Client;
+import server.src.logic.GameManager;
 
 import java.net.*;
 import java.io.*;
@@ -10,10 +12,10 @@ import static components.enums.GameState.*;
 
 public class EvoServer extends Thread{
     private ServerSocket serverSocket;
-    private Socket [] clients;
+    private Vector<Client> clients;
     private int numberOfPlayers;
 
-    private Queue [] recvFromClients;
+    private Queue<byte[]> [] recvFromClients;
 
     private static final int ALL = -1;
 
@@ -21,11 +23,11 @@ public class EvoServer extends Thread{
         serverSocket = new ServerSocket(p);
         serverSocket.setSoTimeout(1000000);
         numberOfPlayers = n;
-        clients = new Socket[numberOfPlayers];
+        clients = new Vector<Client>();
 
         recvFromClients = new LinkedList[numberOfPlayers];
         for(int i = 0; i<numberOfPlayers; i++){
-            recvFromClients[i] = new LinkedList();
+            recvFromClients[i] = new LinkedList<byte[]>();
         }
     }
     // iteruje po tablicy socketow i wysyla do kazdego clienta
@@ -39,14 +41,15 @@ public class EvoServer extends Thread{
         while(true) {
             try {
                 // oczekiwanie na polaczenie
-                clients[num] = serverSocket.accept();
+                Client client = new Client(serverSocket.accept(),num);
+                clients.addElement(client);
                 System.out.println("Just connected to " +
-                        clients[num].getRemoteSocketAddress());
+                        client.socket.getRemoteSocketAddress());
                 // tworzenie watku odbierajacego dane od wlasnie polaczonego clienta
-                Thread t = new ClientHandler(num);
+                Thread t = new ClientHandler(client);
                 t.start();
                 // dodawanie clienta do tablicy gniazdek
-
+                client.send(new byte [] {(byte)Command.ID.getId(),(byte)num});
                 // zwiekszamy numer porzadkowy
                 num += 1;
                 // jesli numer porzadowy rowny ilosc graczy zakoncz petle
@@ -64,13 +67,11 @@ public class EvoServer extends Thread{
         }
         // glowna petal zarzadzajaca gra
 
-        GameManager game = new GameManager(this,numberOfPlayers,recvFromClients);
+        GameManager game = new GameManager(this,numberOfPlayers,clients);
 
         game.setGame();
         while(true){
             // odbieranie czatu i info niezaleznego od kollejki
-            game.handleMassages();
-
             if(game.state == EVOLUTION){
                 game.evolutionPhase();
             }
@@ -92,54 +93,52 @@ public class EvoServer extends Thread{
         }
     }
     // wysyla w zaleznosci od zmiennej n jesli -1( zdefiniowana stala ALL) wysyla do wzystkich jesli numer gracza wysyla do gracza
-    public void send(String s, int n){
-        System.out.println(s);
-        if(n<0) {
-            for (int i = 0; i < numberOfPlayers; i++) {
-                try {
-                    DataOutputStream out = new DataOutputStream(clients[i].getOutputStream());
-                    out.writeUTF(s);
-                } catch (IOException e) {
-                    e.printStackTrace();
+    public void send(byte [] s){
+        try {
+            for (Client client : clients) {
+                DataOutputStream out = new DataOutputStream(client.socket.getOutputStream());
+                out.writeInt(s.length);
+                out.write(s);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void send(byte [] s, int n){
+        try {
+            for (Client client : clients) {
+                if (client.getNumber() == n) {
+                    DataOutputStream out = new DataOutputStream(client.socket.getOutputStream());
+                    out.writeInt(s.length);
+                    out.write(s);
                 }
             }
-        }
-        else{
-            try {
-                DataOutputStream out = new DataOutputStream(clients[n].getOutputStream());
-                out.writeUTF(s);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
     // odbiera dane od clienta
     public class ClientHandler extends Thread{
-        private int playerNumber;
-        private String recv;
-        public ClientHandler(int n){
-            // przypisanie referencji do obiektow stworzonych w serwerze
-            playerNumber = n;
-
+        private Client client;
+        public ClientHandler(Client c){
+            client = c;
         }
 
         // petala wykonywana w watku odbierajacym dane od clienta
         public void run(){
+            byte [] message;
             while(true){
                 try{
                     // odbieranie danych
-                    DataInputStream in = new DataInputStream(clients[playerNumber].getInputStream());
-                    recv = in.readUTF();
-                    // dodanie stringa do kolejki jesli jest rozny od null
-                    System.out.println(recv);
-                    recvFromClients[playerNumber].offer(recv);
+                    DataInputStream in = new DataInputStream(client.socket.getInputStream());
+                    int length = in.readInt();
+                    if(length>0) {
+                        message = new byte[length];
+                        in.readFully(message, 0, message.length);
 
-                    // zamykanie gniazdka na zadanie clienta
-                    if(recv.equals("END")){
-                        clients[playerNumber].close();
-                        break;
+                        client.offer(message);
                     }
-
                 }catch(IOException e){
                     // obsluga wyjatkow
                     reconnect();
@@ -149,23 +148,6 @@ public class EvoServer extends Thread{
 
         }
         public void reconnect(){
-            try {
-                // oczekiwanie na polaczenie
-                clients[playerNumber] = serverSocket.accept();
-                System.out.println("Just connected to " +
-                        clients[playerNumber].getRemoteSocketAddress());
-                // tworzenie watku odbierajacego dane od wlasnie polaczonego clienta
-                Thread t = new ClientHandler(playerNumber);
-
-                send(Command.STATE.getId()+" RECOVER",playerNumber);
-                t.start();
-                System.out.println("All players connected");
-            } catch (SocketTimeoutException s) {
-                System.out.println("Socket timed out!");
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
         }
     }

@@ -1,4 +1,4 @@
-package components;
+package components.objects;
 
 import components.enums.Card;
 import components.enums.Feature;
