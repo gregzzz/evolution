@@ -1,6 +1,8 @@
 package server.src.logic;
 
 
+import components.objects.Player;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -16,6 +18,8 @@ public class Client {
 
     private int number = 0;
     private Queue<byte []> recvFromClient = new LinkedList<byte []>();
+
+    public Player player;
 
     public Client (Socket socket, int number){
         this.socket = socket;

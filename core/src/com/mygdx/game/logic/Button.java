@@ -22,8 +22,8 @@ public class Button {
         positionY=y;
     }
 
-    public boolean isTouched (int [] mouse){
-        if(mouse[0]>positionX && mouse[0]<positionX+graphic.getWidth() && mouse[1]>positionY && mouse[1]<positionY+graphic.getHeight()){
+    public boolean isTouched (Mouse mouse){
+        if(mouse.x>positionX && mouse.x<positionX+graphic.getWidth() && mouse.y>positionY && mouse.y<positionY+graphic.getHeight()){
             return true;
         }else{
             return false;

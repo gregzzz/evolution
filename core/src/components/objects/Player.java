@@ -10,6 +10,8 @@ public class Player {
     public int number;
     public String name;
 
+    public boolean pass = false;
+
     public Player() {}
     public Player(int number,String name,int numberOfCards ){
         this.number = number;

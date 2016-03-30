@@ -73,7 +73,12 @@ public class GameManager {
             }
         }
         else if (command == Command.STATE) {
-            state = GameState.fromInt(recv[1]);
+            if( recv[1] == GameState.ERROR.getId()){
+                c.send(new byte[] {Command.GETGAME.getId()});
+            }
+            else {
+                state = GameState.fromInt(recv[1]);
+            }
         }
         // ustawia czyja tura
         else if (command == Command.TURN) {

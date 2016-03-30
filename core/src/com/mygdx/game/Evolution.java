@@ -4,13 +4,18 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.logic.Button;
+import com.mygdx.game.logic.Keyboard;
+import com.mygdx.game.logic.Mouse;
 import com.mygdx.game.managers.GameManager;
 import com.mygdx.game.managers.LayoutManager;
 import com.mygdx.game.managers.TextureManager;
@@ -27,7 +32,7 @@ import java.util.*;
 
 
 
-public class Evolution implements ApplicationListener {
+public class Evolution implements ApplicationListener, InputProcessor {
 	int screenWidth=1200;
 	int screenHeight=800;
 
@@ -35,6 +40,9 @@ public class Evolution implements ApplicationListener {
 	BufferedReader in;
 	SpriteBatch batch;
 	Texture card;
+	Sprite sprite;
+	BitmapFont font;
+
 	Button cardButtons[]=new Button[12];
 	Button cardChoices[]=new Button[3];
 	Button animalPlaces[]=new Button[5];
@@ -44,9 +52,10 @@ public class Evolution implements ApplicationListener {
 
 
 
-	Sprite sprite;
-	BitmapFont font;
-	int mouseClick[]=new int[2];
+
+	private Mouse mouse = new Mouse();
+	private Keyboard keyboard = new Keyboard();
+
 	GameManager gameManager=new GameManager();
 	TextureManager textures;
 	LayoutManager layout = new LayoutManager(textures);
@@ -59,6 +68,8 @@ public class Evolution implements ApplicationListener {
 	int selectedAnimal=99;
 
 	boolean secondaryPerk;
+
+	boolean getText = false;
 
 	boolean chooseCardFromHand;
 	boolean chooseAction;
@@ -81,49 +92,51 @@ public class Evolution implements ApplicationListener {
 
 
 	}
+	@Override
+	public void create () {
+		batch = new SpriteBatch();
+		font = new BitmapFont();
+		font.setColor(Color.GREEN);
+
+		textures  = new TextureManager();
+		card = textures.getTexture(Card.CHOICE);
+		endRound=new Button(card,screenWidth-card.getWidth(),screenHeight-card.getHeight(),mouse.x,mouse.y);
+		pass=new Button(card,0,screenHeight-card.getHeight(),mouse.x,mouse.y);
+
+		createButtons();
+
+		Gdx.input.setInputProcessor(this);
+	}
 
 	//glowna petla
 	@Override
 	public void render () {
-
-		getMouseInput();
-
 		// piekne stany prosze z nich korzystac
 		if(gameManager.state != GameState.WAIT) {
 			drawGame();
 		}
 
-		if(gameManager.turn==player.number)inputHandler();
-
-	}
-
-	// zeby porzadeczek byl
-	public void inputHandler(){
-		chooseCardFromHand();
-		chooseAction();
-		chooseAnimalPlace();
-		chooseMyAnimal();
 	}
 
 	public void createButtons(){
 		card = textures.getTexture(Card.CHOICE);
 		for (int i = 0; i < 3; i++) {
-			cardChoices[i] = new Button(card, ((screenWidth - card.getWidth()) / 2) + (i-1) * card.getWidth(), (screenHeight - card.getHeight()) / 2 - card.getHeight(),mouseClick[0],mouseClick[1]);
+			cardChoices[i] = new Button(card, ((screenWidth - card.getWidth()) / 2) + (i-1) * card.getWidth(), (screenHeight - card.getHeight()) / 2 - card.getHeight(),mouse.x,mouse.y);
 
 		}
 		for (int i = 0; i < player.cardsNumber(); i++) {
-			cardButtons[i] = new Button(textures.getTexture( player.getCards(i)), i * textures.getTexture(player.getCards(i)).getWidth(), 0, mouseClick[0], mouseClick[1]);
+			cardButtons[i] = new Button(textures.getTexture( player.getCards(i)), i * textures.getTexture(player.getCards(i)).getWidth(), 0, mouse.x, mouse.y);
 		}
 		card = textures.getTexture(Card.SPACE);
 		for (int i = 0; i < 5; i++) {
-			animalPlaces[i]=new Button(card,((screenWidth - card.getWidth()) / 2) + (i-2) * card.getWidth(), 100,mouseClick[0],mouseClick[1]);
+			animalPlaces[i]=new Button(card,((screenWidth - card.getWidth()) / 2) + (i-2) * card.getWidth(), 100,mouse.x,mouse.y);
 		}
 	}
 
 	public void chooseAnimalPlace(){
 		if(!chooseAnimalPlace) {
 			for (int i = 0; i < 5; i++) {
-				if (animalPlaces[i].isTouched(mouseClick) && player.animals[i]==null) {
+				if (animalPlaces[i].isTouched(mouse) && player.animals[i]==null) {
 					//akcja guzika add animal
 					player.addAnimal(i);
 					player.removeCard(chosenCard);
@@ -143,7 +156,7 @@ public class Evolution implements ApplicationListener {
 	public void chooseMyAnimal(){
 		if(!chooseMyAnimal){
 			for(int i=0;i<5;i++) {
-				if(animalButtons[0][i]!=null && animalButtons[0][i].isTouched(mouseClick)){
+				if(animalButtons[0][i]!=null && animalButtons[0][i].isTouched(mouse)){
 					player.animals[i].addFeature(player.getCards(chosenCard));
 					gameManager.addFeature(i,player.getCards(chosenCard));
 					player.removeCard(chosenCard);
@@ -159,20 +172,20 @@ public class Evolution implements ApplicationListener {
 	public void chooseAction(){
 		// 99?
 		if(chosenCard!=99 && !chooseAction) {
-			if (cardChoices[0].isTouched(mouseClick) && player.animalsNumber()<5) {
+			if (cardChoices[0].isTouched(mouse) && player.animalsNumber()<5) {
 				chooseCardFromHand=true;
 				chooseAnimalPlace=false;
 				chooseAction=true;
 				printChoosenCard = false;
 				printAnimalsSlots = true;
 			}
-			else if (cardChoices[1].isTouched(mouseClick) && player.animalsNumber()>0){
+			else if (cardChoices[1].isTouched(mouse) && player.animalsNumber()>0){
 				chooseAction=true;
 				chooseCardFromHand=true;
 				printChoosenCard=false;
 				chooseMyAnimal=false;
 			}
-			else if (cardChoices[2].isTouched(mouseClick) && player.animalsNumber()>0){
+			else if (cardChoices[2].isTouched(mouse) && player.animalsNumber()>0){
 				chooseAction=true;
 				chooseCardFromHand=true;
 				printChoosenCard=false;
@@ -188,20 +201,20 @@ public class Evolution implements ApplicationListener {
 		//wybor karty
 		if(!chooseCardFromHand) {
 			for (int i = 0; i < player.cardsNumber(); i++) {
-				if (cardButtons[i].isTouched(mouseClick)) {
+				if (cardButtons[i].isTouched(mouse)) {
 					chosenCard = i;
 					chooseAction = false;
 					printChoosenCard = true;
 					printSelectedAnimal=false;
 				}
 			}
-			if(pass.isTouched(mouseClick)&&player.animalsNumber()>0){
+			if(pass.isTouched(mouse)&&player.animalsNumber()>0){
 				gameManager.pass();
 				printSelectedAnimal=false;
 				chosenCard=99;
 			}
 			for(int i=0;i<5;i++) {
-				if(animalButtons[0][i]!=null && animalButtons[0][i].isTouched(mouseClick)){
+				if(animalButtons[0][i]!=null && animalButtons[0][i].isTouched(mouse)){
 					printSelectedAnimal=true;
 					selectedAnimal=i;
 				}
@@ -211,13 +224,6 @@ public class Evolution implements ApplicationListener {
 
 
 	//uzupelnia tablice mouseInput wspolrzednymi myszki
-	private boolean getMouseInput(){
-		if(Gdx.input.isTouched()){
-			mouseClick[0]=(int)(((double)Gdx.input.getX())/((double)Gdx.graphics.getWidth()/screenWidth));
-			mouseClick[1]=(int)(((double)Gdx.graphics.getHeight()-(double)Gdx.input.getY())/((double)Gdx.graphics.getHeight()/screenHeight));
-		}
-		return true;
-	}
 
 	public void drawGame(){
 	//najpierw tlo
@@ -252,7 +258,7 @@ public class Evolution implements ApplicationListener {
 				// rysuj wybor
 				if (printChoosenCard) {
 					for (int i = 0; i < player.cardsNumber(); i++) {
-						if (cardButtons[i].isTouched(mouseClick)) {
+						if (cardButtons[i].isTouched(mouse)) {
 							card = textures.getTexture(player.getCards(i));
 							batch.draw(card, (screenWidth - card.getWidth()) / 2, card.getHeight() + (screenHeight - card.getHeight()) / 2);
 							//narysowanie ramki do tekstu
@@ -299,13 +305,13 @@ public class Evolution implements ApplicationListener {
 					card = textures.getTexture(Card.SPACE);
 					//rysuje miejsca na zwierzaka
 					for (int i = 0; i < 5; i++) {
-						animalPlaces[i] = new Button(card, ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth(), 100, mouseClick[0], mouseClick[1]);
+						animalPlaces[i] = new Button(card, ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth(), 100, mouse.x, mouse.y);
 						batch.draw(animalPlaces[i].getGraphic(), animalPlaces[i].getPositionX(), animalPlaces[i].getPositionY());
 					}
 				}
 				//karty gracza
 				for (int i = 0; i < player.cardsNumber(); i++) {
-					cardButtons[i] = new Button(textures.getTexture(player.getCards(i)), i * textures.getTexture(player.getCards(i)).getWidth(), 0, mouseClick[0], mouseClick[1]);
+					cardButtons[i] = new Button(textures.getTexture(player.getCards(i)), i * textures.getTexture(player.getCards(i)).getWidth(), 0, mouse.x, mouse.y);
 					batch.draw(cardButtons[i].getGraphic(), cardButtons[i].getPositionX(), cardButtons[i].getPositionY());
 				}
 
@@ -347,21 +353,6 @@ public class Evolution implements ApplicationListener {
 			batch.end();
 	}
 
-
-
-	@Override
-	public void create () {
-		batch = new SpriteBatch();
-		font = new BitmapFont();
-		font.setColor(Color.GREEN);
-		textures  = new TextureManager();
-		card = textures.getTexture(Card.CHOICE);
-		endRound=new Button(card,screenWidth-card.getWidth(),screenHeight-card.getHeight(),mouseClick[0],mouseClick[1]);
-		pass=new Button(card,0,screenHeight-card.getHeight(),mouseClick[0],mouseClick[1]);
-
-		createButtons();
-
-	}
 	@Override
 	public void dispose() {
 		batch.dispose();
@@ -378,5 +369,64 @@ public class Evolution implements ApplicationListener {
 	public void pause() {}
 	@Override
 	public void resume() {}
+
+	@Override
+	public boolean keyDown(int keycode) {
+		return false;
+	}
+
+	@Override
+	public boolean keyUp(int keycode) {
+		return false;
+	}
+
+	@Override
+	public boolean keyTyped(char character) {
+		if(getText){
+			if((int) character == 10  || (int) character == 13){
+				System.out.println(keyboard.getText());
+				keyboard.clear();
+				return true;
+			}
+			else{
+				keyboard.addChar(character);
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		mouse.x = screenX;
+		mouse.y = Gdx.graphics.getHeight() - screenY;
+		if(gameManager.turn==player.number){
+			chooseCardFromHand();
+			chooseAction();
+			chooseAnimalPlace();
+			chooseMyAnimal();
+		}
+		return false;
+	}
+
+	@Override
+	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+		return false;
+	}
+
+	@Override
+	public boolean touchDragged(int screenX, int screenY, int pointer) {
+		return false;
+	}
+
+	@Override
+	public boolean mouseMoved(int screenX, int screenY) {
+		return false;
+	}
+
+	@Override
+	public boolean scrolled(int amount) {
+		return false;
+	}
+
 
 }

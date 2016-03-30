@@ -17,26 +17,9 @@ public class Client extends Thread {
         serverName = s;
         port = p;
         manager = m;
-        // Nawiazanie polaczenia
-        connect();
         // Watek odbierajacy dane od serwera i zapisujacy je w recv
         Thread t = new ClientRecv();
-
-
         t.start();
-    }
-    // laczenie z serwerem
-    public void connect(){
-        try
-        {
-            System.out.println("Connecting to " + serverName +
-                    " on port " + port);
-            client = new Socket(serverName, port);
-            System.out.println("Just connected to "
-                    + client.getRemoteSocketAddress());
-        }catch(IOException e) {
-            e.printStackTrace();
-        }
     }
     // wysylanie stringa do serwera
     public void send(byte [] s){
@@ -51,11 +34,32 @@ public class Client extends Thread {
 
     public class ClientRecv extends Thread{
         // funckja wykonywana po odpaleniu watku
+        public void connect(){
+            try
+            {
+                System.out.println("Connecting to " + serverName +
+                        " on port " + port);
+                client = new Socket(serverName, port);
+                System.out.println("Just connected to "
+                        + client.getRemoteSocketAddress());
+            }catch(IOException e) {
+                System.out.println("Fail. 5 seconds to retry attempt..");
+                try {
+                    Thread.sleep(5000);                 //1000 milliseconds is one second.
+                } catch(InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+                connect();
+            }
+        }
+
         public void run(){
             // petala odbierajaca dane
+            connect();
             byte[] message;
-            while(true) {
-                try {
+            try {
+                while(true) {
+
                     //odbieranie danych
                     DataInputStream in = new DataInputStream(client.getInputStream());
                     int length = in.readInt();
@@ -64,11 +68,12 @@ public class Client extends Thread {
                         in.readFully(message, 0, message.length); // read the message
                         manager.handleData(message);
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    break;
                 }
+            } catch (IOException e) {
+                System.out.println("Connection lost.");
+                connect();
             }
+
         }
     }
 }

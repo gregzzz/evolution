@@ -3,6 +3,7 @@ package server.src.logic;
 import java.util.*;
 
 import components.enums.*;
+import components.objects.Animal;
 import components.objects.Player;
 import server.src.EvoServer;
 import server.src.logic.Client;
@@ -32,18 +33,12 @@ public class GameManager{
 
     private int amountOfFood;
 
-    private int commandId = 0;
-
     public GameManager(EvoServer s, int n, Vector<Client> r){
         server = s;
         numberOfPlayers = n;
         clients = r;
         players = new Player[n];
 
-        whoPassed = new boolean[n];
-        for(int i = 0; i < n; i++){
-            whoPassed[i] = false;
-        }
     }
 
     // ustawianie kart w talli
@@ -83,22 +78,41 @@ public class GameManager{
                         nextOneTakeTurn();
                     }
                     if (command == Command.NAME) {
-                        players[client.getNumber()] = new Player(client.getNumber(),stringFromBytes(data,1,data.length-2),6);
+                        Player player = new Player(client.getNumber(),stringFromBytes(data,1,data.length-2),6);
+                        players[client.getNumber()] = player;
+                        client.player = player;
+
                         server.send(concat(new byte[] {Command.NAME.getId(),
                                 (byte)client.getNumber()}, players[client.getNumber()].name.getBytes() ));
                         }
                     else if(command == Command.GETGAME){
-                        // wyslac cale info o grze
+                        //id
+                        client.send(new byte[] {Command.ID.getId(),(byte)client.getNumber()});
+                        //imie
+                        client.send(concat(new byte[] {Command.NAME.getId(),
+                                (byte)client.getNumber()}, players[client.getNumber()].name.getBytes() ));
+                        byte [] cards = {};
+                        for(Card card: client.player.cards) {
+                            cards = concat(cards, new byte[]{(byte)card.getId()});
+                        }
+                            client.send(concat(new byte []{Command.CARDS.getId(),(byte)client.getNumber()},cards));
+
+                        for(Player player: players){
+
+                        }
                     }
                     else if (command == Command.EVOLUTION) {
                         //dodaj ceche
-                        server.send(new byte[] {Command.EVOLUTION.getId(),data[1], data[2]});
+                        server.send(new byte[] {Command.EVOLUTION.getId(),(byte)client.getNumber(),data[1], data[2]});
                         nextOneTakeTurn();
                     }
                     else if (command == Command.PASS) {
                         //ktos pasuje
-                        whoPassed[turn] = true;
+                        client.player.pass = true;
                         server.send(new byte[] {Command.PASS.getId(),(byte) turn});
+                        if(!everyonePassed()){
+                            nextOneTakeTurn();
+                        }
                     }
                     else {
                         //jak ktos przysle chujowe dane to mu o tym piszemy
@@ -115,12 +129,13 @@ public class GameManager{
     public void setFoodAndPrepareFeedingPhase(){
         // napisz funckje do ustalania ilosci jedzenia
         amountOfFood = 4;
-        server.send(new byte[] {(byte) amountOfFood});
+        server.send(new byte[] {Command.FOOD.getId(),(byte) amountOfFood});
 
         // zerujemy tablice passow
         whoPassed = new boolean[numberOfPlayers];
-        for(int i = 0; i < numberOfPlayers; i++){
-            whoPassed[i] = false;
+        for(Player player: players){
+            if(player != null)
+                player.pass = false;
         }
         // i ustawiamy kolejke na tego kto zaczyna faze
         turn = whoBeginPhase;
@@ -128,9 +143,10 @@ public class GameManager{
     }
     // sprawdza czy juz wszyscy spasowali
     public boolean everyonePassed(){
-        for(int i = 0 ; i < numberOfPlayers ; i++){
-            if(!whoPassed[i])
-                return false;
+        for(Player player: players){
+            if(player != null)
+                if(!player.pass)
+                     return false;
         }
         return true;
     }
@@ -140,6 +156,9 @@ public class GameManager{
         turn += 1;
         if (turn >= numberOfPlayers) {
             turn = 0;
+        }
+        if(players[turn].pass){
+            nextOneTakeTurn();
         }
         server.send(new byte[] {Command.TURN.getId(),(byte)turn});
     }

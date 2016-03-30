@@ -1,6 +1,8 @@
 package server.src;
 
+import com.badlogic.gdx.Game;
 import components.enums.Command;
+import components.enums.GameState;
 import server.src.logic.Client;
 import server.src.logic.GameManager;
 
@@ -101,10 +103,22 @@ public class EvoServer extends Thread{
                 out.write(s);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            for (Client client : clients) {
+                if(!client.socket.isClosed()) {
+                    while(!client.socket.isClosed()){
+                        try {
+                            Thread.sleep(1000);                 //1000 milliseconds is one second.
+                        } catch(InterruptedException ex) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                    System.out.println("The player is back");
+
+                }
+            }
         }
     }
-
+    // chyba do wyjebania
     public void send(byte [] s, int n){
         try {
             for (Client client : clients) {
@@ -128,8 +142,9 @@ public class EvoServer extends Thread{
         // petala wykonywana w watku odbierajacym dane od clienta
         public void run(){
             byte [] message;
-            while(true){
-                try{
+            try{
+                while(true){
+
                     // odbieranie danych
                     DataInputStream in = new DataInputStream(client.socket.getInputStream());
                     int length = in.readInt();
@@ -139,23 +154,44 @@ public class EvoServer extends Thread{
 
                         client.offer(message);
                     }
-                }catch(IOException e){
-                    // obsluga wyjatkow
-                    reconnect();
-                    break;
                 }
+            }catch(IOException e){
+                // obsluga wyjatkow
+                for(Client client: clients){
+                    if(client.getNumber() != this.client.getNumber()){
+                        client.send(new byte[] {Command.STATE.getId(), (byte) GameState.PLAYEROUT.getId(), (byte)this.client.getNumber() });
+                    }
+                }
+                reconnect();
             }
+
 
         }
         public void reconnect(){
+            try {
+                client.socket.close();
+                client.socket = serverSocket.accept();
+                System.out.println("Just connected to " +
+                        client.socket.getRemoteSocketAddress());
 
+                Thread t = new ClientHandler(client);
+                t.start();
+
+                client.send(new byte [] {(byte)Command.STATE.getId(),(byte)GameState.ERROR.getId()});
+
+            } catch (SocketTimeoutException s) {
+                System.out.println("Socket timed out!");
+            } catch (IOException e) {
+                //po ptokach
+                e.printStackTrace();
+            }
         }
     }
     // funkcja main do rozbudowania o obsluge wielu gier itd ipt
     public static void main(String [] args){
         //serwer ustawiony na jednego gracza
         int port = 5055;
-        int number = 2;
+        int number = 1;
         try{
             Thread t = new EvoServer(port,number);
             t.start();
