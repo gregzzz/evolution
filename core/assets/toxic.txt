@@ -1,1 +1,0 @@
-An animal that has eaten this animal will die at the end of this feeding phase.

@@ -17,6 +17,7 @@ import com.mygdx.game.logic.Button;
 import com.mygdx.game.logic.Keyboard;
 import com.mygdx.game.logic.Mouse;
 import com.mygdx.game.managers.GameManager;
+import com.mygdx.game.managers.InfoManager;
 import com.mygdx.game.managers.LayoutManager;
 import com.mygdx.game.managers.TextureManager;
 import components.objects.Player;
@@ -59,6 +60,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	GameManager gameManager=new GameManager();
 	TextureManager textures;
 	LayoutManager layout = new LayoutManager(textures);
+	InfoManager infomanager = new InfoManager();
 
 	Player player;
 	Player otherPlayer;
@@ -264,19 +266,8 @@ public class Evolution implements ApplicationListener, InputProcessor {
 							//narysowanie ramki do tekstu
 							card = textures.getTexture(Card.RAMKA);
 							batch.draw(card, (screenWidth - card.getWidth()) / 2, (screenHeight - card.getHeight()) / 2);
-							//pobranie opisu musi byc w try-catchu
-							// no to nie moze sie wykonywac co petle
-							try {
-								in = new BufferedReader(new FileReader("core/assets/" + player.getCards(i) + ".txt"));
-							} catch (FileNotFoundException e) {
-								e.printStackTrace();
-							}
-							try {
-								line = in.readLine();
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-							font.draw(batch, line, 600 - 3 * line.length(), 5 + screenHeight / 2);
+							//opis karty
+							font.draw(batch, infomanager.getDescription(player.getCards(i)), 600 - 3 * infomanager.getDescription(player.getCards(i)).length(), 5 + screenHeight / 2);
 
 							batch.draw(cardChoices[0].getGraphic(), cardChoices[0].getPositionX(), cardChoices[0].getPositionY());
 							batch.draw(cardChoices[1].getGraphic(), cardChoices[1].getPositionX(), cardChoices[1].getPositionY());

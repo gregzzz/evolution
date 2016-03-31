@@ -1,1 +1,0 @@
-This animal can only be attacked by animals with this perk. It also needs an additional food token.
