@@ -1,0 +1,1 @@
+Whenever an animal is eaten, this animal recieves an additional food token.

@@ -42,6 +42,10 @@ public class GameManager {
         c.send(new byte[]{Command.PASS.getId()});
     }
 
+    public void endRound() {
+        c.send(new byte[]{Command.ENDROUND.getId()});
+    }
+
     public void feed(int animal, int amount) {
         c.send(new byte[]{Command.FEED.getId(), (byte) animal, (byte) amount});
     }
@@ -111,7 +115,6 @@ public class GameManager {
                 if (player.number == recv[1]) {
                     // ubijamy
                     player.killAnimal(recv[2]);
-                    System.out.print("kkk");
                 }
             }
         }

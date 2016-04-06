@@ -1,0 +1,1 @@
+This animal may substract one food token from the pool each turn.

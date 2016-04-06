@@ -72,6 +72,8 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 	boolean secondaryPerk;
 
+	boolean actionDone=false;
+
 	boolean getText = false;
 
 	boolean chooseCardFromHand;
@@ -196,8 +198,14 @@ public class Evolution implements ApplicationListener, InputProcessor {
 					chooseAnimalAction=false;
 				}
 			}
-			if(pass.isTouched(mouse)&&player.animalsNumber()>0){
+			if(pass.isTouched(mouse) && actionDone){
 				gameManager.pass();
+				printSelectedAnimal=false;
+				printFeedingChoices=false;
+				chosenCard=99;
+			}
+			if(endRound.isTouched(mouse) && actionDone){
+				gameManager.endRound();
 				printSelectedAnimal=false;
 				printFeedingChoices=false;
 				chosenCard=99;
@@ -208,10 +216,12 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	//wybierz co robisz zwirzeciem podczas fazy zywienia
 	public void chooseAnimalAction(){
 		if(!chooseAnimalAction){
-			if(feedChoices[0].isTouched(mouse)&&!player.animals[selectedAnimal].isFeeded()){
+			if(feedChoices[0].isTouched(mouse) && !actionDone){
+				if(!player.animals[selectedAnimal].isFeeded() || player.animals[selectedAnimal].fat<player.animals[selectedAnimal].fatTotal)
 				player.animals[selectedAnimal].feed(1);
 				gameManager.feed(selectedAnimal,1);
-			}else if(feedChoices[1].isTouched(mouse) && player.animals[selectedAnimal].carnivore&&!player.animals[selectedAnimal].isFeeded()){
+				actionDone=true;
+			}else if(feedChoices[1].isTouched(mouse) && player.animals[selectedAnimal].carnivore&&!player.animals[selectedAnimal].isFeeded() && !actionDone){
 				chooseTarget=false;
 				chooseAnimalForAction=true;
 				chooseAnimalAction=true;
@@ -241,6 +251,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 								printSelectedAnimal=false;
 								chooseAnimalForAction=false;
 								updateAnimalButtons();
+								actionDone=true;
 							}else{
 								chooseTarget=true;
 								printSelectedAnimal=false;
@@ -376,6 +387,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 			if(gameManager.turnStart){
 				gameManager.turnStart=false;
 				updateAnimalButtons();
+				actionDone=false;
 			}
 
 			batch.begin();

@@ -32,8 +32,16 @@ public class Animal {
         feeded=false;
     }
 
-    public void feed(int i){
-        food+=i;
+    public void feed(int food){
+        for(int i=0;i<food;i++) {
+            if(this.isFeeded()){
+                if(fat<fatTotal){
+                    fat++;
+                }
+            }else {
+                this.food++;
+            }
+        }
     }
 
     public boolean isFeeded(){

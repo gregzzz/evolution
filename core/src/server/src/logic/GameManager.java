@@ -143,6 +143,11 @@ public class GameManager{
                         nextOneTakeTurn();
                     }
                 }
+                if (command == Command.ENDROUND) {
+                    //ktos konczy
+                    server.send(new byte[] {Command.ENDROUND.getId(),(byte) turn});
+                    nextOneTakeTurn();
+                }
                 else {
                     //jak ktos przysle chujowe dane to mu o tym piszemy
                     server.send(new byte[] {Command.NONE.getId()}, turn);

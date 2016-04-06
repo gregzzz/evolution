@@ -1,0 +1,1 @@
+If this animal is attacked, the player may choose another viable target to be attacked in its stead.

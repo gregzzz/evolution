@@ -18,6 +18,7 @@ public enum Command {
     MSG(12),
     FEED(13),
     KILL(14),
+    ENDROUND(15),
 
     NONE(-1);
 
