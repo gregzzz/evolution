@@ -12,6 +12,7 @@ public class GameManager {
     Client c;
     public Player player = new Player();
     public Vector<Player> otherPlayers = new Vector<Player>();
+    public boolean turnStart=true;
 
     public GameState state = GameState.BEGIN;
     public Command command = Command.NONE;
@@ -33,8 +34,16 @@ public class GameManager {
         c.send(new byte[]{Command.EVOLUTION.getId(), (byte) place, (byte) cardName.getId()});
     }
 
+    public void kill(int player, int place){
+        c.send(new byte[]{Command.KILL.getId(),(byte) player, (byte) place});
+    }
+
     public void pass() {
         c.send(new byte[]{Command.PASS.getId()});
+    }
+
+    public void feed(int animal, int amount) {
+        c.send(new byte[]{Command.FEED.getId(), (byte) animal, (byte) amount});
     }
 
     public void handleData(byte[] recv) {
@@ -83,6 +92,7 @@ public class GameManager {
         // ustawia czyja tura
         else if (command == Command.TURN) {
             turn = recv[1];
+            turnStart=true;
         }
         else if (command == Command.ADD) {
             if (recv[2] != player.number) {
@@ -92,6 +102,25 @@ public class GameManager {
                         otherPlayer.numberOfCards -= 1;
                         // dodajemy zwierze
                         otherPlayer.addAnimal(recv[1]);
+                    }
+                }
+            }
+        }
+        else if (command == Command.KILL) {
+            if (recv[3] != player.number) {
+                if (player.number == recv[1]) {
+                    // ubijamy
+                    player.killAnimal(recv[2]);
+                    System.out.print("kkk");
+                }
+            }
+        }
+        else if (command == Command.FEED) {
+            if (recv[3] != player.number) {
+                for (Player otherPlayer : otherPlayers) {
+                    if (otherPlayer.number == recv[3]) {
+                        // karmimy
+                        otherPlayer.animals[recv[1]].feed(recv[2]);;
                     }
                 }
             }

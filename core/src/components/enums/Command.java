@@ -16,6 +16,8 @@ public enum Command {
     GETNAME(10),
     GETGAME(11),
     MSG(12),
+    FEED(13),
+    KILL(14),
 
     NONE(-1);
 

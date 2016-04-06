@@ -84,18 +84,16 @@ public class GameManager{
 
                         server.send(concat(new byte[] {Command.NAME.getId(),
                                 (byte)client.getNumber()}, players[client.getNumber()].name.getBytes() ));
-                        }
-                    else if(command == Command.GETGAME){
+                    } else if(command == Command.GETGAME){
                         //id
                         client.send(new byte[] {Command.ID.getId(),(byte)client.getNumber()});
                         //imie
-                        client.send(concat(new byte[] {Command.NAME.getId(),
-                                (byte)client.getNumber()}, players[client.getNumber()].name.getBytes() ));
+                        client.send(concat(new byte[] {Command.NAME.getId(), (byte)client.getNumber()}, players[client.getNumber()].name.getBytes() ));
                         byte [] cards = {};
                         for(Card card: client.player.cards) {
                             cards = concat(cards, new byte[]{(byte)card.getId()});
                         }
-                            client.send(concat(new byte []{Command.CARDS.getId(),(byte)client.getNumber()},cards));
+                        client.send(concat(new byte []{Command.CARDS.getId(),(byte)client.getNumber()},cards));
 
                         for(Player player: players){
 
@@ -118,10 +116,39 @@ public class GameManager{
                         //jak ktos przysle chujowe dane to mu o tym piszemy
                         server.send(new byte[] {Command.NONE.getId()}, turn);
                     }
+            }
+        }
+    }
+
+
+    public void feedingPhase(){
+        for (Client client: clients) {
+            if (client.peek()) {
+                byte [] data = client.poll();
+                command = Command.fromInt(data[0]);
+                System.out.println(command);
+
+                if (command == Command.FEED) {
+                    server.send(new byte[] {Command.FEED.getId(),data[1],data[2],(byte)turn});
+                }
+                if (command == Command.KILL) {
+                    server.send(new byte[] {Command.KILL.getId(),data[1],data[2],(byte)turn});
+                }
+
+                if (command == Command.PASS) {
+                    //ktos pasuje
+                    client.player.pass = true;
+                    server.send(new byte[] {Command.PASS.getId(),(byte) turn});
+                    if(!everyonePassed()){
+                        nextOneTakeTurn();
+                    }
+                }
+                else {
+                    //jak ktos przysle chujowe dane to mu o tym piszemy
+                    server.send(new byte[] {Command.NONE.getId()}, turn);
                 }
             }
         }
-    public void feedingPhase(){
 
     }
 
@@ -140,15 +167,22 @@ public class GameManager{
         // i ustawiamy kolejke na tego kto zaczyna faze
         turn = whoBeginPhase;
         server.send(new byte [] {Command.TURN.getId(), (byte)turn});
+        server.send(new byte [] {Command.STATE.getId(),(byte)GameState.FEEDING.getId()});
+        state = GameState.FEEDING;
     }
+
     // sprawdza czy juz wszyscy spasowali
     public boolean everyonePassed(){
-        for(Player player: players){
-            if(player != null)
-                if(!player.pass)
-                     return false;
+        for(Player player: players) {
+            if (player != null) {
+                if (!player.pass)
+                    return false;
+            } else {
+                return false;
+            }
         }
         return true;
+
     }
     // ustawia kolejke na nastepna osobe gdy dostanie "TURN [kto to mowi] NEXT"
     // i gdy "PASS [kto pasuje]

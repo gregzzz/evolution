@@ -10,9 +10,6 @@ import java.net.SocketTimeoutException;
 import java.util.LinkedList;
 import java.util.Queue;
 
-/**
- * Created by kopec on 2016-03-22.
- */
 public class Client {
     public Socket socket;
 

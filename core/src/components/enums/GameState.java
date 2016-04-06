@@ -3,9 +3,7 @@ package components.enums;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by kopec on 2016-03-17.
- */
+
 public enum GameState {
     BEGIN(1),
     EVOLUTION(2),

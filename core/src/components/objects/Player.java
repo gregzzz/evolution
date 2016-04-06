@@ -29,11 +29,12 @@ public class Player {
     }
 
     public void addAnimal(int slot){
-        animals[slot] = new Animal(number);
+        animals[slot] = new Animal(number, slot);
         animalsNumber ++;
     }
 
     public void killAnimal(int slot){
+        animals[slot]=null;
         animalsNumber --;
     }
 

@@ -28,6 +28,8 @@ public enum Card {
     MIMICRY(18),
     PIRACY(19),
     PARASITEC(20),
+    CARNIVORE(21),
+    FAT(22),
 
     //kARTY NIE KARTY, DO PRZECHOWYWANIA W MAPIE TEKSTUR
     BACKGROUND1(-2),

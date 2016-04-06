@@ -26,7 +26,7 @@ public class TextureManager {
         textures.put(Card.COOPERATIONC,new Texture("core/assets/coopc.png"));
         textures.put(Card.COOPERATIONF,new Texture("core/assets/coopf.png"));
         textures.put(Card.HIBERNATION,new Texture("core/assets/hibernation.png"));
-        //textures.put(Card.,new Texture("core/assets/fat.png"));
+        textures.put(Card.FAT,new Texture("core/assets/fat.png"));
         textures.put(Card.MASSIVEC,new Texture("core/assets/massivec.png"));
         textures.put(Card.MASSIVEF,new Texture("core/assets/massivef.png"));
         textures.put(Card.MIMICRY,new Texture("core/assets/mimicry.png"));
@@ -41,6 +41,7 @@ public class TextureManager {
         textures.put(Card.SYMBIOSIS,new Texture("core/assets/symbiosis.png"));
         textures.put(Card.TAILTOSS,new Texture("core/assets/tail.png"));
         textures.put(Card.TOXIC,new Texture("core/assets/toxic.png"));
+        textures.put(Card.CARNIVORE,new Texture("core/assets/carnivore.png"));
         // cos tam
         textures.put(Card.SPACE,new Texture("core/assets/space.png"));
         textures.put(Card.ANIMAL,new Texture("core/assets/animal.png"));

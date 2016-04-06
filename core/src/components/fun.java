@@ -2,9 +2,7 @@ package components;
 
 import java.nio.ByteBuffer;
 
-/**
- * Created by kopec on 2016-03-22.
- */
+
 public class fun {
     public static byte[] concat(byte[] a, byte[] b){
         int aLen = a.length;
