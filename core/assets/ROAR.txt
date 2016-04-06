@@ -1,1 +1,0 @@
-This animal cannot be attacked once it is fed.
