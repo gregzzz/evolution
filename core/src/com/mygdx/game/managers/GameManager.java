@@ -18,6 +18,7 @@ public class GameManager {
     public Command command = Command.NONE;
     // zeby nie byl to null
     public int turn = -1;
+    public int amountOfFood;
 
     public void startClient() {
         if (!clientConnected) {
@@ -47,7 +48,7 @@ public class GameManager {
     }
 
     public void feed(int animal, int amount) {
-        c.send(new byte[]{Command.FEED.getId(), (byte) animal, (byte) amount});
+        c.send(new byte[]{Command.FEED.getId(), (byte) animal, (byte) amount, (byte) amountOfFood});
     }
 
     public void handleData(byte[] recv) {
@@ -85,6 +86,9 @@ public class GameManager {
                 }
             }
         }
+        else if (command == Command.FOOD){
+            amountOfFood=recv[1];
+        }
         else if (command == Command.STATE) {
             if( recv[1] == GameState.ERROR.getId()){
                 c.send(new byte[] {Command.GETGAME.getId()});
@@ -119,11 +123,12 @@ public class GameManager {
             }
         }
         else if (command == Command.FEED) {
-            if (recv[3] != player.number) {
+            if (recv[4] != player.number) {
                 for (Player otherPlayer : otherPlayers) {
-                    if (otherPlayer.number == recv[3]) {
+                    if (otherPlayer.number == recv[4]) {
                         // karmimy
-                        otherPlayer.animals[recv[1]].feed(recv[2]);;
+                        otherPlayer.animals[recv[1]].feed(recv[2]);
+                        amountOfFood=recv[3];
                     }
                 }
             }

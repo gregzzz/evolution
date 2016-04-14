@@ -73,7 +73,7 @@ public class EvoServer extends Thread{
 
         game.setGame();
         while(true){
-            // odbieranie czatu i info niezaleznego od kollejki
+            // odbieranie czatu i info niezaleznego od kolejki
             if(game.state == EVOLUTION){
                 game.evolutionPhase();
             }

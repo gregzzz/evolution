@@ -129,7 +129,7 @@ public class GameManager{
                 System.out.println(command);
 
                 if (command == Command.FEED) {
-                    server.send(new byte[] {Command.FEED.getId(),data[1],data[2],(byte)turn});
+                    server.send(new byte[] {Command.FEED.getId(),data[1],data[2],data[3],(byte)turn});
                 }
                 if (command == Command.KILL) {
                     server.send(new byte[] {Command.KILL.getId(),data[1],data[2],(byte)turn});
@@ -160,7 +160,14 @@ public class GameManager{
     //funckja ustawiajaca ilosc jedzenia i przygotowujemy faze zywienia
     public void setFoodAndPrepareFeedingPhase(){
         // napisz funckje do ustalania ilosci jedzenia
-        amountOfFood = 4;
+        if(numberOfPlayers==2) {
+            amountOfFood = randomGenerator.nextInt(6) + 3;
+        }else if(numberOfPlayers==3){
+            amountOfFood = randomGenerator.nextInt(6)+ randomGenerator.nextInt(6) + 2;
+        }
+        else if(numberOfPlayers==4){
+            amountOfFood = randomGenerator.nextInt(6)+ randomGenerator.nextInt(6) + 4;
+        }
         server.send(new byte[] {Command.FOOD.getId(),(byte) amountOfFood});
 
         // zerujemy tablice passow

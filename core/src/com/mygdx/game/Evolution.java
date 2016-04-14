@@ -218,6 +218,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		if(!chooseAnimalAction){
 			if(feedChoices[0].isTouched(mouse) && !actionDone){
 				if(!player.animals[selectedAnimal].isFeeded() || player.animals[selectedAnimal].fat<player.animals[selectedAnimal].fatTotal)
+				gameManager.amountOfFood--;
 				player.animals[selectedAnimal].feed(1);
 				gameManager.feed(selectedAnimal,1);
 				actionDone=true;
@@ -246,7 +247,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 								player.animals[selectedAnimal].feed(2);
 								gameManager.feed(selectedAnimal,2);
 								otherPlayer.killAnimal(j);
-								gameManager.kill(i,j);
+								gameManager.kill(otherPlayer.number,j);
 								chooseTarget=true;
 								printSelectedAnimal=false;
 								chooseAnimalForAction=false;
@@ -307,9 +308,10 @@ public class Evolution implements ApplicationListener, InputProcessor {
 								chooseCardFromHand = false;
 								chooseMyAnimal = true;
 							}
-						}else if(player.getCards(chosenCard)==Card.MASSIVEF || player.getCards(chosenCard)==Card.PARASITEF ||  player.getCards(chosenCard)==Card.COOPERATIONF ||  player.getCards(chosenCard)==Card.CAMOUFLAGE || player.getCards(chosenCard)==Card.ROAR){
+						}else if(player.getCards(chosenCard)==Card.MASSIVEF || player.getCards(chosenCard)==Card.PARASITEF ||  player.getCards(chosenCard)==Card.COOPERATIONF ||  player.getCards(chosenCard)==Card.CAMOUFLAGE || player.getCards(chosenCard)==Card.ROAR || player.getCards(chosenCard)==Card.PASTURAGE || player.getCards(chosenCard)==Card.SHARPSIGHT){
 							player.animals[i].addFeature(Card.FAT);
 							gameManager.addFeature(i, Card.FAT);
+							player.removeCard(chosenCard);
 							chooseCardFromHand = false;
 							chooseMyAnimal = true;
 						}else{
@@ -399,6 +401,22 @@ public class Evolution implements ApplicationListener, InputProcessor {
 			if (gameManager.state == GameState.EVOLUTION || gameManager.state == GameState.FEEDING) {
 
 				card = textures.getTexture(Card.CHOICE);
+
+				//ilosc jedzenia
+				batch.draw(card, screenWidth - card.getWidth(), 100);
+				if(gameManager.state==GameState.EVOLUTION){
+					if(gameManager.otherPlayers.size()==1) {
+						font.draw(batch, "1x dice + 2", screenWidth - card.getWidth() + 12, 105 + card.getHeight()/2);
+					}else if(gameManager.otherPlayers.size()==2) {
+						font.draw(batch, "2x dice", screenWidth - card.getWidth() + 20, 105 + card.getHeight()/2);
+					}else if(gameManager.otherPlayers.size()==3) {
+						font.draw(batch, "2x dice + 2", screenWidth - card.getWidth() + 12, 105 +card.getHeight()/2);
+					}
+				}else if(gameManager.state==GameState.FEEDING){
+					font.draw(batch, Integer.toString(gameManager.amountOfFood), screenWidth - card.getWidth()/2 -1, 105 + card.getHeight()/2);
+				}
+
+				//czyja tura
 				batch.draw(card, screenWidth - 2 * card.getWidth(), screenHeight - card.getHeight());
 				if (gameManager.turn == player.number) {
 					font.draw(batch, "Your Turn", screenWidth - 2 * card.getWidth() + 15, 5 + screenHeight - 25);

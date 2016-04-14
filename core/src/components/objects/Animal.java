@@ -83,7 +83,7 @@ public class Animal {
             return false;
         }else if(this.have(Card.MASSIVEF) && !attacker.have(Card.MASSIVEF)){
             return false;
-        }else if(this.have(Card.ROAR) && this.feeded){
+        }else if(this.have(Card.ROAR) && this.isFeeded()){
             return false;
         }else if(this.have(Card.AQUATIC) && !attacker.have(Card.AQUATIC)){
             return false;
