@@ -134,6 +134,12 @@ public class GameManager{
                 if (command == Command.KILL) {
                     server.send(new byte[] {Command.KILL.getId(),data[1],data[2],(byte)turn});
                 }
+                if (command == Command.STEAL) {
+                    server.send(new byte[] {Command.STEAL.getId(),data[1],data[2],(byte)turn});
+                }
+                if (command == Command.SCAVENGE) {
+                    server.send(new byte[] {Command.SCAVENGE.getId(),(byte)turn});
+                }
 
                 if (command == Command.PASS) {
                     //ktos pasuje

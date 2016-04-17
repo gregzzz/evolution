@@ -19,6 +19,8 @@ public enum Command {
     FEED(13),
     KILL(14),
     ENDROUND(15),
+    STEAL(16),
+    SCAVENGE(16),
 
     NONE(-1);
 

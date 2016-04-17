@@ -51,6 +51,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	Button animalButtons[][]=new Button[4][5];
 	Button endRound;
 	Button pass;
+	Button cancelButton;
 
 
 
@@ -83,11 +84,13 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	boolean chooseAnimalForAction;
 	boolean chooseAnimalAction;
 	boolean chooseTarget;
+	boolean choosePiracyTarget;
 
 	boolean printAnimalsSlots = false;
 	boolean printChoosenCard = false;
 	boolean printSelectedAnimal=false;
 	boolean printFeedingChoices=false;
+	boolean printCancelButton=false;
 
 
 	public Evolution(){
@@ -101,6 +104,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		chooseAnimalForAction=false;
 		chooseAnimalAction=true;
 		chooseTarget=true;
+		choosePiracyTarget=true;
 
 
 	}
@@ -131,6 +135,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 	public void createButtons(){
 		card = textures.getTexture(Card.CHOICE);
+		cancelButton = new Button(card, ((screenWidth - card.getWidth()) / 2),(screenHeight - card.getHeight()) / 2 );
 		for (int i = 0; i < 3; i++) {
 			cardChoices[i] = new Button(card, ((screenWidth - card.getWidth()) / 2) + (i-1) * card.getWidth(), (screenHeight - card.getHeight()) / 2 - card.getHeight(),mouse.x,mouse.y);
 
@@ -198,17 +203,35 @@ public class Evolution implements ApplicationListener, InputProcessor {
 					chooseAnimalAction=false;
 				}
 			}
-			if(pass.isTouched(mouse) && actionDone){
-				gameManager.pass();
-				printSelectedAnimal=false;
-				printFeedingChoices=false;
-				chosenCard=99;
+			if(pass.isTouched(mouse)){
+				if(!actionDone && gameManager.amountOfFood==0) {
+					actionDone = false;
+					gameManager.pass();
+					printSelectedAnimal = false;
+					printFeedingChoices = false;
+					chosenCard = 99;
+				}else if(actionDone){
+					actionDone = false;
+					gameManager.pass();
+					printSelectedAnimal = false;
+					printFeedingChoices = false;
+					chosenCard = 99;
+				}
 			}
 			if(endRound.isTouched(mouse) && actionDone){
-				gameManager.endRound();
-				printSelectedAnimal=false;
-				printFeedingChoices=false;
-				chosenCard=99;
+				if(!actionDone && gameManager.amountOfFood==0) {
+					gameManager.endRound();
+					actionDone=false;
+					printSelectedAnimal=false;
+					printFeedingChoices=false;
+					chosenCard=99;
+				}else if(actionDone) {
+					gameManager.endRound();
+					actionDone = false;
+					printSelectedAnimal = false;
+					printFeedingChoices = false;
+					chosenCard = 99;
+				}
 			}
 		}
 	}
@@ -216,7 +239,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	//wybierz co robisz zwirzeciem podczas fazy zywienia
 	public void chooseAnimalAction(){
 		if(!chooseAnimalAction){
-			if(feedChoices[0].isTouched(mouse) && !actionDone){
+			if(feedChoices[0].isTouched(mouse) && !actionDone && gameManager.amountOfFood>0){
 				if(!player.animals[selectedAnimal].isFeeded() || player.animals[selectedAnimal].fat<player.animals[selectedAnimal].fatTotal)
 				gameManager.amountOfFood--;
 				player.animals[selectedAnimal].feed(1);
@@ -227,6 +250,29 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				chooseAnimalForAction=true;
 				chooseAnimalAction=true;
 				printFeedingChoices=false;
+				printCancelButton=true;
+			}else if(feedChoices[2].isTouched(mouse) && player.animals[selectedAnimal].have(Card.PIRACY)&&!player.animals[selectedAnimal].isFeeded()&& !player.animals[selectedAnimal].piracy){
+				choosePiracyTarget=false;
+				chooseAnimalForAction=true;
+				chooseAnimalAction=true;
+				printFeedingChoices=false;
+				printCancelButton=true;
+			}else if(feedChoices[3].isTouched(mouse) && player.animals[selectedAnimal].have(Card.PASTURAGE)&&gameManager.amountOfFood>0&& !player.animals[selectedAnimal].pasturage){
+				gameManager.amountOfFood--;
+				//updatuje u innych ilosc zarcia
+				gameManager.feed(selectedAnimal,0);
+				player.animals[selectedAnimal].pasturage=true;
+			}else if(feedChoices[4].isTouched(mouse) && player.animals[selectedAnimal].have(Card.HIBERNATION)&& !player.animals[selectedAnimal].hibernation){
+				player.animals[selectedAnimal].hibernation=true;
+				player.animals[selectedAnimal].hibernationUsed=true;
+				player.animals[selectedAnimal].feed(player.animals[selectedAnimal].foodNeeded-player.animals[selectedAnimal].food);
+				gameManager.feed(selectedAnimal,player.animals[selectedAnimal].foodNeeded-player.animals[selectedAnimal].food);
+			}else if(feedChoices[5].isTouched(mouse) && player.animals[selectedAnimal].have(Card.SCAVENGER)&& !player.animals[selectedAnimal].scavenger && gameManager.corpse){
+				player.animals[selectedAnimal].scavenger=true;
+				player.animals[selectedAnimal].feed(1);
+				gameManager.feed(selectedAnimal,1);
+				gameManager.corpse=false;
+				gameManager.scavenge();
 			}
 		}
 	}
@@ -248,19 +294,61 @@ public class Evolution implements ApplicationListener, InputProcessor {
 								gameManager.feed(selectedAnimal,2);
 								otherPlayer.killAnimal(j);
 								gameManager.kill(otherPlayer.number,j);
+								gameManager.corpse=true;
 								chooseTarget=true;
 								printSelectedAnimal=false;
 								chooseAnimalForAction=false;
+								printCancelButton=false;
 								updateAnimalButtons();
 								actionDone=true;
 							}else{
 								chooseTarget=true;
 								printSelectedAnimal=false;
 								chooseAnimalForAction=false;
+								printCancelButton=false;
 							}
 						}
 					}
 				}
+			}
+			if(cancelButton.isTouched(mouse)) {
+				chooseTarget = true;
+				printSelectedAnimal = false;
+				chooseAnimalForAction = false;
+				printCancelButton=false;
+			}
+		}
+	}
+
+	public void choosePiracyTarget(){
+		if(!choosePiracyTarget){
+			for(int i=0;i<4;i++) {
+				for (int j = 0; j < 5; j++) {
+					if (animalButtons[i][j] != null && animalButtons[i][j].isTouched(mouse)) {
+						if(i>0) {
+							otherPlayer = gameManager.otherPlayers.elementAt(i - 1);
+						}else{
+							otherPlayer=player;
+						}
+						if(otherPlayer.animals[j]!=player.animals[selectedAnimal] && !otherPlayer.animals[j].isFeeded() && otherPlayer.animals[j].food>0){
+							player.animals[selectedAnimal].feed(1);
+							gameManager.feed(selectedAnimal,1);
+							otherPlayer.animals[j].feed(-1);
+							gameManager.steal(otherPlayer.number,j);
+							chooseTarget=true;
+							printSelectedAnimal=false;
+							chooseAnimalForAction=false;
+							printCancelButton=false;
+							player.animals[selectedAnimal].piracy=true;
+						}
+					}
+				}
+			}
+			if(cancelButton.isTouched(mouse)) {
+				chooseTarget = true;
+				printSelectedAnimal = false;
+				chooseAnimalForAction = false;
+				printCancelButton=false;
 			}
 		}
 	}
@@ -386,11 +474,29 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	//najpierw tlo
 			Gdx.gl.glClearColor(0, 0, 0, 0);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-			if(gameManager.turnStart){
-				gameManager.turnStart=false;
-				updateAnimalButtons();
-				actionDone=false;
+		if(gameManager.turnStart){
+			gameManager.turnStart=false;
+			updateAnimalButtons();
+			actionDone=false;
+			//guziki kart
+			for (int i = 0; i < player.cardsNumber(); i++) {
+				cardButtons[i] = new Button(textures.getTexture(player.getCards(i)), i * textures.getTexture(player.getCards(i)).getWidth(), 0, mouse.x, mouse.y);
 			}
+			//odblokowanie cech
+			for(int i=0;i<5;i++){
+				if(player.animals[i]!=null) {
+					player.animals[i].piracy = false;
+					player.animals[i].scavenger = false;
+					player.animals[i].pasturage = false;
+					if (player.animals[i].hibernationUsed = false) {
+						player.animals[i].hibernation = false;
+					}
+					if (player.animals[i].hibernationUsed = true) {
+						player.animals[i].hibernationUsed = false;
+					}
+				}
+			}
+		}
 
 			batch.begin();
 			// rysul tlo
@@ -455,6 +561,13 @@ public class Evolution implements ApplicationListener, InputProcessor {
 						}
 					}
 				}
+
+				//rysuj guzik do anulowania
+				if(printCancelButton) {
+					batch.draw(cancelButton.getGraphic(), cancelButton.getPositionX(),cancelButton.getPositionY());
+					font.draw(batch, "Cancel", cancelButton.getPositionX() + 30, cancelButton.getPositionY() + 30);
+				}
+
 				//rysuj podswietlone zwierze
 				if (printSelectedAnimal) {
 					for (int i = 0; i < player.animals[selectedAnimal].features.size(); i++) {
@@ -488,7 +601,6 @@ public class Evolution implements ApplicationListener, InputProcessor {
 					card = textures.getTexture(Card.SPACE);
 					//rysuje miejsca na zwierzaka
 					for (int i = 0; i < 5; i++) {
-						animalPlaces[i] = new Button(card, ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth(), 100, mouse.x, mouse.y);
 						batch.draw(animalPlaces[i].getGraphic(), animalPlaces[i].getPositionX(), animalPlaces[i].getPositionY());
 					}
 				}
@@ -583,6 +695,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 			chooseAnimalForAction();
 			chooseAnimalAction();
 			chooseTarget();
+			choosePiracyTarget();
 		}
 		return false;
 	}

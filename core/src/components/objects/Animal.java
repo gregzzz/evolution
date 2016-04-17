@@ -18,6 +18,11 @@ public class Animal {
     public int foodNeeded = 1;
     public int fat=0;
     public int fatTotal=0;
+    public boolean piracy=false;
+    public boolean pasturage=false;
+    public boolean hibernation=false;
+    public boolean hibernationUsed=false;
+    public boolean scavenger=false;
 
 
     public Vector<Card> features = new Vector<Card>();
@@ -33,6 +38,9 @@ public class Animal {
     }
 
     public void feed(int food){
+        if(food==-1){
+            this.food--;
+        }
         for(int i=0;i<food;i++) {
             if(this.isFeeded()){
                 if(fat<fatTotal){
@@ -88,6 +96,8 @@ public class Animal {
         }else if(this.have(Card.AQUATIC) && !attacker.have(Card.AQUATIC)){
             return false;
         }else if(this.have(Card.CAMOUFLAGE) && !attacker.have(Card.SHARPSIGHT)){
+            return false;
+        }else if(!this.have(Card.AQUATIC) && attacker.have(Card.AQUATIC)){
             return false;
         }else{
             return true;

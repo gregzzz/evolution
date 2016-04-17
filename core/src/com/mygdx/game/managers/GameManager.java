@@ -19,6 +19,8 @@ public class GameManager {
     // zeby nie byl to null
     public int turn = -1;
     public int amountOfFood;
+    //cialo dla padlinozercy
+    public boolean corpse=false;
 
     public void startClient() {
         if (!clientConnected) {
@@ -38,9 +40,16 @@ public class GameManager {
     public void kill(int player, int place){
         c.send(new byte[]{Command.KILL.getId(),(byte) player, (byte) place});
     }
+    public void steal(int player, int place){
+        c.send(new byte[]{Command.STEAL.getId(),(byte) player, (byte) place});
+    }
 
     public void pass() {
         c.send(new byte[]{Command.PASS.getId()});
+    }
+
+    public void scavenge() {
+        c.send(new byte[]{Command.SCAVENGE.getId()});
     }
 
     public void endRound() {
@@ -119,7 +128,21 @@ public class GameManager {
                 if (player.number == recv[1]) {
                     // ubijamy
                     player.killAnimal(recv[2]);
+                    corpse=true;
                 }
+            }
+        }
+        else if (command == Command.STEAL) {
+            if (recv[3] != player.number) {
+                if (player.number == recv[1]) {
+                    // ubijamy
+                    player.animals[recv[2]].feed(-1);
+                }
+            }
+        }
+        else if (command == Command.SCAVENGE) {
+            if (recv[1] != player.number) {
+                corpse=false;
             }
         }
         else if (command == Command.FEED) {
