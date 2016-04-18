@@ -33,8 +33,8 @@ public class GameManager {
         c.send(new byte[]{Command.ADD.getId(), (byte) place});
     }
 
-    public void addFeature(int place, Card cardName) {
-        c.send(new byte[]{Command.EVOLUTION.getId(), (byte) place, (byte) cardName.getId()});
+    public void addFeature(int playerNumber, int place, Card cardName) {
+        c.send(new byte[]{Command.EVOLUTION.getId(), (byte) playerNumber, (byte) place, (byte) cardName.getId()});
     }
 
     public void kill(int player, int place){
@@ -159,12 +159,20 @@ public class GameManager {
         else if (command == Command.EVOLUTION) {
             if (recv[1] != player.number) {
                 for (Player player : otherPlayers) {
-                    if (player.number == recv[1])
+                    if (player.number == recv[1]) {
 
                         // bo dodal zwierze
                         player.numberOfCards -= 1;
-                    // dodajemy ceche
-                    player.animals[recv[2]].addFeature(Card.fromInt(recv[3]));
+                    }
+                }
+                if(recv[2]==player.number){
+                    player.animals[recv[3]].addFeature(Card.fromInt(recv[4]));
+                }
+                for (Player player : otherPlayers) {
+                    if (player.number == recv[2]) {
+                        // dodajemy ceche
+                        player.animals[recv[3]].addFeature(Card.fromInt(recv[4]));
+                    }
                 }
             }
 
