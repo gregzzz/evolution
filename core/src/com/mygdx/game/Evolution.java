@@ -332,34 +332,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 	//wybierz zwierze ktoremu chcesz dodac ceche
 	public void chooseMyAnimal(){
-<<<<<<< HEAD
-		if(!flagManager.chooseMyAnimal){
-			for(int i=0;i<5;i++) {
-				if(animalButtons[0][i]!=null && animalButtons[0][i].isTouched(mouse)){
-					if(!secondaryPerk) {
-						player.animals[i].addFeature(player.getCards(chosenCard));
-						gameManager.addFeature(i, player.getCards(chosenCard));
-						player.removeCard(chosenCard);
-
-						flagManager.chooseMyAnimal();
-
-					}else{
-						if(player.getCards(chosenCard)==Card.MASSIVEC || player.getCards(chosenCard)==Card.PARASITEC || player.getCards(chosenCard)==Card.COOPERATIONC || player.getCards(chosenCard)==Card.COMMUNICATION || player.getCards(chosenCard)==Card.TOXIC || player.getCards(chosenCard)==Card.HIBERNATION){
-							if(!player.animals[i].carnivore) {
-								player.animals[i].addFeature(Card.CARNIVORE);
-								gameManager.addFeature(i, Card.CARNIVORE);
-								player.removeCard(chosenCard);
-								flagManager.chooseMyAnimal();
-							}
-						}else if(player.getCards(chosenCard)==Card.MASSIVEF || player.getCards(chosenCard)==Card.PARASITEF ||  player.getCards(chosenCard)==Card.COOPERATIONF ||  player.getCards(chosenCard)==Card.CAMOUFLAGE || player.getCards(chosenCard)==Card.ROAR || player.getCards(chosenCard)==Card.PASTURAGE || player.getCards(chosenCard)==Card.SHARPSIGHT){
-							player.animals[i].addFeature(Card.FAT);
-							gameManager.addFeature(i, Card.FAT);
-							player.removeCard(chosenCard);
-							flagManager.chooseMyAnimal();
-						}else{
-							flagManager.chooseMyAnimal();
-=======
-		if(!chooseMyAnimal) {
+		if(!flagManager.chooseMyAnimal) {
 			for (int j = 0; j < 4; j++) {
 				for (int i = 0; i < 5; i++) {
 					if (animalButtons[j][i] != null && animalButtons[j][i].isTouched(mouse)) {
@@ -368,44 +341,38 @@ public class Evolution implements ApplicationListener, InputProcessor {
 						}else{
 							otherPlayer=player;
 						}
+						//czy zwykla cecha
 						if (!secondaryPerk) {
+							//czy pasozyt do wroga lub czy zwykla dla siebie
 							if((j==0 && player.getCards(chosenCard)!=Card.PARASITEF && player.getCards(chosenCard)!=Card.PARASITEC) || (j>0 && (player.getCards(chosenCard)==Card.PARASITEF || player.getCards(chosenCard)==Card.PARASITEC))) {
-								if(player.getCards(chosenCard)==Card.PARASITEF || player.getCards(chosenCard)==Card.PARASITEF || !otherPlayer.animals[i].have(player.getCards(chosenCard))) {
-									otherPlayer.animals[i].addFeature(player.getCards(chosenCard));
-									gameManager.addFeature(otherPlayer.number, i, player.getCards(chosenCard));
-									player.removeCard(chosenCard);
-
-									chooseCardFromHand = false;
-									chooseMyAnimal = true;
+								//czy juz ma taka ceche
+								if (player.getCards(chosenCard) == Card.PARASITEF || player.getCards(chosenCard) == Card.PARASITEF || !otherPlayer.animals[i].have(player.getCards(chosenCard))) {
+									//czy to nie sa duze masy ciala tylko z inna druga cecha
+									if(!(player.getCards(chosenCard)==Card.MASSIVEC&&otherPlayer.animals[i].have(Card.MASSIVEF)||player.getCards(chosenCard)==Card.MASSIVEF&&otherPlayer.animals[i].have(Card.MASSIVEC))) {
+										otherPlayer.animals[i].addFeature(player.getCards(chosenCard));
+										gameManager.addFeature(otherPlayer.number, i, player.getCards(chosenCard));
+										player.removeCard(chosenCard);
+									}
 								}
-							}else{
-								chooseCardFromHand = false;
-								chooseMyAnimal = true;
 							}
-
 						} else {
+							//drapieznik
 							if (player.getCards(chosenCard) == Card.MASSIVEC || player.getCards(chosenCard) == Card.PARASITEC || player.getCards(chosenCard) == Card.COOPERATIONC || player.getCards(chosenCard) == Card.COMMUNICATION || player.getCards(chosenCard) == Card.TOXIC || player.getCards(chosenCard) == Card.HIBERNATION) {
 								if (!player.animals[i].carnivore && j==0) {
 									player.animals[i].addFeature(Card.CARNIVORE);
 									gameManager.addFeature(player.number, i, Card.CARNIVORE);
 									player.removeCard(chosenCard);
-									chooseCardFromHand = false;
-									chooseMyAnimal = true;
 								}
+								//tkaneczka
 							} else if (player.getCards(chosenCard) == Card.MASSIVEF || player.getCards(chosenCard) == Card.PARASITEF || player.getCards(chosenCard) == Card.COOPERATIONF || player.getCards(chosenCard) == Card.CAMOUFLAGE || player.getCards(chosenCard) == Card.ROAR || player.getCards(chosenCard) == Card.PASTURAGE || player.getCards(chosenCard) == Card.SHARPSIGHT) {
 								if(j==0) {
 									player.animals[i].addFeature(Card.FAT);
 									gameManager.addFeature(player.number, i, Card.FAT);
 									player.removeCard(chosenCard);
-									chooseCardFromHand = false;
-									chooseMyAnimal = true;
 								}
-							} else {
-								chooseCardFromHand = false;
-								chooseMyAnimal = true;
 							}
->>>>>>> origin/master
 						}
+						flagManager.chooseMyAnimal();
 					}
 				}
 			}
