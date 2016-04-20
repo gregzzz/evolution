@@ -82,7 +82,6 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		player = gameManager.player;
 
 		flagManager=new FlagManager();
-		flagManager.startGame();
 	}
 	@Override
 	public void create () {
@@ -178,24 +177,31 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				}
 			}
 			if(pass.isTouched(mouse)){
-				if(gameManager.amountOfFood==0) {
+				boolean allAnimalsFeeded=true;
+				for(int i=0;i<5;i++){
+					if(player.animals[i]!=null && !player.animals[i].isFeeded()){
+						allAnimalsFeeded=false;
+					}
+				}
+				if(gameManager.amountOfFood==0 || allAnimalsFeeded) {
 					actionDone = false;
 					flagManager.passOrEndRound();
 					gameManager.pass();
 					chosenCard = 99;
 				}
 			}
-			if(endRound.isTouched(mouse) && actionDone){
-				if(!actionDone && gameManager.amountOfFood==0) {
+			if(endRound.isTouched(mouse)){
+				boolean allAnimalsFeeded=true;
+				for(int i=0;i<5;i++){
+					if(player.animals[i]!=null && !player.animals[i].isFeeded()){
+						allAnimalsFeeded=false;
+					}
+				}
+				if(gameManager.amountOfFood==0 || allAnimalsFeeded || actionDone) {
 					gameManager.endRound();
 					flagManager.passOrEndRound();
 					actionDone=false;
 					chosenCard=99;
-				}else if(actionDone) {
-					actionDone = false;
-					flagManager.passOrEndRound();
-					gameManager.endRound();
-					chosenCard = 99;
 				}
 			}
 		}
@@ -204,28 +210,34 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	//wybierz co robisz zwirzeciem podczas fazy zywienia
 	public void chooseAnimalAction(){
 		if(!flagManager.chooseAnimalAction){
+			//jedz
 			if(feedChoices[0].isTouched(mouse) && !actionDone && gameManager.amountOfFood>0){
 				if(!player.animals[selectedAnimal].isFeeded() || player.animals[selectedAnimal].fat<player.animals[selectedAnimal].fatTotal)
 				gameManager.amountOfFood--;
 				player.animals[selectedAnimal].feed(1);
 				gameManager.feed(selectedAnimal,1);
 				actionDone=true;
+				//drapieznik
 			}else if(feedChoices[1].isTouched(mouse) && player.animals[selectedAnimal].carnivore&&!player.animals[selectedAnimal].isFeeded() && !actionDone){
 				flagManager.chooseTarget=false;
 				flagManager.chooseTarget();
+				//piractwo
 			}else if(feedChoices[2].isTouched(mouse) && player.animals[selectedAnimal].have(Card.PIRACY)&&!player.animals[selectedAnimal].isFeeded()&& !player.animals[selectedAnimal].piracy){
 				flagManager.choosePiracyTarget=false;
 				flagManager.chooseTarget();
+				//wypas
 			}else if(feedChoices[3].isTouched(mouse) && player.animals[selectedAnimal].have(Card.PASTURAGE)&&gameManager.amountOfFood>0&& !player.animals[selectedAnimal].pasturage){
 				gameManager.amountOfFood--;
 				//updatuje u innych ilosc zarcia
 				gameManager.feed(selectedAnimal,0);
 				player.animals[selectedAnimal].pasturage=true;
+				//hibernacja
 			}else if(feedChoices[4].isTouched(mouse) && player.animals[selectedAnimal].have(Card.HIBERNATION)&& !player.animals[selectedAnimal].hibernation){
 				player.animals[selectedAnimal].hibernation=true;
 				player.animals[selectedAnimal].hibernationUsed=true;
 				player.animals[selectedAnimal].feed(player.animals[selectedAnimal].foodNeeded-player.animals[selectedAnimal].food);
 				gameManager.feed(selectedAnimal,player.animals[selectedAnimal].foodNeeded-player.animals[selectedAnimal].food);
+				//padlinozerca
 			}else if(feedChoices[5].isTouched(mouse) && player.animals[selectedAnimal].have(Card.SCAVENGER)&& !player.animals[selectedAnimal].scavenger && gameManager.corpse){
 				player.animals[selectedAnimal].scavenger=true;
 				player.animals[selectedAnimal].feed(1);
@@ -248,18 +260,21 @@ public class Evolution implements ApplicationListener, InputProcessor {
 							otherPlayer=player;
 						}
 						if(otherPlayer.animals[j]!=player.animals[selectedAnimal] && otherPlayer.animals[j].canBeAttacked(player.animals[selectedAnimal])){
-							if(player.animals[selectedAnimal].attack(otherPlayer.animals[j])!=0){
+							int attackType=player.animals[selectedAnimal].attack(otherPlayer.animals[j]);
+							if(attackType==1){
 								player.animals[selectedAnimal].feed(2);
 								gameManager.feed(selectedAnimal,2);
 								otherPlayer.killAnimal(j);
 								gameManager.kill(otherPlayer.number,j);
 								gameManager.corpse=true;
-								flagManager.targetChosen();
 								updateAnimalButtons();
 								actionDone=true;
-							}else{
-								flagManager.targetChosen();
+							}else if(attackType==2){
+								player.animals[selectedAnimal].feed(1);
+								gameManager.feed(selectedAnimal,1);
+								actionDone=true;
 							}
+							flagManager.targetChosen();
 						}
 					}
 				}

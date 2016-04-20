@@ -17,25 +17,7 @@ public class FlagManager {
     public boolean printFeedingChoices;
     public boolean printCancelButton;
 
-    public FlagManager( boolean chooseCardFromHand, boolean chooseAction, boolean chooseAnimalPlace, boolean chooseMyAnimal, boolean chooseAnimalForAction, boolean chooseAnimalAction, boolean chooseTarget, boolean choosePiracyTarget, boolean printAnimalsSlots, boolean printChoosenCard, boolean printSelectedAnimal, boolean printFeedingChoices, boolean printCancelButton){
-        this.chooseCardFromHand=chooseCardFromHand;
-        this.chooseAction=chooseAction;
-        this.chooseAnimalPlace=chooseAnimalPlace;
-        this.chooseMyAnimal=chooseMyAnimal;
-        this.chooseAnimalForAction=chooseAnimalForAction;
-        this.chooseAnimalAction=chooseAnimalAction;
-        this.chooseTarget=chooseTarget;
-        this.choosePiracyTarget=choosePiracyTarget;
-        this.printAnimalsSlots=printAnimalsSlots;
-        this.printChoosenCard=printChoosenCard;
-        this.printSelectedAnimal=printSelectedAnimal;
-        this.printFeedingChoices=printFeedingChoices;
-        this.printCancelButton=printCancelButton;
-    }
-
-    public FlagManager(){}
-
-    public void startGame(){
+    public FlagManager(){
         printAnimalsSlots=false;
         printChoosenCard=false;
         printSelectedAnimal=false;

@@ -91,6 +91,10 @@ public class Animal {
             return false;
         }else if(this.have(Card.MASSIVEF) && !attacker.have(Card.MASSIVEF)){
             return false;
+        }else if(this.have(Card.MASSIVEC) && !attacker.have(Card.MASSIVEF)){
+            return false;
+        }else if(this.have(Card.MASSIVEF) && !attacker.have(Card.MASSIVEC)){
+            return false;
         }else if(this.have(Card.ROAR) && this.isFeeded()){
             return false;
         }else if(this.have(Card.AQUATIC) && !attacker.have(Card.AQUATIC)){
@@ -106,8 +110,6 @@ public class Animal {
 
         //zwraca 0 jesli atak nieudany, 1 jesli udany, 2 jesli odrzucenie ogona
     public int attack(Animal target){
-        boolean attackSuccesful=true;
-
         if(target.have(Card.SPEED)){
             Random generator = new Random();
             if(generator.nextInt(2)==1){
