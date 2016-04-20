@@ -16,10 +16,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.logic.Button;
 import com.mygdx.game.logic.Keyboard;
 import com.mygdx.game.logic.Mouse;
-import com.mygdx.game.managers.GameManager;
-import com.mygdx.game.managers.InfoManager;
-import com.mygdx.game.managers.LayoutManager;
-import com.mygdx.game.managers.TextureManager;
+import com.mygdx.game.managers.*;
 import components.objects.Player;
 import components.enums.GameState;
 import components.enums.Card;
@@ -59,6 +56,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	private Mouse mouse = new Mouse();
 	private Keyboard keyboard = new Keyboard();
 
+	FlagManager flagManager;
 	GameManager gameManager=new GameManager();
 	TextureManager textures;
 	LayoutManager layout = new LayoutManager(textures);
@@ -77,36 +75,14 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 	boolean getText = false;
 
-	boolean chooseCardFromHand;
-	boolean chooseAction;
-	boolean chooseAnimalPlace;
-	boolean chooseMyAnimal;
-	boolean chooseAnimalForAction;
-	boolean chooseAnimalAction;
-	boolean chooseTarget;
-	boolean choosePiracyTarget;
-
-	boolean printAnimalsSlots = false;
-	boolean printChoosenCard = false;
-	boolean printSelectedAnimal=false;
-	boolean printFeedingChoices=false;
-	boolean printCancelButton=false;
 
 
 	public Evolution(){
 		gameManager.startClient();
 		player = gameManager.player;
 
-		chooseCardFromHand=false;
-		chooseAction=true;
-		chooseAnimalPlace=true;
-		chooseMyAnimal=true;
-		chooseAnimalForAction=false;
-		chooseAnimalAction=true;
-		chooseTarget=true;
-		choosePiracyTarget=true;
-
-
+		flagManager=new FlagManager();
+		flagManager.startGame();
 	}
 	@Override
 	public void create () {
@@ -194,42 +170,31 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 	//wybierz zwierze podczas fazy zywienia
 	public void chooseAnimalForAction(){
-		if(!chooseAnimalForAction){
+		if(!flagManager.chooseAnimalForAction){
 			for(int i=0;i<5;i++) {
 				if(animalButtons[0][i]!=null && animalButtons[0][i].isTouched(mouse)){
-					printSelectedAnimal=true;
+					flagManager.chooseAnimalForAction();
 					selectedAnimal=i;
-					printFeedingChoices=true;
-					chooseAnimalAction=false;
 				}
 			}
 			if(pass.isTouched(mouse)){
-				if(!actionDone && gameManager.amountOfFood==0) {
+				if(gameManager.amountOfFood==0) {
 					actionDone = false;
+					flagManager.passOrEndRound();
 					gameManager.pass();
-					printSelectedAnimal = false;
-					printFeedingChoices = false;
-					chosenCard = 99;
-				}else if(actionDone){
-					actionDone = false;
-					gameManager.pass();
-					printSelectedAnimal = false;
-					printFeedingChoices = false;
 					chosenCard = 99;
 				}
 			}
 			if(endRound.isTouched(mouse) && actionDone){
 				if(!actionDone && gameManager.amountOfFood==0) {
 					gameManager.endRound();
+					flagManager.passOrEndRound();
 					actionDone=false;
-					printSelectedAnimal=false;
-					printFeedingChoices=false;
 					chosenCard=99;
 				}else if(actionDone) {
-					gameManager.endRound();
 					actionDone = false;
-					printSelectedAnimal = false;
-					printFeedingChoices = false;
+					flagManager.passOrEndRound();
+					gameManager.endRound();
 					chosenCard = 99;
 				}
 			}
@@ -238,7 +203,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 	//wybierz co robisz zwirzeciem podczas fazy zywienia
 	public void chooseAnimalAction(){
-		if(!chooseAnimalAction){
+		if(!flagManager.chooseAnimalAction){
 			if(feedChoices[0].isTouched(mouse) && !actionDone && gameManager.amountOfFood>0){
 				if(!player.animals[selectedAnimal].isFeeded() || player.animals[selectedAnimal].fat<player.animals[selectedAnimal].fatTotal)
 				gameManager.amountOfFood--;
@@ -246,17 +211,11 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				gameManager.feed(selectedAnimal,1);
 				actionDone=true;
 			}else if(feedChoices[1].isTouched(mouse) && player.animals[selectedAnimal].carnivore&&!player.animals[selectedAnimal].isFeeded() && !actionDone){
-				chooseTarget=false;
-				chooseAnimalForAction=true;
-				chooseAnimalAction=true;
-				printFeedingChoices=false;
-				printCancelButton=true;
+				flagManager.chooseTarget=false;
+				flagManager.chooseTarget();
 			}else if(feedChoices[2].isTouched(mouse) && player.animals[selectedAnimal].have(Card.PIRACY)&&!player.animals[selectedAnimal].isFeeded()&& !player.animals[selectedAnimal].piracy){
-				choosePiracyTarget=false;
-				chooseAnimalForAction=true;
-				chooseAnimalAction=true;
-				printFeedingChoices=false;
-				printCancelButton=true;
+				flagManager.choosePiracyTarget=false;
+				flagManager.chooseTarget();
 			}else if(feedChoices[3].isTouched(mouse) && player.animals[selectedAnimal].have(Card.PASTURAGE)&&gameManager.amountOfFood>0&& !player.animals[selectedAnimal].pasturage){
 				gameManager.amountOfFood--;
 				//updatuje u innych ilosc zarcia
@@ -279,7 +238,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 	//wybierz zwierze do ataku i zaatakuj
 	public void chooseTarget(){
-		if(!chooseTarget){
+		if(!flagManager.chooseTarget){
 			for(int i=0;i<4;i++) {
 				for (int j = 0; j < 5; j++) {
 					if (animalButtons[i][j] != null && animalButtons[i][j].isTouched(mouse)) {
@@ -295,33 +254,24 @@ public class Evolution implements ApplicationListener, InputProcessor {
 								otherPlayer.killAnimal(j);
 								gameManager.kill(otherPlayer.number,j);
 								gameManager.corpse=true;
-								chooseTarget=true;
-								printSelectedAnimal=false;
-								chooseAnimalForAction=false;
-								printCancelButton=false;
+								flagManager.targetChosen();
 								updateAnimalButtons();
 								actionDone=true;
 							}else{
-								chooseTarget=true;
-								printSelectedAnimal=false;
-								chooseAnimalForAction=false;
-								printCancelButton=false;
+								flagManager.targetChosen();
 							}
 						}
 					}
 				}
 			}
 			if(cancelButton.isTouched(mouse)) {
-				chooseTarget = true;
-				printSelectedAnimal = false;
-				chooseAnimalForAction = false;
-				printCancelButton=false;
+				flagManager.targetChosen();
 			}
 		}
 	}
 
 	public void choosePiracyTarget(){
-		if(!choosePiracyTarget){
+		if(!flagManager.choosePiracyTarget){
 			for(int i=0;i<4;i++) {
 				for (int j = 0; j < 5; j++) {
 					if (animalButtons[i][j] != null && animalButtons[i][j].isTouched(mouse)) {
@@ -335,27 +285,23 @@ public class Evolution implements ApplicationListener, InputProcessor {
 							gameManager.feed(selectedAnimal,1);
 							otherPlayer.animals[j].feed(-1);
 							gameManager.steal(otherPlayer.number,j);
-							chooseTarget=true;
-							printSelectedAnimal=false;
-							chooseAnimalForAction=false;
-							printCancelButton=false;
+							flagManager.piracyTargetChosen();
 							player.animals[selectedAnimal].piracy=true;
+						}else{
+							flagManager.piracyTargetChosen();
 						}
 					}
 				}
 			}
 			if(cancelButton.isTouched(mouse)) {
-				chooseTarget = true;
-				printSelectedAnimal = false;
-				chooseAnimalForAction = false;
-				printCancelButton=false;
+				flagManager.piracyTargetChosen();
 			}
 		}
 	}
 
 	//wybierz gdzie chcesz postawic nowe zwierze
 	public void chooseAnimalPlace(){
-		if(!chooseAnimalPlace) {
+		if(!flagManager.chooseAnimalPlace) {
 			for (int i = 0; i < 5; i++) {
 				if (animalPlaces[i].isTouched(mouse) && player.animals[i]==null) {
 					//akcja guzika add animal
@@ -363,12 +309,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 					player.removeCard(chosenCard);
 					gameManager.addAnimal(i);
 					animalButtons[0][i]=new Button(textures.getTexture(Card.ANIMAL),animalPlaces[i].getPositionX(),animalPlaces[i].getPositionY());
-
-					chooseAction=true;
-					chooseAnimalPlace=true;
-					chooseCardFromHand=false;
-
-					printAnimalsSlots = false;
+					flagManager.chooseAnimalPlace();
 				}
 			}
 		}
@@ -376,7 +317,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 	//wybierz zwierze ktoremu chcesz dodac ceche
 	public void chooseMyAnimal(){
-		if(!chooseMyAnimal){
+		if(!flagManager.chooseMyAnimal){
 			for(int i=0;i<5;i++) {
 				if(animalButtons[0][i]!=null && animalButtons[0][i].isTouched(mouse)){
 					if(!secondaryPerk) {
@@ -384,8 +325,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 						gameManager.addFeature(i, player.getCards(chosenCard));
 						player.removeCard(chosenCard);
 
-						chooseCardFromHand = false;
-						chooseMyAnimal = true;
+						flagManager.chooseMyAnimal();
 
 					}else{
 						if(player.getCards(chosenCard)==Card.MASSIVEC || player.getCards(chosenCard)==Card.PARASITEC || player.getCards(chosenCard)==Card.COOPERATIONC || player.getCards(chosenCard)==Card.COMMUNICATION || player.getCards(chosenCard)==Card.TOXIC || player.getCards(chosenCard)==Card.HIBERNATION){
@@ -393,50 +333,38 @@ public class Evolution implements ApplicationListener, InputProcessor {
 								player.animals[i].addFeature(Card.CARNIVORE);
 								gameManager.addFeature(i, Card.CARNIVORE);
 								player.removeCard(chosenCard);
-								chooseCardFromHand = false;
-								chooseMyAnimal = true;
+								flagManager.chooseMyAnimal();
 							}
 						}else if(player.getCards(chosenCard)==Card.MASSIVEF || player.getCards(chosenCard)==Card.PARASITEF ||  player.getCards(chosenCard)==Card.COOPERATIONF ||  player.getCards(chosenCard)==Card.CAMOUFLAGE || player.getCards(chosenCard)==Card.ROAR || player.getCards(chosenCard)==Card.PASTURAGE || player.getCards(chosenCard)==Card.SHARPSIGHT){
 							player.animals[i].addFeature(Card.FAT);
 							gameManager.addFeature(i, Card.FAT);
 							player.removeCard(chosenCard);
-							chooseCardFromHand = false;
-							chooseMyAnimal = true;
+							flagManager.chooseMyAnimal();
 						}else{
-							chooseCardFromHand = false;
-							chooseMyAnimal = true;
+							flagManager.chooseMyAnimal();
 						}
-
 					}
-
 				}
+			}
+			if(cancelButton.isTouched(mouse)) {
+				flagManager.chooseMyAnimal();
 			}
 		}
 	}
 
 	//wybierz co chcesz zrobic z kartą
 	public void chooseAction(){
-		if(chosenCard!=99 && !chooseAction) {
+		if(chosenCard!=99 && !flagManager.chooseAction) {
 			if (cardChoices[0].isTouched(mouse) && player.animalsNumber()<5) {
-				chooseCardFromHand=true;
-				chooseAnimalPlace=false;
-				chooseAction=true;
-				printChoosenCard = false;
-				printAnimalsSlots = true;
+				flagManager.addAnimal();
 			}
 			else if (cardChoices[1].isTouched(mouse) && player.animalsNumber()>0){
 				secondaryPerk=false;
-				chooseAction=true;
-				chooseCardFromHand=true;
-				printChoosenCard=false;
-				chooseMyAnimal=false;
+				flagManager.addPerk();
 			}
 			else if (cardChoices[2].isTouched(mouse) && player.animalsNumber()>0){
 				secondaryPerk=true;
-				chooseAction=true;
-				chooseCardFromHand=true;
-				printChoosenCard=false;
-				chooseMyAnimal=false;
+				flagManager.addPerk();
 			}
 		}
 
@@ -445,23 +373,21 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	//wybierz karte z łapy albo spasuj
 	public void chooseCardFromHand(){
 		//wybor karty
-		if(!chooseCardFromHand) {
+		if(!flagManager.chooseCardFromHand) {
 			for (int i = 0; i < player.cardsNumber(); i++) {
 				if (cardButtons[i].isTouched(mouse)) {
 					chosenCard = i;
-					chooseAction = false;
-					printChoosenCard = true;
-					printSelectedAnimal=false;
+					flagManager.chooseCard();
 				}
 			}
 			if(pass.isTouched(mouse)&&player.animalsNumber()>0){
 				gameManager.pass();
-				printSelectedAnimal=false;
+				flagManager.printSelectedAnimal=false;
 				chosenCard=99;
 			}
 			for(int i=0;i<5;i++) {
 				if(animalButtons[0][i]!=null && animalButtons[0][i].isTouched(mouse)){
-					printSelectedAnimal=true;
+					flagManager.printSelectedAnimal=true;
 					selectedAnimal=i;
 				}
 			}
@@ -540,7 +466,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				batch.draw(endRound.getGraphic(), endRound.getPositionX(), endRound.getPositionY());
 				font.draw(batch, "End Round", screenWidth - card.getWidth() + 15, 5 + screenHeight - 25);
 				// rysuj wybor
-				if (printChoosenCard) {
+				if (flagManager.printChoosenCard) {
 					for (int i = 0; i < player.cardsNumber(); i++) {
 						if (cardButtons[i].isTouched(mouse)) {
 							card = textures.getTexture(player.getCards(i));
@@ -563,13 +489,13 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				}
 
 				//rysuj guzik do anulowania
-				if(printCancelButton) {
+				if(flagManager.printCancelButton) {
 					batch.draw(cancelButton.getGraphic(), cancelButton.getPositionX(),cancelButton.getPositionY());
 					font.draw(batch, "Cancel", cancelButton.getPositionX() + 30, cancelButton.getPositionY() + 30);
 				}
 
 				//rysuj podswietlone zwierze
-				if (printSelectedAnimal) {
+				if (flagManager.printSelectedAnimal) {
 					for (int i = 0; i < player.animals[selectedAnimal].features.size(); i++) {
 						card = textures.getTexture(player.animals[selectedAnimal].getFeature(i));
 						if (player.animals[selectedAnimal].features.size() % 2 == 0) {
@@ -581,7 +507,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				}
 
 				//rysuj opcje FEEDing faze
-				if (printFeedingChoices) {
+				if (flagManager.printFeedingChoices) {
 					for (int i = 0; i < 6; i++) {
 						batch.draw(feedChoices[i].getGraphic(), feedChoices[i].getPositionX(), feedChoices[i].getPositionY());
 					}
@@ -597,7 +523,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 
 				// rysowanie pozycji na zwierzeta
-				if (printAnimalsSlots) {
+				if (flagManager.printAnimalsSlots) {
 					card = textures.getTexture(Card.SPACE);
 					//rysuje miejsca na zwierzaka
 					for (int i = 0; i < 5; i++) {
