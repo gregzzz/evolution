@@ -12,10 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class InfoManager {
+public class Info {
     public Map<Card,String> descriptions;
 
-    public InfoManager(){
+    public Info(){
         descriptions = new HashMap<Card,String>();
         descriptions.put(Card.AQUATIC,"This animal can only attack and be attacked by animals with this perk.");
         descriptions.put(Card.CAMOUFLAGE,"Only an animal with the Sharp Sight perk can attack this animal.");

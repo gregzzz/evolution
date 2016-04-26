@@ -1,6 +1,6 @@
 
 package com.mygdx.game.logic;
-import com.mygdx.game.managers.GameManager;
+import com.mygdx.game.managers.Game;
 
 
 import java.net.*;
@@ -10,10 +10,10 @@ public class Client extends Thread {
     private String serverName;
     private int port;
     Socket client;
-    GameManager manager;
+    Game manager;
     //gameManager
 
-    public Client(String s,int p, GameManager m){
+    public Client(String s,int p, Game m){
         serverName = s;
         port = p;
         manager = m;

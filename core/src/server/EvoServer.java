@@ -1,10 +1,9 @@
-package server.src;
+package server;
 
-import com.badlogic.gdx.Game;
 import components.enums.Command;
 import components.enums.GameState;
-import server.src.logic.Client;
-import server.src.logic.GameManager;
+import server.logic.Client;
+import server.logic.GameManager;
 
 import java.net.*;
 import java.io.*;

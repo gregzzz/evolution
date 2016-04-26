@@ -11,10 +11,10 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Color;
 import components.enums.Card;
 
-public class TextureManager {
+public class Textures {
     public Map<Card,Texture> textures;
 
-    public TextureManager(){
+    public Textures(){
         textures = new HashMap<Card,Texture>();
         // tla
         textures.put(Card.BACKGROUND1,new Texture("core/assets/bg.png"));
