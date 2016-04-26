@@ -44,7 +44,7 @@ public class Data {
     Flag flagManager;
     Game gameManager=new Game();
     Textures textures;
-    LayoutManager layout = new LayoutManager(textures);
+
     Info infomanager = new Info();
 
     Player player;
