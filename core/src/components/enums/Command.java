@@ -20,8 +20,8 @@ public enum Command {
     KILL(14),
     ENDROUND(15),
     STEAL(16),
-    SCAVENGE(16),
     HOWMANYANIMALS(17),
+    SCAVENGE(18),
 
     NONE(-1);
 
