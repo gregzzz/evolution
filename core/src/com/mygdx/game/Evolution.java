@@ -564,6 +564,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				}
 				//karty gracza
 				for (int i = 0; i < player.cardsNumber(); i++) {
+					updateAnimalButtons();
 					if(cardButtons[i]!=null) {
 						batch.draw(cardButtons[i].getGraphic(), cardButtons[i].getPositionX(), cardButtons[i].getPositionY());
 					}
@@ -642,7 +643,6 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		updateCardButtons();
 		mouse.x = (int)(((double)screenX)/((double)Gdx.graphics.getWidth()/screenWidth));
 		mouse.y = (int)(((double)Gdx.graphics.getHeight()-(double)screenY)/((double)Gdx.graphics.getHeight()/screenHeight));
 		if(gameManager.turn==player.number && gameManager.state==GameState.EVOLUTION){

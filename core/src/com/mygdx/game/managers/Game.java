@@ -139,7 +139,6 @@ public class Game {
         else if (command == Command.STEAL) {
             if (recv[3] != player.number) {
                 if (player.number == recv[1]) {
-                    // ubijamy
                     player.animals[recv[2]].feed(-1);
                 }
             }

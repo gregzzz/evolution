@@ -94,13 +94,9 @@ public class Animal {
     }
 
     public boolean canBeAttacked(Animal attacker){
-        if(this.have(Card.MASSIVEC) && !attacker.have(Card.MASSIVEC)){
+        if(this.have(Card.MASSIVEC) && (!attacker.have(Card.MASSIVEC) && !attacker.have(Card.MASSIVEF))){
             return false;
-        }else if(this.have(Card.MASSIVEF) && !attacker.have(Card.MASSIVEF)){
-            return false;
-        }else if(this.have(Card.MASSIVEC) && !attacker.have(Card.MASSIVEF)){
-            return false;
-        }else if(this.have(Card.MASSIVEF) && !attacker.have(Card.MASSIVEC)){
+        }else if(this.have(Card.MASSIVEF) && (!attacker.have(Card.MASSIVEF) && !attacker.have(Card.MASSIVEC))){
             return false;
         }else if(this.have(Card.ROAR) && this.isFeeded()){
             return false;
