@@ -52,6 +52,13 @@ public class Animal {
         }
     }
 
+    public void eatFat(){
+        while(!this.isFeeded() && fat>0){
+            food++;
+            fat--;
+        }
+    }
+
     public boolean isFeeded(){
         if(food>=foodNeeded){
             return true;

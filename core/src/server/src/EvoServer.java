@@ -85,6 +85,10 @@ public class EvoServer extends Thread{
             if(game.everyonePassed() && game.state == EVOLUTION){
                 game.setFoodAndPrepareFeedingPhase();
             }
+
+            if(game.everyonePassed() && game.state == FEEDING){
+                game.prepareForEvolution();
+            }
             // usypiaj watek za kazdym razem gdy sprawdzasz czy nowe dane sie pojawily
             // generaleni w kazdej petli
             try {

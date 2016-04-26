@@ -74,7 +74,7 @@ public class GameManager{
                     System.out.println(command);
 
                     if (command == Command.ADD) {
-                        server.send(new byte[] {Command.ADD.getId(),data[1],(byte)turn});
+                        server.send(new byte[] {Command.ADD.getId(),data[1],data[2]});
                         nextOneTakeTurn();
                     }
                     if (command == Command.NAME) {
@@ -103,6 +103,25 @@ public class GameManager{
                         //dodaj ceche
                         server.send(new byte[] {Command.EVOLUTION.getId(),(byte)client.getNumber(),data[1] , data[2], data[3]});
                         nextOneTakeTurn();
+                    }
+                    else if (command == Command.KILL) {
+                        server.send(new byte[] {Command.KILL.getId(),data[1],data[2],(byte)turn});
+                    }
+                    else if (command == Command.HOWMANYANIMALS) {
+                        byte [] cards = {};
+                        int amountOfCardsToSend;
+                        //ile wyslac kart
+                        if((data[1]==0&&data[2]>0) || data[1]>0){
+                            amountOfCardsToSend=data[1]+1;
+                        }else{
+                            amountOfCardsToSend=6;
+                        }
+                        //stworzenie tablicy kart do wyslania
+                        for(int card = 0; card < amountOfCardsToSend ; card++){
+                            cards = concat(cards,new byte[] {(byte)deck.getCardFromDeck().getId()});
+                        }
+                        //wyslanie
+                        server.send(concat(new byte []{Command.CARDS.getId(),data[3]},cards));
                     }
                     else if (command == Command.PASS) {
                         //ktos pasuje
@@ -154,12 +173,51 @@ public class GameManager{
                     server.send(new byte[] {Command.ENDROUND.getId(),(byte) turn});
                     nextOneTakeTurn();
                 }
+                if (command == Command.HOWMANYANIMALS) {
+                    byte [] cards = {};
+                    int amountOfCardsToSend;
+                    //ile wyslac kart
+                    if((data[1]==0&&data[2]>0) || data[1]>0){
+                        amountOfCardsToSend=data[1]+1;
+                    }else{
+                        amountOfCardsToSend=6;
+                    }
+                    //stworzenie tablicy kart do wyslania
+                    for(int card = 0; card < amountOfCardsToSend ; card++){
+                        cards = concat(cards,new byte[] {(byte)deck.getCardFromDeck().getId()});
+                    }
+                    //wyslanie
+                    server.send(concat(new byte []{Command.CARDS.getId(),data[3]},cards));
+                }
                 else {
                     //jak ktos przysle chujowe dane to mu o tym piszemy
                     server.send(new byte[] {Command.NONE.getId()}, turn);
                 }
             }
         }
+
+    }
+
+    //rozdajemy karty za zwierzęta
+    public void prepareForEvolution(){
+        // zerujemy tablice passow
+        whoPassed = new boolean[numberOfPlayers];
+        for(Player player: players){
+            if(player != null)
+                player.pass = false;
+        }
+        // i ustawiamy kolejke na tego kto zaczyna faze
+        if(whoBeginPhase==numberOfPlayers-1){
+            whoBeginPhase=0;
+            turn=0;
+        }else{
+            whoBeginPhase++;
+            turn = whoBeginPhase;
+        }
+        server.send(new byte [] {Command.HOWMANYANIMALS.getId()});
+        server.send(new byte [] {Command.TURN.getId(), (byte)turn});
+        server.send(new byte [] {Command.STATE.getId(),(byte)GameState.EVOLUTION.getId()});
+        state = GameState.EVOLUTION;
 
     }
 

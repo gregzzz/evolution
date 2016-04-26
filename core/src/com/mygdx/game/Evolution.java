@@ -425,33 +425,40 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	}
 
 
+	//guziki kart
+	public void updateCardButtons(){
+		for (int i = 0; i < player.cardsNumber(); i++) {
+			cardButtons[i] = new Button(textures.getTexture(player.getCards(i)), i * textures.getTexture(player.getCards(i)).getWidth(), 0, mouse.x, mouse.y);
+		}
+	}
+
+	public void startOfTurnCleanup(){
+		gameManager.turnStart=false;
+		updateAnimalButtons();
+		actionDone=false;
+
+		//odblokowanie cech
+		for(int i=0;i<5;i++){
+			if(player.animals[i]!=null) {
+				player.animals[i].piracy = false;
+				player.animals[i].scavenger = false;
+				player.animals[i].pasturage = false;
+				if (player.animals[i].hibernationUsed = false) {
+					player.animals[i].hibernation = false;
+				}
+				if (player.animals[i].hibernationUsed = true) {
+					player.animals[i].hibernationUsed = false;
+				}
+			}
+		}
+	}
 
 	public void drawGame(){
 	//najpierw tlo
 			Gdx.gl.glClearColor(0, 0, 0, 0);
 			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		if(gameManager.turnStart){
-			gameManager.turnStart=false;
-			updateAnimalButtons();
-			actionDone=false;
-			//guziki kart
-			for (int i = 0; i < player.cardsNumber(); i++) {
-				cardButtons[i] = new Button(textures.getTexture(player.getCards(i)), i * textures.getTexture(player.getCards(i)).getWidth(), 0, mouse.x, mouse.y);
-			}
-			//odblokowanie cech
-			for(int i=0;i<5;i++){
-				if(player.animals[i]!=null) {
-					player.animals[i].piracy = false;
-					player.animals[i].scavenger = false;
-					player.animals[i].pasturage = false;
-					if (player.animals[i].hibernationUsed = false) {
-						player.animals[i].hibernation = false;
-					}
-					if (player.animals[i].hibernationUsed = true) {
-						player.animals[i].hibernationUsed = false;
-					}
-				}
-			}
+			startOfTurnCleanup();
 		}
 
 			batch.begin();
@@ -562,8 +569,9 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				}
 				//karty gracza
 				for (int i = 0; i < player.cardsNumber(); i++) {
-					cardButtons[i] = new Button(textures.getTexture(player.getCards(i)), i * textures.getTexture(player.getCards(i)).getWidth(), 0, mouse.x, mouse.y);
-					batch.draw(cardButtons[i].getGraphic(), cardButtons[i].getPositionX(), cardButtons[i].getPositionY());
+					if(cardButtons[i]!=null) {
+						batch.draw(cardButtons[i].getGraphic(), cardButtons[i].getPositionX(), cardButtons[i].getPositionY());
+					}
 				}
 
 				//zwierzęta innych graczy
@@ -639,6 +647,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		updateCardButtons();
 		mouse.x = (int)(((double)screenX)/((double)Gdx.graphics.getWidth()/screenWidth));
 		mouse.y = (int)(((double)Gdx.graphics.getHeight()-(double)screenY)/((double)Gdx.graphics.getHeight()/screenHeight));
 		if(gameManager.turn==player.number && gameManager.state==GameState.EVOLUTION){

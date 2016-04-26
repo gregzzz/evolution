@@ -30,7 +30,7 @@ public class GameManager {
     }
 
     public void addAnimal(int place) {
-        c.send(new byte[]{Command.ADD.getId(), (byte) place});
+        c.send(new byte[]{Command.ADD.getId(), (byte) place, (byte)player.number});
     }
 
     public void addFeature(int playerNumber, int place, Card cardName) {
@@ -97,6 +97,10 @@ public class GameManager {
         }
         else if (command == Command.FOOD){
             amountOfFood=recv[1];
+        }
+        else if (command == Command.HOWMANYANIMALS){
+            hungerDeaths();
+            c.send(new byte[] {Command.HOWMANYANIMALS.getId(), (byte)player.animalsNumber(), (byte)player.cardsNumber(), (byte)player.number});
         }
         else if (command == Command.STATE) {
             if( recv[1] == GameState.ERROR.getId()){
@@ -176,6 +180,27 @@ public class GameManager {
                 }
             }
 
+        }
+    }
+
+    private void hungerDeaths(){
+        Player otherPlayer;
+        for(int j=0; j<otherPlayers.size()+1;j++) {
+            if(j!=0) {
+                otherPlayer=otherPlayers.elementAt(j-1);
+            }else{
+                otherPlayer=player;
+            }
+            for (int i = 0; i < 5; i++) {
+                if (otherPlayer.animals[i] != null) {
+                    otherPlayer.animals[i].eatFat();
+                    if (otherPlayer.animals[i].isFeeded() && !otherPlayer.animals[i].poisoned) {
+                        otherPlayer.animals[i].resetFoodData();
+                    } else {
+                        otherPlayer.killAnimal(i);
+                    }
+                }
+            }
         }
     }
 }
