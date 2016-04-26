@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -11,35 +12,30 @@ import com.mygdx.game.managers.*;
 import components.objects.Player;
 
 import java.io.BufferedReader;
+import java.util.Vector;
 
 /**
  * Created by kopec on 2016-04-26.
  */
 public class Data {
-    int screenWidth=1200;
-    int screenHeight=800;
+    SpriteBatch batch;
+    BitmapFont font;
+
+    public int screenWidth=1200;
+    public int screenHeight=800;
 
     String line;
     BufferedReader in;
-    SpriteBatch batch;
+
     Texture card;
     Sprite sprite;
-    BitmapFont font;
-
-    Button cardButtons[]=new Button[12];
-    Button cardChoices[]=new Button[3];
-    Button feedChoices[]=new Button[6];
-    Button animalPlaces[]=new Button[5];
-    Button animalButtons[][]=new Button[4][5];
-    Button endRound;
-    Button pass;
-    Button cancelButton;
 
 
 
 
-    private Mouse mouse = new Mouse();
-    private Keyboard keyboard = new Keyboard();
+
+    public Mouse mouse = new Mouse();
+    public Keyboard keyboard = new Keyboard();
 
     Flag flagManager;
     Game gameManager=new Game();
@@ -47,8 +43,8 @@ public class Data {
 
     Info infomanager = new Info();
 
-    Player player;
-    Player otherPlayer;
+    public Player player;
+    public Player otherPlayer;
 
     // zmienne do do funkcji z uzyciem kart i wybranego zwierzęcia
     int chosenCard=99;
@@ -59,6 +55,29 @@ public class Data {
     boolean actionDone=false;
 
     boolean getText = false;
+
+    private static Data holder;
+
+    public void Data(){
+        holder = this;
+
+        batch = new SpriteBatch();
+        font = new BitmapFont();
+        font.setColor(Color.RED);
+    }
+    public static Data getInstance() { return holder; }
+
+    public static void setBatchAndFont(SpriteBatch b, BitmapFont f){
+        b = getInstance().batch;
+        f = getInstance().font;
+    }
+
+    public static void setManagers(Textures t, Game g, Info i, Flag f){
+        t = getInstance().textures;
+        g = getInstance().gameManager;
+        i = getInstance().infomanager;
+        f = getInstance().flagManager;
+    }
 
 
 }
