@@ -17,6 +17,14 @@ public class FlagManager {
     public boolean printFeedingChoices;
     public boolean printCancelButton;
 
+    public boolean login;
+    public boolean password;
+    public boolean inputed;
+
+    public boolean chooseMainMenuOption;
+    public boolean lookingForGames;
+
+
     public FlagManager(){
         printAnimalsSlots=false;
         printChoosenCard=false;
@@ -32,6 +40,13 @@ public class FlagManager {
         chooseAnimalAction=true;
         chooseTarget=true;
         choosePiracyTarget=true;
+
+        login=true;
+        password=false;
+        inputed=false;
+
+        chooseMainMenuOption=false;
+        lookingForGames=false;
     }
 
     public void passOrEndRound(){

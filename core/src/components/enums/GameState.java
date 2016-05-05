@@ -15,6 +15,7 @@ public enum GameState {
     RECOVER(8),
     MENU(9),
     OPTIONS(10),
+    LOGIN(11),
 
     NONE(-1);
 

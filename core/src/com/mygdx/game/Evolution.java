@@ -2,10 +2,7 @@ package com.mygdx.game;
 
 
 
-import com.badlogic.gdx.ApplicationListener;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -16,6 +13,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.logic.Button;
 import com.mygdx.game.logic.Keyboard;
 import com.mygdx.game.logic.Mouse;
+import com.mygdx.game.logic.MyTextInputListener;
 import com.mygdx.game.managers.*;
 import components.objects.Player;
 import components.enums.GameState;
@@ -46,6 +44,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	Button feedChoices[]=new Button[6];
 	Button animalPlaces[]=new Button[5];
 	Button animalButtons[][]=new Button[4][5];
+	Button menuButtons[]=new Button[6];
 	Button endRound;
 	Button pass;
 	Button cancelButton;
@@ -56,11 +55,12 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	private Mouse mouse = new Mouse();
 	private Keyboard keyboard = new Keyboard();
 
-	FlagManager flagManager;
+	FlagManager flagManager=new FlagManager();
 	GameManager gameManager=new GameManager();
 	TextureManager textures;
 	LayoutManager layout = new LayoutManager(textures);
 	InfoManager infomanager = new InfoManager();
+	MyTextInputListener listener=new MyTextInputListener(flagManager);
 
 	Player player;
 	Player otherPlayer;
@@ -78,10 +78,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 
 	public Evolution(){
-		gameManager.startClient();
 		player = gameManager.player;
-
-		flagManager=new FlagManager();
 	}
 	@Override
 	public void create () {
@@ -102,7 +99,23 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	//glowna petla
 	@Override
 	public void render () {
-		if(gameManager.state != GameState.WAIT) {
+		try
+		{
+			Thread.sleep((long)(1000/10-Gdx.graphics.getDeltaTime()));
+		}
+		catch (InterruptedException e)
+		{
+			e.printStackTrace();
+		}
+		if(gameManager.state == GameState.LOGIN){
+			drawLogin();
+		}
+
+		if(gameManager.state == GameState.BEGIN){
+			drawMenu();
+		}
+
+		if(gameManager.state != GameState.WAIT && gameManager.state != GameState.BEGIN && gameManager.state != GameState.LOGIN) {
 			drawGame();
 		}
 
@@ -121,6 +134,9 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		}
 		for (int i = 0; i < player.cardsNumber(); i++) {
 			cardButtons[i] = new Button(textures.getTexture( player.getCards(i)), i * textures.getTexture(player.getCards(i)).getWidth(), 0, mouse.x, mouse.y);
+		}
+		for (int i=0; i<6; i++){
+			menuButtons[i] = new Button(card, 100, screenHeight - 100 - i*card.getHeight());
 		}
 		card = textures.getTexture(Card.SPACE);
 		for (int i = 0; i < 5; i++) {
@@ -424,6 +440,36 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		}
 	}
 
+	//wybierz opcje z glownego menu
+	public void chooseMainMenuOption(){
+		if(!flagManager.chooseMainMenuOption) {
+			if(menuButtons[0].isTouched(mouse)){
+				flagManager.chooseMainMenuOption=true;
+				flagManager.login=true;
+				gameManager.state=GameState.LOGIN;
+			}
+			if(menuButtons[1].isTouched(mouse)){
+
+			}
+			if(menuButtons[2].isTouched(mouse)){
+				if(gameManager.playerName!=null) {
+					flagManager.chooseMainMenuOption=true;
+					gameManager.startClient();
+					flagManager.lookingForGames=true;
+				}
+			}
+			if(menuButtons[3].isTouched(mouse)){
+
+			}
+			if(menuButtons[4].isTouched(mouse)){
+
+			}
+			if(menuButtons[5].isTouched(mouse)){
+
+			}
+		}
+	}
+
 
 	//guziki kart
 	public void updateCardButtons(){
@@ -450,6 +496,55 @@ public class Evolution implements ApplicationListener, InputProcessor {
 					player.animals[i].hibernationUsed = false;
 				}
 			}
+		}
+	}
+
+	public void drawMenu(){
+		//najpierw tlo
+		Gdx.gl.glClearColor(0, 0, 0, 0);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		batch.begin();
+		// rysul tlo
+		batch.draw(textures.getTexture(Card.BACKGROUND1), 0, 0);
+		batch.draw(textures.getTexture(Card.BACKGROUND2), 0, 0);
+
+		for (int i = 0; i < 6; i++) {
+			batch.draw(menuButtons[i].getGraphic(), menuButtons[i].getPositionX(), menuButtons[i].getPositionY());
+		}
+		font.draw(batch, "Login", menuButtons[0].getPositionX() + 15, menuButtons[0].getPositionY() + 30);
+		font.draw(batch, "Register", menuButtons[1].getPositionX() + 15, menuButtons[1].getPositionY() + 30);
+		font.draw(batch, "Find Game", menuButtons[2].getPositionX() + 15, menuButtons[2].getPositionY() + 30);
+		font.draw(batch, "Options", menuButtons[3].getPositionX() + 15, menuButtons[3].getPositionY() + 30);
+		font.draw(batch, "Help", menuButtons[4].getPositionX() + 15, menuButtons[4].getPositionY() + 30);
+		font.draw(batch, "Credits", menuButtons[5].getPositionX() + 15, menuButtons[5].getPositionY() + 30);
+
+		//szukanie gry...
+		if(flagManager.lookingForGames){
+			card = textures.getTexture(Card.RAMKA);
+			batch.draw(card, (screenWidth - card.getWidth()) / 2, (screenHeight - card.getHeight()) / 2);
+			font.draw(batch, "Looking for a game..." ,(screenWidth - card.getWidth()) / 2 + 15, (screenHeight - card.getHeight()) / 2 + 30 );
+
+		}
+		batch.end();
+	}
+
+	public void drawLogin(){
+		if(flagManager.login) {
+			flagManager.inputed=false;
+			flagManager.login=false;
+			Gdx.input.getTextInput(listener, "Username:", "Username", "");
+			flagManager.password=true;
+		}
+		if(flagManager.password && flagManager.inputed) {
+			gameManager.playerName=listener.getIntputedText()+" ";
+			flagManager.inputed=false;
+			flagManager.password=false;
+			Gdx.input.getTextInput(listener, "Password:", "Password", "");
+		}
+		if(flagManager.inputed && !flagManager.password && !flagManager.login){
+			gameManager.state=GameState.BEGIN;
+			flagManager.chooseMainMenuOption=false;
+
 		}
 	}
 
@@ -569,7 +664,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				}
 				//karty gracza
 				for (int i = 0; i < player.cardsNumber(); i++) {
-					updateAnimalButtons();
+					updateCardButtons();
 					if(cardButtons[i]!=null) {
 						batch.draw(cardButtons[i].getGraphic(), cardButtons[i].getPositionX(), cardButtons[i].getPositionY());
 					}
@@ -650,6 +745,11 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
 		mouse.x = (int)(((double)screenX)/((double)Gdx.graphics.getWidth()/screenWidth));
 		mouse.y = (int)(((double)Gdx.graphics.getHeight()-(double)screenY)/((double)Gdx.graphics.getHeight()/screenHeight));
+
+		if(gameManager.state==GameState.BEGIN){
+			chooseMainMenuOption();
+		}
+
 		if(gameManager.turn==player.number && gameManager.state==GameState.EVOLUTION){
 			chooseCardFromHand();
 			chooseAction();

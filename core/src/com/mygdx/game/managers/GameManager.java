@@ -13,6 +13,7 @@ public class GameManager {
     public Player player = new Player();
     public Vector<Player> otherPlayers = new Vector<Player>();
     public boolean turnStart=true;
+    public String playerName=null;
 
     public GameState state = GameState.BEGIN;
     public Command command = Command.NONE;
@@ -67,7 +68,7 @@ public class GameManager {
         command = Command.fromInt((int) recv[0]);
         System.out.println(command);
         if (command == Command.GETNAME) {
-            c.send(concat(new byte[]{Command.NAME.getId()}, new String ("TOBI").getBytes()));
+            c.send(concat(new byte[]{Command.NAME.getId()}, new String (playerName).getBytes()));
         }
         else if (command == Command.ID) {
             player.number = recv[1];
