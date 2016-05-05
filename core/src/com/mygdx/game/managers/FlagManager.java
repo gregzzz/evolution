@@ -1,6 +1,6 @@
 package com.mygdx.game.managers;
 
-public class Flag {
+public class FlagManager {
 
     public boolean chooseCardFromHand;
     public boolean chooseAction;
@@ -17,7 +17,7 @@ public class Flag {
     public boolean printFeedingChoices;
     public boolean printCancelButton;
 
-    public Flag(){
+    public FlagManager(){
         printAnimalsSlots=false;
         printChoosenCard=false;
         printSelectedAnimal=false;

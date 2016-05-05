@@ -4,6 +4,7 @@ package com.mygdx.game;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -11,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.logic.Button;
 import com.mygdx.game.logic.Keyboard;
 import com.mygdx.game.logic.Mouse;
@@ -20,6 +22,9 @@ import components.enums.GameState;
 import components.enums.Card;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 
 import java.util.*;
 
@@ -51,11 +56,11 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	private Mouse mouse = new Mouse();
 	private Keyboard keyboard = new Keyboard();
 
-	Flag flagManager;
-	Game gameManager=new Game();
-	Textures textures;
+	FlagManager flagManager;
+	GameManager gameManager=new GameManager();
+	TextureManager textures;
 	LayoutManager layout = new LayoutManager(textures);
-	Info infomanager = new Info();
+	InfoManager infomanager = new InfoManager();
 
 	Player player;
 	Player otherPlayer;
@@ -76,7 +81,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		gameManager.startClient();
 		player = gameManager.player;
 
-		flagManager=new Flag();
+		flagManager=new FlagManager();
 	}
 	@Override
 	public void create () {
@@ -84,7 +89,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		font = new BitmapFont();
 		font.setColor(Color.GREEN);
 
-		textures  = new Textures();
+		textures  = new TextureManager();
 		card = textures.getTexture(Card.CHOICE);
 		endRound=new Button(card,screenWidth-card.getWidth(),screenHeight-card.getHeight(),mouse.x,mouse.y);
 		pass=new Button(card,0,screenHeight-card.getHeight(),mouse.x,mouse.y);

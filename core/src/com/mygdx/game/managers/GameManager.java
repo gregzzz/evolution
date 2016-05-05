@@ -7,7 +7,7 @@ import static components.fun.*;
 
 import java.util.Vector;
 
-public class Game {
+public class GameManager {
     boolean clientConnected = false;
     Client c;
     public Player player = new Player();

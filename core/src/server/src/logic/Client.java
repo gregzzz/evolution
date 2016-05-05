@@ -1,4 +1,4 @@
-package server.logic;
+package server.src.logic;
 
 
 import components.objects.Player;

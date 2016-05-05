@@ -1,10 +1,12 @@
-package server.logic;
+package server.src.logic;
 
 import java.util.*;
 
 import components.enums.*;
+import components.objects.Animal;
 import components.objects.Player;
-import server.EvoServer;
+import server.src.EvoServer;
+import server.src.logic.Client;
 
 import static components.fun.*;
 
