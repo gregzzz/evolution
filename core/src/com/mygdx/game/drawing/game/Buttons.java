@@ -10,7 +10,6 @@ import components.objects.Player;
  * Created by kopec on 2016-04-26.
  */
 public class Buttons {
-    /*
     public void drawGame(){
         //najpierw tlo
         Gdx.gl.glClearColor(0, 0, 0, 0);
@@ -159,5 +158,5 @@ public class Buttons {
             }
         }
         batch.end();
-    }*/
+    }
 }

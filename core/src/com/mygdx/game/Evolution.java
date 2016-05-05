@@ -54,7 +54,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	Flag flagManager;
 	Game gameManager=new Game();
 	Textures textures;
-
+	LayoutManager layout = new LayoutManager(textures);
 	Info infomanager = new Info();
 
 	Player player;
