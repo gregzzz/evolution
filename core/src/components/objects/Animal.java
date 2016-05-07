@@ -25,6 +25,8 @@ public class Animal {
     public boolean scavenger=false;
 
     public Integer coopWith[]=new Integer[2];
+    public Integer commWith[]=new Integer[2];
+    public Integer symbiosis[]=new Integer[2];
 
 
     public Vector<Card> features = new Vector<Card>();

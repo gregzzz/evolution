@@ -38,6 +38,11 @@ public enum Card {
     ANIMAL(-5),
     CHOICE(-6),
     RAMKA(-7),
+
+    //strzalki
+    COOP(-8),
+    COMM(-9),
+    SYMB(-10),
     //...
 
     NONE(-1);

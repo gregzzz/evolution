@@ -105,7 +105,12 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 	}
 
-
+	//ramka z napisem
+	public void drawMessage(String text){
+		card = textures.getTexture(Card.RAMKA);
+		batch.draw(card, (screenWidth - card.getWidth()) / 2, (screenHeight - card.getHeight()) / 2);
+		font.draw(batch, text ,(screenWidth - card.getWidth()) / 2 + 15, (screenHeight - card.getHeight()) / 2 + 30 );
+	}
 
 	public void startOfTurnCleanup(){
 		gameManager.turnStart=false;
@@ -149,10 +154,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 		//szukanie gry...
 		if(flagManager.lookingForGames){
-			card = textures.getTexture(Card.RAMKA);
-			batch.draw(card, (screenWidth - card.getWidth()) / 2, (screenHeight - card.getHeight()) / 2);
-			font.draw(batch, "Looking for a game..." ,(screenWidth - card.getWidth()) / 2 + 15, (screenHeight - card.getHeight()) / 2 + 30 );
-
+			drawMessage("Looking for a game...");
 		}
 		batch.end();
 	}
@@ -223,11 +225,8 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				if (buttonManager.cardButtons[i].isTouched(mouse)) {
 					card = textures.getTexture(player.getCards(i));
 					batch.draw(card, (screenWidth - card.getWidth()) / 2, card.getHeight() + (screenHeight - card.getHeight()) / 2);
-					//narysowanie ramki do tekstu
-					card = textures.getTexture(Card.RAMKA);
-					batch.draw(card, (screenWidth - card.getWidth()) / 2, (screenHeight - card.getHeight()) / 2);
 					//opis karty
-					font.draw(batch, infomanager.getDescription(player.getCards(i)), 600 - 3 * infomanager.getDescription(player.getCards(i)).length(), 5 + screenHeight / 2);
+					drawMessage(infomanager.getDescription(player.getCards(i)));
 
 					batch.draw(buttonManager.cardChoices[0].getGraphic(), buttonManager.cardChoices[0].getPositionX(), buttonManager.cardChoices[0].getPositionY());
 					batch.draw(buttonManager.cardChoices[1].getGraphic(), buttonManager.cardChoices[1].getPositionX(), buttonManager.cardChoices[1].getPositionY());
@@ -312,6 +311,15 @@ public class Evolution implements ApplicationListener, InputProcessor {
 					font.draw(batch, "Perks: "+Integer.toString(otherPlayer.animals[i].features.size()), buttonManager.animalButtons[j][i].getPositionX() + 20, buttonManager.animalButtons[j][i].getPositionY() + 70);
 					font.draw(batch, "Food: "+Integer.toString(otherPlayer.animals[i].food)+"/"+Integer.toString(otherPlayer.animals[i].foodNeeded), buttonManager.animalButtons[j][i].getPositionX() + 15, buttonManager.animalButtons[j][i].getPositionY() + 50);
 					font.draw(batch, "Fat: "+Integer.toString(otherPlayer.animals[i].fat)+"/"+Integer.toString(otherPlayer.animals[i].fatTotal), buttonManager.animalButtons[j][i].getPositionX() + 20, buttonManager.animalButtons[j][i].getPositionY() + 30);
+					if(otherPlayer.animals[i].coopWith[1]!=null){
+						batch.draw(textures.getTexture(Card.COOP), buttonManager.animalButtons[j][i].getPositionX() + card.getWidth()-textures.getTexture(Card.COOP).getWidth()/2, buttonManager.animalButtons[j][i].getPositionY()-textures.getTexture(Card.COOP).getHeight());
+					}
+					if(otherPlayer.animals[i].commWith[1]!=null){
+						batch.draw(textures.getTexture(Card.COMM), buttonManager.animalButtons[j][i].getPositionX() + card.getWidth()-textures.getTexture(Card.COMM).getWidth()/2, buttonManager.animalButtons[j][i].getPositionY()-textures.getTexture(Card.COMM).getHeight());
+					}
+					if(otherPlayer.animals[i].symbiosis[1]!=null){
+						batch.draw(textures.getTexture(Card.SYMB), buttonManager.animalButtons[j][i].getPositionX() + card.getWidth()-textures.getTexture(Card.SYMB).getWidth()/2, buttonManager.animalButtons[j][i].getPositionY()-textures.getTexture(Card.SYMB).getHeight());
+					}
 				}
 			}
 		}
@@ -326,6 +334,15 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				font.draw(batch, "Perks: "+Integer.toString(player.animals[i].features.size()), ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth() + 20, 130+card.getHeight()/2);
 				font.draw(batch, "Food: "+Integer.toString(player.animals[i].food)+"/"+Integer.toString(player.animals[i].foodNeeded), ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth() + 15, 110+card.getHeight()/2);
 				font.draw(batch, "Fat: "+Integer.toString(player.animals[i].fat)+"/"+Integer.toString(player.animals[i].fatTotal), ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth() + 20, 90+card.getHeight()/2);
+				if(player.animals[i].coopWith[1]!=null){
+					batch.draw(textures.getTexture(Card.COOP), ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth() + card.getWidth()-textures.getTexture(Card.COOP).getWidth()/2, 100 + card.getHeight());
+				}
+				if(player.animals[i].commWith[1]!=null){
+					batch.draw(textures.getTexture(Card.COMM), ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth() + card.getWidth()-textures.getTexture(Card.COMM).getWidth()/2, 100 + card.getHeight());
+				}
+				if(player.animals[i].symbiosis[1]!=null){
+					batch.draw(textures.getTexture(Card.SYMB), ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth() + card.getWidth()-textures.getTexture(Card.SYMB).getWidth()/2, 100 + card.getHeight());
+				}
 			}
 		}
 	}

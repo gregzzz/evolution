@@ -148,6 +148,7 @@ public class PlayerAction {
         }
     }
 
+    //kogo piracic
     public void choosePiracyTarget(){
         Player otherPlayer;
         if(!flagManager.choosePiracyTarget){
@@ -191,6 +192,9 @@ public class PlayerAction {
                     flagManager.chooseAnimalPlace();
                 }
             }
+            if(buttonManager.cancelButton.isTouched(mouse)) {
+                flagManager.chooseAnimalPlace();
+            }
         }
     }
 
@@ -220,6 +224,12 @@ public class PlayerAction {
                                             otherPlayer.animals[i].addFeature(addedCard);
                                             gameManager.addFeature(otherPlayer.number, i, addedCard);
                                             player.removeCard(chosenCard);
+                                        }else if(i<5 && otherPlayer.animals[i+1]!=null){
+                                            //podwojne
+                                            if(otherPlayer.addDoubleCard(addedCard,i)){
+                                                player.removeCard(chosenCard);
+                                                gameManager.addDouble(i,addedCard);
+                                            }
                                         }
                                     }
                                 }

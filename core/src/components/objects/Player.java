@@ -28,6 +28,34 @@ public class Player {
         cards.addElement(card);
     }
 
+    public boolean addDoubleCard(Card card, int animalPlace){
+        if(card==Card.COOPERATIONC || card==Card.COOPERATIONF){
+            if(animals[animalPlace].coopWith[1]==null){
+                animals[animalPlace].coopWith[1]=animalPlace+1;
+                animals[animalPlace+1].coopWith[0]=animalPlace;
+                return true;
+            }else{
+                return false;
+            }
+        }else if(card==Card.COMMUNICATION){
+            if(animals[animalPlace].commWith[1]==null){
+                animals[animalPlace].commWith[1]=animalPlace+1;
+                animals[animalPlace+1].commWith[0]=animalPlace;
+                return true;
+            }else{
+                return false;
+            }
+        }else if(card==Card.SYMBIOSIS){
+            if(animals[animalPlace].symbiosis[1]==null){
+                animals[animalPlace].symbiosis[1]=animalPlace+1;
+                animals[animalPlace+1].symbiosis[0]=animalPlace;
+                return true;
+            }else{
+                return false;
+            }
+        }else return false;
+    }
+
     public void addAnimal(int slot){
         animals[slot] = new Animal(number, slot);
         animalsNumber ++;

@@ -38,6 +38,10 @@ public class GameManager {
         c.send(new byte[]{Command.EVOLUTION.getId(), (byte) playerNumber, (byte) place, (byte) cardName.getId()});
     }
 
+    public void addDouble(int place, Card cardName){
+        c.send(new byte[]{Command.EVOLUTION2.getId(), (byte) place, (byte) cardName.getId()});
+    }
+
     public void kill(int player, int place){
         c.send(new byte[]{Command.KILL.getId(),(byte) player, (byte) place});
     }
@@ -68,7 +72,7 @@ public class GameManager {
         command = Command.fromInt((int) recv[0]);
         System.out.println(command);
         if (command == Command.GETNAME) {
-            c.send(concat(new byte[]{Command.NAME.getId()}, new String (playerName).getBytes()));
+            c.send(concat(new byte[]{Command.NAME.getId()}, playerName.getBytes()));
         }
         else if (command == Command.ID) {
             player.number = recv[1];
@@ -170,16 +174,28 @@ public class GameManager {
                     }
                 }
                 if(recv[2]==player.number){
-                    player.animals[recv[3]].addFeature(Card.fromInt(recv[4]));
+                    player.animals[recv[3]].addFeature(Card.fromInt((int)recv[4]));
                 }
                 for (Player player : otherPlayers) {
                     if (player.number == recv[2]) {
                         // dodajemy ceche
-                        player.animals[recv[3]].addFeature(Card.fromInt(recv[4]));
+                        player.animals[recv[3]].addFeature(Card.fromInt((int)recv[4]));
                     }
                 }
             }
 
+        }
+        else if (command == Command.EVOLUTION2) {
+            if (recv[1] != player.number) {
+                for (Player otherPlayer : otherPlayers) {
+                    if (otherPlayer.number == recv[4]) {
+                        // bo dodal zwierze
+                        otherPlayer.numberOfCards -= 1;
+                        // dodajemy zwierze
+                        otherPlayer.addDoubleCard(Card.fromInt((int) recv[3]), (int) recv[2]);
+                    }
+                }
+            }
         }
     }
 

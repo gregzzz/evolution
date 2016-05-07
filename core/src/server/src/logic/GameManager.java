@@ -104,6 +104,11 @@ public class GameManager{
                         server.send(new byte[] {Command.EVOLUTION.getId(),(byte)client.getNumber(),data[1] , data[2], data[3]});
                         nextOneTakeTurn();
                     }
+                    else if (command == Command.EVOLUTION2) {
+                        //dodaj ceche
+                        server.send(new byte[] {Command.EVOLUTION2.getId(),(byte)client.getNumber(),data[1] , data[2], (byte)turn});
+                        nextOneTakeTurn();
+                    }
                     else if (command == Command.KILL) {
                         server.send(new byte[] {Command.KILL.getId(),data[1],data[2],(byte)turn});
                     }

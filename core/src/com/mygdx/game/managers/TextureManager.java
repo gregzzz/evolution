@@ -47,6 +47,10 @@ public class TextureManager {
         textures.put(Card.ANIMAL,new Texture("core/assets/animal.png"));
         textures.put(Card.CHOICE,new Texture("core/assets/choice.png"));
         textures.put(Card.RAMKA ,new Texture("core/assets/ramka.png"));
+        //strzalki
+        textures.put(Card.COOP,new Texture("core/assets/coop.png"));
+        textures.put(Card.COMM,new Texture("core/assets/comm.png"));
+        textures.put(Card.SYMB ,new Texture("core/assets/symb.png"));
     }
 
     public Texture getTexture(Card textureName){

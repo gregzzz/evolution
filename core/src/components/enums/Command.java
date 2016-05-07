@@ -22,6 +22,7 @@ public enum Command {
     STEAL(16),
     HOWMANYANIMALS(17),
     SCAVENGE(18),
+    EVOLUTION2(19),
 
     NONE(-1);
 

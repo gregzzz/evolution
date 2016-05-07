@@ -94,6 +94,7 @@ public class FlagManager {
         chooseAnimalPlace=true;
         chooseCardFromHand=false;
         printAnimalsSlots = false;
+        printCancelButton=false;
     }
 
     public void chooseMyAnimal(){
@@ -116,6 +117,7 @@ public class FlagManager {
         printChoosenCard = false;
         printAnimalsSlots = true;
         chooseAction=true;
+        printCancelButton=true;
     }
 
     public void chooseCard(){
