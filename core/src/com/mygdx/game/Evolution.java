@@ -58,11 +58,6 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	Player otherPlayer;
 
 
-
-
-
-
-
 	public Evolution(){
 	}
 	@Override
@@ -182,6 +177,159 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		}
 	}
 
+	//ilosc jedzenia
+	public void drawFoodAmount(){
+
+		batch.draw(card, screenWidth - card.getWidth(), 100);
+		if(gameManager.state==GameState.EVOLUTION){
+			if(gameManager.otherPlayers.size()==1) {
+				font.draw(batch, "1x dice + 2", screenWidth - card.getWidth() + 12, 105 + card.getHeight()/2);
+			}else if(gameManager.otherPlayers.size()==2) {
+				font.draw(batch, "2x dice", screenWidth - card.getWidth() + 20, 105 + card.getHeight()/2);
+			}else if(gameManager.otherPlayers.size()==3) {
+				font.draw(batch, "2x dice + 2", screenWidth - card.getWidth() + 12, 105 +card.getHeight()/2);
+			}
+		}else if(gameManager.state==GameState.FEEDING){
+			font.draw(batch, Integer.toString(gameManager.amountOfFood), screenWidth - card.getWidth()/2 -1, 105 + card.getHeight()/2);
+		}
+	}
+
+	//czyja tura
+	public void drawWhoseTurn(){
+		batch.draw(card, screenWidth - 2 * card.getWidth(), screenHeight - card.getHeight());
+		if (gameManager.turn == player.number) {
+			font.draw(batch, "Your Turn", screenWidth - 2 * card.getWidth() + 15, 5 + screenHeight - 25);
+		} else {
+			for (Player player : gameManager.otherPlayers) {
+				if (player.number == gameManager.turn)
+					if (player.name != null)
+						font.draw(batch, player.name, screenWidth - 2 * card.getWidth() + 15, 5 + screenHeight - 25);
+			}
+		}
+	}
+
+	//guziki End Round i Pass
+	public void drawEndRoundAndPass() {
+		batch.draw(buttonManager.pass.getGraphic(), buttonManager.pass.getPositionX(), buttonManager.pass.getPositionY());
+		font.draw(batch, "Pass", 35, 5 + screenHeight - 25);
+		batch.draw(buttonManager.endRound.getGraphic(), buttonManager.endRound.getPositionX(), buttonManager.endRound.getPositionY());
+		font.draw(batch, "End Round", screenWidth - card.getWidth() + 15, 5 + screenHeight - 25);
+	}
+
+	// rysuj wybor
+	public void drawSelectedCard(){
+		if (flagManager.printChoosenCard) {
+			for (int i = 0; i < player.cardsNumber(); i++) {
+				if (buttonManager.cardButtons[i].isTouched(mouse)) {
+					card = textures.getTexture(player.getCards(i));
+					batch.draw(card, (screenWidth - card.getWidth()) / 2, card.getHeight() + (screenHeight - card.getHeight()) / 2);
+					//narysowanie ramki do tekstu
+					card = textures.getTexture(Card.RAMKA);
+					batch.draw(card, (screenWidth - card.getWidth()) / 2, (screenHeight - card.getHeight()) / 2);
+					//opis karty
+					font.draw(batch, infomanager.getDescription(player.getCards(i)), 600 - 3 * infomanager.getDescription(player.getCards(i)).length(), 5 + screenHeight / 2);
+
+					batch.draw(buttonManager.cardChoices[0].getGraphic(), buttonManager.cardChoices[0].getPositionX(), buttonManager.cardChoices[0].getPositionY());
+					batch.draw(buttonManager.cardChoices[1].getGraphic(), buttonManager.cardChoices[1].getPositionX(), buttonManager.cardChoices[1].getPositionY());
+					batch.draw(buttonManager.cardChoices[2].getGraphic(), buttonManager.cardChoices[2].getPositionX(), buttonManager.cardChoices[2].getPositionY());
+					card = textures.getTexture(Card.CHOICE);
+					font.draw(batch, "Add Animal", ((screenWidth - card.getWidth()) / 2) - card.getWidth() + 10, ((screenHeight - card.getHeight()) / 2) - 20);
+					font.draw(batch, "Add Perk 1", ((screenWidth - card.getWidth()) / 2) + 10, ((screenHeight - card.getHeight()) / 2) - 20);
+					font.draw(batch, "Add Perk 2", ((screenWidth - card.getWidth()) / 2) + card.getWidth() + 10, ((screenHeight - card.getHeight()) / 2) - 20);
+				}
+			}
+		}
+	}
+
+	//rysuj guzik do anulowania
+	public void drawCancelButton(){
+		if(flagManager.printCancelButton) {
+			batch.draw(buttonManager.cancelButton.getGraphic(), buttonManager.cancelButton.getPositionX(),buttonManager.cancelButton.getPositionY());
+			font.draw(batch, "Cancel", buttonManager.cancelButton.getPositionX() + 30, buttonManager.cancelButton.getPositionY() + 30);
+		}
+	}
+
+	//rysuj wybrane zwierze
+	public void drawSelectedAnimal(){
+		if (flagManager.printSelectedAnimal) {
+			for (int i = 0; i < player.animals[playerAction.selectedAnimal].features.size(); i++) {
+				card = textures.getTexture(player.animals[playerAction.selectedAnimal].getFeature(i));
+				if (player.animals[playerAction.selectedAnimal].features.size() % 2 == 0) {
+					batch.draw(card, ((screenWidth - player.animals[playerAction.selectedAnimal].features.size()) / 2) + card.getWidth() * (i - (player.animals[playerAction.selectedAnimal].features.size()) / 2), card.getHeight() + (screenHeight - card.getHeight()) / 2);
+				} else {
+					batch.draw(card, ((screenWidth - player.animals[playerAction.selectedAnimal].features.size()) / 2) + card.getWidth() * (i - (player.animals[playerAction.selectedAnimal].features.size()) / 2) - card.getWidth() / 2, card.getHeight() + (screenHeight - card.getHeight()) / 2);
+				}
+			}
+		}
+	}
+
+	//rysuj opcje FEEDing faze
+	public void drawAnimalOptions(){
+		if (flagManager.printFeedingChoices) {
+			for (int i = 0; i < 6; i++) {
+				batch.draw(buttonManager.feedChoices[i].getGraphic(), buttonManager.feedChoices[i].getPositionX(), buttonManager.feedChoices[i].getPositionY());
+			}
+			card = textures.getTexture(Card.CHOICE);
+			font.draw(batch, "Eat", buttonManager.feedChoices[0].getPositionX() + 40, buttonManager.feedChoices[0].getPositionY() + 30);
+			font.draw(batch, "Carnivore", buttonManager.feedChoices[1].getPositionX() + 15, buttonManager.feedChoices[1].getPositionY() + 30);
+			font.draw(batch, "Piracy", buttonManager.feedChoices[2].getPositionX() + 25, buttonManager.feedChoices[2].getPositionY() + 30);
+			font.draw(batch, "Pasturage", buttonManager.feedChoices[3].getPositionX() + 15, buttonManager.feedChoices[3].getPositionY() + 30);
+			font.draw(batch, "Hibernation", buttonManager.feedChoices[4].getPositionX() + 10, buttonManager.feedChoices[4].getPositionY() + 30);
+			font.draw(batch, "Scavenger", buttonManager.feedChoices[5].getPositionX() + 15, buttonManager.feedChoices[5].getPositionY() + 30);
+
+		}
+	}
+
+	// rysowanie pozycji na zwierzeta
+	public void drawAnimalSlots(){
+		if (flagManager.printAnimalsSlots) {
+			card = textures.getTexture(Card.SPACE);
+			//rysuje miejsca na zwierzaka
+			for (int i = 0; i < 5; i++) {
+				batch.draw(buttonManager.animalPlaces[i].getGraphic(), buttonManager.animalPlaces[i].getPositionX(), buttonManager.animalPlaces[i].getPositionY());
+			}
+		}
+	}
+
+	//karty gracza
+	public void drawPlayerCards(){
+		for (int i = 0; i < player.cardsNumber(); i++) {
+			buttonManager.updateCardButtons();
+			if(buttonManager.cardButtons[i]!=null) {
+				batch.draw(buttonManager.cardButtons[i].getGraphic(), buttonManager.cardButtons[i].getPositionX(), buttonManager.cardButtons[i].getPositionY());
+			}
+		}
+	}
+
+	//zwierzęta innych graczy
+	public void drawOtherAnimals(){
+		card = textures.getTexture(Card.ANIMAL);
+		for(int j=1;j<gameManager.otherPlayers.size()+1;j++){
+			otherPlayer = gameManager.otherPlayers.elementAt(j-1);
+			for (int i = 0; i < 5; i++) {
+				if (buttonManager.animalButtons[j][i] != null) {
+					batch.draw(card, buttonManager.animalButtons[j][i].getPositionX(), buttonManager.animalButtons[j][i].getPositionY());
+					font.draw(batch, "Perks: "+Integer.toString(otherPlayer.animals[i].features.size()), buttonManager.animalButtons[j][i].getPositionX() + 20, buttonManager.animalButtons[j][i].getPositionY() + 70);
+					font.draw(batch, "Food: "+Integer.toString(otherPlayer.animals[i].food)+"/"+Integer.toString(otherPlayer.animals[i].foodNeeded), buttonManager.animalButtons[j][i].getPositionX() + 15, buttonManager.animalButtons[j][i].getPositionY() + 50);
+					font.draw(batch, "Fat: "+Integer.toString(otherPlayer.animals[i].fat)+"/"+Integer.toString(otherPlayer.animals[i].fatTotal), buttonManager.animalButtons[j][i].getPositionX() + 20, buttonManager.animalButtons[j][i].getPositionY() + 30);
+				}
+			}
+		}
+	}
+
+	//zwierzeta
+	public void drawMyAnimals(){
+		card = textures.getTexture(Card.ANIMAL);
+		for (int i = 0; i < 5; i++) {
+			if (player.animals[i] != null) {
+				batch.draw(card, ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth(), 100);
+				font.draw(batch, "Perks: "+Integer.toString(player.animals[i].features.size()), ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth() + 20, 130+card.getHeight()/2);
+				font.draw(batch, "Food: "+Integer.toString(player.animals[i].food)+"/"+Integer.toString(player.animals[i].foodNeeded), ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth() + 15, 110+card.getHeight()/2);
+				font.draw(batch, "Fat: "+Integer.toString(player.animals[i].fat)+"/"+Integer.toString(player.animals[i].fatTotal), ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth() + 20, 90+card.getHeight()/2);
+			}
+		}
+	}
+
 	public void drawGame(){
 	//najpierw tlo
 			Gdx.gl.glClearColor(0, 0, 0, 0);
@@ -195,140 +343,19 @@ public class Evolution implements ApplicationListener, InputProcessor {
 			batch.draw(textures.getTexture(Card.BACKGROUND1), 0, 0);
 			batch.draw(textures.getTexture(Card.BACKGROUND2), 0, 0);
 
-		//czja tura
 			if (gameManager.state == GameState.EVOLUTION || gameManager.state == GameState.FEEDING) {
-
 				card = textures.getTexture(Card.CHOICE);
-
-				//ilosc jedzenia
-				batch.draw(card, screenWidth - card.getWidth(), 100);
-				if(gameManager.state==GameState.EVOLUTION){
-					if(gameManager.otherPlayers.size()==1) {
-						font.draw(batch, "1x dice + 2", screenWidth - card.getWidth() + 12, 105 + card.getHeight()/2);
-					}else if(gameManager.otherPlayers.size()==2) {
-						font.draw(batch, "2x dice", screenWidth - card.getWidth() + 20, 105 + card.getHeight()/2);
-					}else if(gameManager.otherPlayers.size()==3) {
-						font.draw(batch, "2x dice + 2", screenWidth - card.getWidth() + 12, 105 +card.getHeight()/2);
-					}
-				}else if(gameManager.state==GameState.FEEDING){
-					font.draw(batch, Integer.toString(gameManager.amountOfFood), screenWidth - card.getWidth()/2 -1, 105 + card.getHeight()/2);
-				}
-
-				//czyja tura
-				batch.draw(card, screenWidth - 2 * card.getWidth(), screenHeight - card.getHeight());
-				if (gameManager.turn == player.number) {
-					font.draw(batch, "Your Turn", screenWidth - 2 * card.getWidth() + 15, 5 + screenHeight - 25);
-				} else {
-					for (Player player : gameManager.otherPlayers) {
-						if (player.number == gameManager.turn)
-							if (player.name != null)
-								font.draw(batch, player.name, screenWidth - 2 * card.getWidth() + 15, 5 + screenHeight - 25);
-					}
-				}
-
-				//guziki pass i end turn
-				batch.draw(buttonManager.pass.getGraphic(), buttonManager.pass.getPositionX(), buttonManager.pass.getPositionY());
-				font.draw(batch, "Pass", 35, 5 + screenHeight - 25);
-				batch.draw(buttonManager.endRound.getGraphic(), buttonManager.endRound.getPositionX(), buttonManager.endRound.getPositionY());
-				font.draw(batch, "End Round", screenWidth - card.getWidth() + 15, 5 + screenHeight - 25);
-				// rysuj wybor
-				if (flagManager.printChoosenCard) {
-					for (int i = 0; i < player.cardsNumber(); i++) {
-						if (buttonManager.cardButtons[i].isTouched(mouse)) {
-							card = textures.getTexture(player.getCards(i));
-							batch.draw(card, (screenWidth - card.getWidth()) / 2, card.getHeight() + (screenHeight - card.getHeight()) / 2);
-							//narysowanie ramki do tekstu
-							card = textures.getTexture(Card.RAMKA);
-							batch.draw(card, (screenWidth - card.getWidth()) / 2, (screenHeight - card.getHeight()) / 2);
-							//opis karty
-							font.draw(batch, infomanager.getDescription(player.getCards(i)), 600 - 3 * infomanager.getDescription(player.getCards(i)).length(), 5 + screenHeight / 2);
-
-							batch.draw(buttonManager.cardChoices[0].getGraphic(), buttonManager.cardChoices[0].getPositionX(), buttonManager.cardChoices[0].getPositionY());
-							batch.draw(buttonManager.cardChoices[1].getGraphic(), buttonManager.cardChoices[1].getPositionX(), buttonManager.cardChoices[1].getPositionY());
-							batch.draw(buttonManager.cardChoices[2].getGraphic(), buttonManager.cardChoices[2].getPositionX(), buttonManager.cardChoices[2].getPositionY());
-							card = textures.getTexture(Card.CHOICE);
-							font.draw(batch, "Add Animal", ((screenWidth - card.getWidth()) / 2) - card.getWidth() + 10, ((screenHeight - card.getHeight()) / 2) - 20);
-							font.draw(batch, "Add Perk 1", ((screenWidth - card.getWidth()) / 2) + 10, ((screenHeight - card.getHeight()) / 2) - 20);
-							font.draw(batch, "Add Perk 2", ((screenWidth - card.getWidth()) / 2) + card.getWidth() + 10, ((screenHeight - card.getHeight()) / 2) - 20);
-						}
-					}
-				}
-
-				//rysuj guzik do anulowania
-				if(flagManager.printCancelButton) {
-					batch.draw(buttonManager.cancelButton.getGraphic(), buttonManager.cancelButton.getPositionX(),buttonManager.cancelButton.getPositionY());
-					font.draw(batch, "Cancel", buttonManager.cancelButton.getPositionX() + 30, buttonManager.cancelButton.getPositionY() + 30);
-				}
-
-				//rysuj podswietlone zwierze
-				if (flagManager.printSelectedAnimal) {
-					for (int i = 0; i < player.animals[playerAction.selectedAnimal].features.size(); i++) {
-						card = textures.getTexture(player.animals[playerAction.selectedAnimal].getFeature(i));
-						if (player.animals[playerAction.selectedAnimal].features.size() % 2 == 0) {
-							batch.draw(card, ((screenWidth - player.animals[playerAction.selectedAnimal].features.size()) / 2) + card.getWidth() * (i - (player.animals[playerAction.selectedAnimal].features.size()) / 2), card.getHeight() + (screenHeight - card.getHeight()) / 2);
-						} else {
-							batch.draw(card, ((screenWidth - player.animals[playerAction.selectedAnimal].features.size()) / 2) + card.getWidth() * (i - (player.animals[playerAction.selectedAnimal].features.size()) / 2) - card.getWidth() / 2, card.getHeight() + (screenHeight - card.getHeight()) / 2);
-						}
-					}
-				}
-
-				//rysuj opcje FEEDing faze
-				if (flagManager.printFeedingChoices) {
-					for (int i = 0; i < 6; i++) {
-						batch.draw(buttonManager.feedChoices[i].getGraphic(), buttonManager.feedChoices[i].getPositionX(), buttonManager.feedChoices[i].getPositionY());
-					}
-					card = textures.getTexture(Card.CHOICE);
-					font.draw(batch, "Eat", buttonManager.feedChoices[0].getPositionX() + 40, buttonManager.feedChoices[0].getPositionY() + 30);
-					font.draw(batch, "Carnivore", buttonManager.feedChoices[1].getPositionX() + 15, buttonManager.feedChoices[1].getPositionY() + 30);
-					font.draw(batch, "Piracy", buttonManager.feedChoices[2].getPositionX() + 25, buttonManager.feedChoices[2].getPositionY() + 30);
-					font.draw(batch, "Pasturage", buttonManager.feedChoices[3].getPositionX() + 15, buttonManager.feedChoices[3].getPositionY() + 30);
-					font.draw(batch, "Hibernation", buttonManager.feedChoices[4].getPositionX() + 10, buttonManager.feedChoices[4].getPositionY() + 30);
-					font.draw(batch, "Scavenger", buttonManager.feedChoices[5].getPositionX() + 15, buttonManager.feedChoices[5].getPositionY() + 30);
-
-				}
-
-
-				// rysowanie pozycji na zwierzeta
-				if (flagManager.printAnimalsSlots) {
-					card = textures.getTexture(Card.SPACE);
-					//rysuje miejsca na zwierzaka
-					for (int i = 0; i < 5; i++) {
-						batch.draw(buttonManager.animalPlaces[i].getGraphic(), buttonManager.animalPlaces[i].getPositionX(), buttonManager.animalPlaces[i].getPositionY());
-					}
-				}
-				//karty gracza
-				for (int i = 0; i < player.cardsNumber(); i++) {
-					buttonManager.updateCardButtons();
-					if(buttonManager.cardButtons[i]!=null) {
-						batch.draw(buttonManager.cardButtons[i].getGraphic(), buttonManager.cardButtons[i].getPositionX(), buttonManager.cardButtons[i].getPositionY());
-					}
-				}
-
-				//zwierzęta innych graczy
-				card = textures.getTexture(Card.ANIMAL);
-				for(int j=1;j<gameManager.otherPlayers.size()+1;j++){
-					otherPlayer = gameManager.otherPlayers.elementAt(j-1);
-					for (int i = 0; i < 5; i++) {
-						if (buttonManager.animalButtons[j][i] != null) {
-							batch.draw(card, buttonManager.animalButtons[j][i].getPositionX(), buttonManager.animalButtons[j][i].getPositionY());
-							font.draw(batch, "Perks: "+Integer.toString(otherPlayer.animals[i].features.size()), buttonManager.animalButtons[j][i].getPositionX() + 20, buttonManager.animalButtons[j][i].getPositionY() + 70);
-							font.draw(batch, "Food: "+Integer.toString(otherPlayer.animals[i].food)+"/"+Integer.toString(otherPlayer.animals[i].foodNeeded), buttonManager.animalButtons[j][i].getPositionX() + 15, buttonManager.animalButtons[j][i].getPositionY() + 50);
-							font.draw(batch, "Fat: "+Integer.toString(otherPlayer.animals[i].fat)+"/"+Integer.toString(otherPlayer.animals[i].fatTotal), buttonManager.animalButtons[j][i].getPositionX() + 20, buttonManager.animalButtons[j][i].getPositionY() + 30);
-						}
-					}
-				}
-
-
-				//zwierzeta
-				card = textures.getTexture(Card.ANIMAL);
-				for (int i = 0; i < 5; i++) {
-					if (player.animals[i] != null) {
-						batch.draw(card, ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth(), 100);
-						font.draw(batch, "Perks: "+Integer.toString(player.animals[i].features.size()), ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth() + 20, 130+card.getHeight()/2);
-						font.draw(batch, "Food: "+Integer.toString(player.animals[i].food)+"/"+Integer.toString(player.animals[i].foodNeeded), ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth() + 15, 110+card.getHeight()/2);
-						font.draw(batch, "Fat: "+Integer.toString(player.animals[i].fat)+"/"+Integer.toString(player.animals[i].fatTotal), ((screenWidth - card.getWidth()) / 2) + (i - 2) * card.getWidth() + 20, 90+card.getHeight()/2);
-					}
-				}
+				drawFoodAmount();
+				drawWhoseTurn();
+				drawEndRoundAndPass();
+				drawSelectedCard();
+				drawCancelButton();
+				drawSelectedAnimal();
+				drawAnimalOptions();
+				drawAnimalSlots();
+				drawPlayerCards();
+				drawOtherAnimals();
+				drawMyAnimals();
 			}
 			batch.end();
 	}
