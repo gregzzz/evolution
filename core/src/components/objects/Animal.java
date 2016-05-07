@@ -24,12 +24,15 @@ public class Animal {
     public boolean hibernationUsed=false;
     public boolean scavenger=false;
 
+    public Integer coopWith[]=new Integer[2];
+
 
     public Vector<Card> features = new Vector<Card>();
 
     public Animal(int owner, int number){
         this.number=number;
         this.owner = owner;
+        for(int i=0;i<2;i++)coopWith[i]=null;
     }
 
     public void resetFoodData(){

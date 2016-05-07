@@ -24,6 +24,12 @@ public class FlagManager {
     public boolean chooseMainMenuOption;
     public boolean lookingForGames;
 
+    public boolean secondaryPerk;
+
+    public boolean actionDone;
+
+    public boolean getText;
+
 
     public FlagManager(){
         printAnimalsSlots=false;
@@ -47,6 +53,9 @@ public class FlagManager {
 
         chooseMainMenuOption=false;
         lookingForGames=false;
+
+        actionDone=false;
+        getText = false;
     }
 
     public void passOrEndRound(){

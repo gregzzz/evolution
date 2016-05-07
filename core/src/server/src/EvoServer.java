@@ -17,6 +17,7 @@ public class EvoServer extends Thread{
     private Vector<Client> clients;
     private int numberOfPlayers;
 
+
     private Queue<byte[]> [] recvFromClients;
 
     private static final int ALL = -1;

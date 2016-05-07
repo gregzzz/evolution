@@ -1,0 +1,324 @@
+package com.mygdx.game;
+
+
+import com.mygdx.game.logic.Button;
+import com.mygdx.game.logic.Keyboard;
+import com.mygdx.game.logic.Mouse;
+import components.enums.Card;
+import com.mygdx.game.managers.*;
+import components.enums.GameState;
+import components.objects.Player;
+
+public class PlayerAction {
+    public FlagManager flagManager;
+    public GameManager gameManager;
+    public ButtonManager buttonManager;
+    private Mouse mouse;
+    public Player player;
+
+    // zmienne do do funkcji z uzyciem kart i wybranego zwierzęcia
+    public int chosenCard=99;
+    public int selectedAnimal=99;
+
+
+    public PlayerAction(FlagManager flagManager, GameManager gameManager, Mouse mouse, ButtonManager buttonManager){
+        this.flagManager=flagManager;
+        this.gameManager=gameManager;
+        this.mouse=mouse;
+        this.buttonManager=buttonManager;
+        this.player=gameManager.player;
+    }
+
+    //wybierz zwierze podczas fazy zywienia
+    public void chooseAnimalForAction(){
+        if(!flagManager.chooseAnimalForAction){
+            for(int i=0;i<5;i++) {
+                if(buttonManager.animalButtons[0][i]!=null && buttonManager.animalButtons[0][i].isTouched(mouse)){
+                    flagManager.chooseAnimalForAction();
+                    selectedAnimal=i;
+                }
+            }
+            if(buttonManager.pass.isTouched(mouse)){
+                boolean allAnimalsFeeded=true;
+                for(int i=0;i<5;i++){
+                    if(player.animals[i]!=null && !player.animals[i].isFeeded()){
+                        allAnimalsFeeded=false;
+                    }
+                }
+                if(gameManager.amountOfFood==0 || allAnimalsFeeded) {
+                    flagManager.actionDone = false;
+                    flagManager.passOrEndRound();
+                    gameManager.pass();
+                    chosenCard = 99;
+                }
+            }
+            if(buttonManager.endRound.isTouched(mouse)){
+                boolean allAnimalsFeeded=true;
+                for(int i=0;i<5;i++){
+                    if(player.animals[i]!=null && !player.animals[i].isFeeded()){
+                        allAnimalsFeeded=false;
+                    }
+                }
+                if(gameManager.amountOfFood==0 || allAnimalsFeeded || flagManager.actionDone) {
+                    gameManager.endRound();
+                    flagManager.passOrEndRound();
+                    flagManager.actionDone=false;
+                    chosenCard=99;
+                }
+            }
+        }
+    }
+
+    //wybierz co robisz zwirzeciem podczas fazy zywienia
+    public void chooseAnimalAction(){
+        if(!flagManager.chooseAnimalAction){
+            //jedz
+            if(buttonManager.feedChoices[0].isTouched(mouse) && !flagManager.actionDone && gameManager.amountOfFood>0){
+                if(!player.animals[selectedAnimal].isFeeded() || player.animals[selectedAnimal].fat<player.animals[selectedAnimal].fatTotal)
+                    gameManager.amountOfFood--;
+                player.animals[selectedAnimal].feed(1);
+                gameManager.feed(selectedAnimal,1);
+                flagManager.actionDone=true;
+                //drapieznik
+            }else if(buttonManager.feedChoices[1].isTouched(mouse) && player.animals[selectedAnimal].carnivore&&!player.animals[selectedAnimal].isFeeded() && !flagManager.actionDone){
+                flagManager.chooseTarget=false;
+                flagManager.chooseTarget();
+                //piractwo
+            }else if(buttonManager.feedChoices[2].isTouched(mouse) && player.animals[selectedAnimal].have(Card.PIRACY)&&!player.animals[selectedAnimal].isFeeded()&& !player.animals[selectedAnimal].piracy){
+                flagManager.choosePiracyTarget=false;
+                flagManager.chooseTarget();
+                //wypas
+            }else if(buttonManager.feedChoices[3].isTouched(mouse) && player.animals[selectedAnimal].have(Card.PASTURAGE)&&gameManager.amountOfFood>0&& !player.animals[selectedAnimal].pasturage){
+                gameManager.amountOfFood--;
+                //updatuje u innych ilosc zarcia
+                gameManager.feed(selectedAnimal,0);
+                player.animals[selectedAnimal].pasturage=true;
+                //hibernacja
+            }else if(buttonManager.feedChoices[4].isTouched(mouse) && player.animals[selectedAnimal].have(Card.HIBERNATION)&& !player.animals[selectedAnimal].hibernation){
+                player.animals[selectedAnimal].hibernation=true;
+                player.animals[selectedAnimal].hibernationUsed=true;
+                player.animals[selectedAnimal].feed(player.animals[selectedAnimal].foodNeeded-player.animals[selectedAnimal].food);
+                gameManager.feed(selectedAnimal,player.animals[selectedAnimal].foodNeeded-player.animals[selectedAnimal].food);
+                //padlinozerca
+            }else if(buttonManager.feedChoices[5].isTouched(mouse) && player.animals[selectedAnimal].have(Card.SCAVENGER)&& !player.animals[selectedAnimal].scavenger && gameManager.corpse){
+                player.animals[selectedAnimal].scavenger=true;
+                player.animals[selectedAnimal].feed(1);
+                gameManager.feed(selectedAnimal,1);
+                gameManager.corpse=false;
+                gameManager.scavenge();
+            }
+        }
+    }
+
+    //wybierz zwierze do ataku i zaatakuj
+    public void chooseTarget(){
+        Player otherPlayer;
+        if(!flagManager.chooseTarget){
+            for(int i=0;i<4;i++) {
+                for (int j = 0; j < 5; j++) {
+                    if (buttonManager.animalButtons[i][j] != null && buttonManager.animalButtons[i][j].isTouched(mouse)) {
+                        if(i>0) {
+                            otherPlayer = gameManager.otherPlayers.elementAt(i - 1);
+                        }else{
+                            otherPlayer=player;
+                        }
+                        if(otherPlayer.animals[j]!=player.animals[selectedAnimal] && otherPlayer.animals[j].canBeAttacked(player.animals[selectedAnimal])){
+                            int attackType=player.animals[selectedAnimal].attack(otherPlayer.animals[j]);
+                            if(attackType==1){
+                                player.animals[selectedAnimal].feed(2);
+                                gameManager.feed(selectedAnimal,2);
+                                otherPlayer.killAnimal(j);
+                                gameManager.kill(otherPlayer.number,j);
+                                gameManager.corpse=true;
+                                buttonManager.updateAnimalButtons();
+                                flagManager.actionDone=true;
+                            }else if(attackType==2){
+                                player.animals[selectedAnimal].feed(1);
+                                gameManager.feed(selectedAnimal,1);
+                                flagManager.actionDone=true;
+                            }
+                            flagManager.targetChosen();
+                        }
+                    }
+                }
+            }
+            if(buttonManager.cancelButton.isTouched(mouse)) {
+                flagManager.targetChosen();
+            }
+        }
+    }
+
+    public void choosePiracyTarget(){
+        Player otherPlayer;
+        if(!flagManager.choosePiracyTarget){
+            for(int i=0;i<4;i++) {
+                for (int j = 0; j < 5; j++) {
+                    if (buttonManager.animalButtons[i][j] != null && buttonManager.animalButtons[i][j].isTouched(mouse)) {
+                        if(i>0) {
+                            otherPlayer = gameManager.otherPlayers.elementAt(i - 1);
+                        }else{
+                            otherPlayer=player;
+                        }
+                        if(otherPlayer.animals[j]!=player.animals[selectedAnimal] && !otherPlayer.animals[j].isFeeded() && otherPlayer.animals[j].food>0){
+                            player.animals[selectedAnimal].feed(1);
+                            gameManager.feed(selectedAnimal,1);
+                            otherPlayer.animals[j].feed(-1);
+                            gameManager.steal(otherPlayer.number,j);
+                            flagManager.piracyTargetChosen();
+                            player.animals[selectedAnimal].piracy=true;
+                        }else{
+                            flagManager.piracyTargetChosen();
+                        }
+                    }
+                }
+            }
+            if(buttonManager.cancelButton.isTouched(mouse)) {
+                flagManager.piracyTargetChosen();
+            }
+        }
+    }
+
+    //wybierz gdzie chcesz postawic nowe zwierze
+    public void chooseAnimalPlace(){
+        if(!flagManager.chooseAnimalPlace) {
+            for (int i = 0; i < 5; i++) {
+                if (buttonManager.animalPlaces[i].isTouched(mouse) && player.animals[i]==null) {
+                    //akcja guzika add animal
+                    player.addAnimal(i);
+                    player.removeCard(chosenCard);
+                    gameManager.addAnimal(i);
+                    buttonManager.addAnimalButton(i);
+                    flagManager.chooseAnimalPlace();
+                }
+            }
+        }
+    }
+
+    //wybierz zwierze ktoremu chcesz dodac ceche
+    public void chooseMyAnimal(){
+        if(!flagManager.chooseMyAnimal) {
+            Player otherPlayer;
+            for (int j = 0; j < 4; j++) {
+                for (int i = 0; i < 5; i++) {
+                    if (buttonManager.animalButtons[j][i] != null && buttonManager.animalButtons[j][i].isTouched(mouse)) {
+                        if(j>0) {
+                            otherPlayer = gameManager.otherPlayers.elementAt(j - 1);
+                        }else{
+                            otherPlayer=player;
+                        }
+                        Card addedCard=player.getCards(chosenCard);
+                        //czy zwykla cecha
+                        if (!flagManager.secondaryPerk) {
+                            //czy pasozyt do wroga lub czy zwykla dla siebie
+                            if((j==0 && addedCard!=Card.PARASITEF &&addedCard!=Card.PARASITEC) || (j>0 && (addedCard==Card.PARASITEF || addedCard==Card.PARASITEC))) {
+                                //czy juz ma taka ceche
+                                if (addedCard == Card.PARASITEF || addedCard == Card.PARASITEC || !otherPlayer.animals[i].have(addedCard)) {
+                                    //czy to nie sa duze masy ciala tylko z inna druga cecha
+                                    if(!(player.getCards(chosenCard)==Card.MASSIVEC&&otherPlayer.animals[i].have(Card.MASSIVEF)||addedCard==Card.MASSIVEF&&otherPlayer.animals[i].have(Card.MASSIVEC))) {
+                                        //czy to nie cecha podwojna
+                                        if(addedCard!=Card.COMMUNICATION&&addedCard!=Card.COOPERATIONC&&addedCard!=Card.COOPERATIONF&&addedCard!=Card.SYMBIOSIS) {
+                                            otherPlayer.animals[i].addFeature(addedCard);
+                                            gameManager.addFeature(otherPlayer.number, i, addedCard);
+                                            player.removeCard(chosenCard);
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            //drapieznik
+                            if (addedCard == Card.MASSIVEC || addedCard == Card.PARASITEC || addedCard == Card.COOPERATIONC || addedCard == Card.COMMUNICATION || addedCard == Card.TOXIC || addedCard == Card.HIBERNATION) {
+                                if (!player.animals[i].carnivore && j==0) {
+                                    player.animals[i].addFeature(Card.CARNIVORE);
+                                    gameManager.addFeature(player.number, i, Card.CARNIVORE);
+                                    player.removeCard(chosenCard);
+                                }
+                                //tkaneczka
+                            } else if (addedCard == Card.MASSIVEF || addedCard == Card.PARASITEF || addedCard == Card.COOPERATIONF || addedCard == Card.CAMOUFLAGE || addedCard == Card.ROAR || addedCard == Card.PASTURAGE || addedCard == Card.SHARPSIGHT) {
+                                if(j==0) {
+                                    player.animals[i].addFeature(Card.FAT);
+                                    gameManager.addFeature(player.number, i, Card.FAT);
+                                    player.removeCard(chosenCard);
+                                }
+                            }
+                        }
+                        flagManager.chooseMyAnimal();
+                    }
+                }
+            }
+            if(buttonManager.cancelButton.isTouched(mouse)) {
+                flagManager.chooseMyAnimal();
+            }
+        }
+    }
+
+    //wybierz co chcesz zrobic z kartą
+    public void chooseAction(){
+        if(chosenCard!=99 && !flagManager.chooseAction) {
+            if (buttonManager.cardChoices[0].isTouched(mouse) && player.animalsNumber()<5) {
+                flagManager.addAnimal();
+            }
+            else if (buttonManager.cardChoices[1].isTouched(mouse) && player.animalsNumber()>0){
+                flagManager.secondaryPerk=false;
+                flagManager.addPerk();
+            }
+            else if (buttonManager.cardChoices[2].isTouched(mouse) && player.animalsNumber()>0){
+                flagManager.secondaryPerk=true;
+                flagManager.addPerk();
+            }
+        }
+
+    }
+
+    //wybierz karte z łapy albo spasuj
+    public void chooseCardFromHand(){
+        //wybor karty
+        if(!flagManager.chooseCardFromHand) {
+            for (int i = 0; i < player.cardsNumber(); i++) {
+                if (buttonManager.cardButtons[i].isTouched(mouse)) {
+                    chosenCard = i;
+                    flagManager.chooseCard();
+                }
+            }
+            if(buttonManager.pass.isTouched(mouse)&&player.animalsNumber()>0){
+                gameManager.pass();
+                flagManager.printSelectedAnimal=false;
+                chosenCard=99;
+            }
+            for(int i=0;i<5;i++) {
+                if(buttonManager.animalButtons[0][i]!=null && buttonManager.animalButtons[0][i].isTouched(mouse)){
+                    flagManager.printSelectedAnimal=true;
+                    selectedAnimal=i;
+                }
+            }
+        }
+    }
+    //wybierz opcje z glownego menu
+    public void chooseMainMenuOption(){
+        if(!flagManager.chooseMainMenuOption) {
+            if(buttonManager.menuButtons[0].isTouched(mouse)){
+                flagManager.chooseMainMenuOption=true;
+                flagManager.login=true;
+                gameManager.state= GameState.LOGIN;
+            }
+            if(buttonManager.menuButtons[1].isTouched(mouse)){
+
+            }
+            if(buttonManager.menuButtons[2].isTouched(mouse)){
+                if(gameManager.playerName!=null) {
+                    flagManager.chooseMainMenuOption=true;
+                    gameManager.startClient();
+                    flagManager.lookingForGames=true;
+                }
+            }
+            if(buttonManager.menuButtons[3].isTouched(mouse)){
+
+            }
+            if(buttonManager.menuButtons[4].isTouched(mouse)){
+
+            }
+            if(buttonManager.menuButtons[5].isTouched(mouse)){
+
+            }
+        }
+    }
+}
