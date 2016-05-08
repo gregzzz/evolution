@@ -241,7 +241,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	public void drawSelectedCard(){
 		if (flagManager.printChoosenCard) {
 			for (int i = 0; i < player.cardsNumber(); i++) {
-				if (buttonManager.cardButtons[i].isTouched(mouse)) {
+				if (buttonManager.cardButtons[i]!=null && buttonManager.cardButtons[i].isTouched(mouse)) {
 					card = textures.getTexture(player.getCards(i));
 					batch.draw(card, (screenWidth - card.getWidth()) / 2, card.getHeight() + (screenHeight - card.getHeight()) / 2);
 					//opis karty
