@@ -398,7 +398,9 @@ public class PlayerAction {
                 }
             }
             if(buttonManager.menuButtons[3].isTouched(mouse)){
-
+                flagManager.chooseMainMenuOption=true;
+                flagManager.server=true;
+                gameManager.state= GameState.SERVER;
             }
             if(buttonManager.menuButtons[4].isTouched(mouse)){
 

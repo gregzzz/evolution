@@ -20,6 +20,7 @@ public class FlagManager {
     public boolean login;
     public boolean password;
     public boolean inputed;
+    public boolean server;
 
     public boolean chooseMainMenuOption;
     public boolean lookingForGames;
@@ -55,6 +56,7 @@ public class FlagManager {
         login=true;
         password=false;
         inputed=false;
+        server=true;
 
         chooseMainMenuOption=false;
         lookingForGames=false;

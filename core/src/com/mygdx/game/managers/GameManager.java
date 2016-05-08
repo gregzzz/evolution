@@ -14,6 +14,7 @@ public class GameManager {
     public Vector<Player> otherPlayers = new Vector<Player>();
     public boolean turnStart=true;
     public String playerName=null;
+    public String serverAdress="localhost";
 
     public GameState state = GameState.BEGIN;
     public Command command = Command.NONE;
@@ -26,7 +27,7 @@ public class GameManager {
     public void startClient() {
         if (!clientConnected) {
             clientConnected = true;
-            c = new Client("localhost", 5055, this);
+            c = new Client(serverAdress, 5055, this);
         }
     }
 

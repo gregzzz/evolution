@@ -94,6 +94,9 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		if(gameManager.state == GameState.LOGIN){
 			drawLogin();
 		}
+		if(gameManager.state == GameState.SERVER){
+			drawServer();
+		}
 
 		if(gameManager.state == GameState.BEGIN){
 			drawMenu();
@@ -152,7 +155,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		font.draw(batch, "Login", buttonManager.menuButtons[0].getPositionX() + 15, buttonManager.menuButtons[0].getPositionY() + 30);
 		font.draw(batch, "Register", buttonManager.menuButtons[1].getPositionX() + 15, buttonManager.menuButtons[1].getPositionY() + 30);
 		font.draw(batch, "Find Game", buttonManager.menuButtons[2].getPositionX() + 15, buttonManager.menuButtons[2].getPositionY() + 30);
-		font.draw(batch, "Options", buttonManager.menuButtons[3].getPositionX() + 15, buttonManager.menuButtons[3].getPositionY() + 30);
+		font.draw(batch, "Server", buttonManager.menuButtons[3].getPositionX() + 15, buttonManager.menuButtons[3].getPositionY() + 30);
 		font.draw(batch, "Help", buttonManager.menuButtons[4].getPositionX() + 15, buttonManager.menuButtons[4].getPositionY() + 30);
 		font.draw(batch, "Credits", buttonManager.menuButtons[5].getPositionX() + 15, buttonManager.menuButtons[5].getPositionY() + 30);
 
@@ -177,6 +180,20 @@ public class Evolution implements ApplicationListener, InputProcessor {
 			Gdx.input.getTextInput(listener, "Password:", "Password", "");
 		}
 		if(flagManager.inputed && !flagManager.password && !flagManager.login){
+			gameManager.state=GameState.BEGIN;
+			flagManager.chooseMainMenuOption=false;
+
+		}
+	}
+
+	//wpisz adres serwera
+	public void drawServer(){
+		if(flagManager.server) {
+			flagManager.inputed=false;
+			flagManager.server=false;
+			Gdx.input.getTextInput(listener, "Server Adress:", "localhost", "");
+		}
+		if(flagManager.inputed && !flagManager.server){
 			gameManager.state=GameState.BEGIN;
 			flagManager.chooseMainMenuOption=false;
 
