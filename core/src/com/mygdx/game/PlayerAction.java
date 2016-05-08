@@ -13,6 +13,7 @@ public class PlayerAction {
     public ButtonManager buttonManager;
     private Mouse mouse;
     public Player player;
+    public Player otherPlayer;
 
     // zmienne do do funkcji z uzyciem kart i wybranego zwierzęcia
     public int chosenCard=99;
@@ -30,10 +31,21 @@ public class PlayerAction {
     //wybierz zwierze podczas fazy zywienia
     public void chooseAnimalForAction(){
         if(!flagManager.chooseAnimalForAction){
-            for(int i=0;i<5;i++) {
-                if(buttonManager.animalButtons[0][i]!=null && buttonManager.animalButtons[0][i].isTouched(mouse) && (player.animals[i].symbiosis[0]==null || player.animals[i-1].isFeeded())){
-                    flagManager.chooseAnimalForAction();
-                    selectedAnimal=i;
+            for(int i=0;i<4;i++) {
+                for (int j = 0; j < 5; j++) {
+                    if (buttonManager.animalButtons[i][j] != null && buttonManager.animalButtons[i][j].isTouched(mouse)) {
+                        if (i > 0) {
+                            otherPlayer = gameManager.otherPlayers.elementAt(i - 1);
+                            selectedAnimal = j;
+                            flagManager.printSelectedAnimal=true;
+                            flagManager.printFeedingChoices=false;
+                            flagManager.chooseAnimalAction=true;
+                        } else if(player.animals[j].symbiosis[0]==null || player.animals[j-1].isFeeded()) {
+                            flagManager.chooseAnimalForAction();
+                            selectedAnimal = j;
+                            otherPlayer=player;
+                        }
+                    }
                 }
             }
             if(buttonManager.pass.isTouched(mouse)){
@@ -85,7 +97,7 @@ public class PlayerAction {
                 if (!boostedAnimal.isFeeded() || boostedAnimal.fat < boostedAnimal.fatTotal && (player.animals[selectedAnimal].symbiosis[0]==null || player.animals[selectedAnimal-1].isFeeded())) {
                     gameManager.amountOfFood--;
                     boostedAnimal.feed(1);
-                    gameManager.feed(selectedAnimal - 1, 1);
+                    gameManager.feed(selectedAnimal + 1, 1);
                     player.animals[selectedAnimal].commUsed=true;
                     flagManager.communicationDone();
                 }
@@ -356,7 +368,7 @@ public class PlayerAction {
 
     }
 
-    //wybierz karte z łapy albo spasuj
+    //wybierz karte z łapy albo spasuj albo zwierze
     public void chooseCardFromHand(){
         //wybor karty
         if(!flagManager.chooseCardFromHand) {
@@ -371,10 +383,19 @@ public class PlayerAction {
                 flagManager.printSelectedAnimal=false;
                 chosenCard=99;
             }
-            for(int i=0;i<5;i++) {
-                if(buttonManager.animalButtons[0][i]!=null && buttonManager.animalButtons[0][i].isTouched(mouse)){
-                    flagManager.printSelectedAnimal=true;
-                    selectedAnimal=i;
+            for(int i=0;i<4;i++) {
+                for (int j = 0; j < 5; j++) {
+                    if (buttonManager.animalButtons[i][j] != null && buttonManager.animalButtons[i][j].isTouched(mouse)) {
+                        if (i > 0) {
+                            otherPlayer = gameManager.otherPlayers.elementAt(i - 1);
+                            selectedAnimal = j;
+                            flagManager.printSelectedAnimal=true;
+                        } else{
+                            flagManager.printSelectedAnimal=true;
+                            selectedAnimal = j;
+                            otherPlayer=player;
+                        }
+                    }
                 }
             }
         }

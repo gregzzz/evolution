@@ -194,6 +194,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 			Gdx.input.getTextInput(listener, "Server Adress:", "localhost", "");
 		}
 		if(flagManager.inputed && !flagManager.server){
+            gameManager.serverAdress=listener.getIntputedText();
 			gameManager.state=GameState.BEGIN;
 			flagManager.chooseMainMenuOption=false;
 
@@ -287,12 +288,12 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	//rysuj wybrane zwierze
 	public void drawSelectedAnimal(){
 		if (flagManager.printSelectedAnimal) {
-			for (int i = 0; i < player.animals[playerAction.selectedAnimal].features.size(); i++) {
-				card = textures.getTexture(player.animals[playerAction.selectedAnimal].getFeature(i));
-				if (player.animals[playerAction.selectedAnimal].features.size() % 2 == 0) {
-					batch.draw(card, ((screenWidth - player.animals[playerAction.selectedAnimal].features.size()) / 2) + card.getWidth() * (i - (player.animals[playerAction.selectedAnimal].features.size()) / 2), card.getHeight() + (screenHeight - card.getHeight()) / 2);
+			for (int i = 0; i < playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size(); i++) {
+				card = textures.getTexture(playerAction.otherPlayer.animals[playerAction.selectedAnimal].getFeature(i));
+				if (playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size() % 2 == 0) {
+					batch.draw(card, ((screenWidth - playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size()) / 2) + card.getWidth() * (i - (playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size()) / 2), card.getHeight() + (screenHeight - card.getHeight()) / 2);
 				} else {
-					batch.draw(card, ((screenWidth - player.animals[playerAction.selectedAnimal].features.size()) / 2) + card.getWidth() * (i - (player.animals[playerAction.selectedAnimal].features.size()) / 2) - card.getWidth() / 2, card.getHeight() + (screenHeight - card.getHeight()) / 2);
+					batch.draw(card, ((screenWidth - playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size()) / 2) + card.getWidth() * (i - (playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size()) / 2) - card.getWidth() / 2, card.getHeight() + (screenHeight - card.getHeight()) / 2);
 				}
 			}
 		}
