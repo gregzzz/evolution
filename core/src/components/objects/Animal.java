@@ -10,7 +10,6 @@ public class Animal {
 
     public int owner;
     public int number;
-    public boolean exists = false;
     public boolean feeded = false;
     public boolean poisoned = false;
     public boolean carnivore = false;
@@ -23,6 +22,13 @@ public class Animal {
     public boolean hibernation=false;
     public boolean hibernationUsed=false;
     public boolean scavenger=false;
+    public boolean commUsed=false;
+    public boolean coopUsed=false;
+
+    public boolean foodRecieved=false;
+    public boolean realFoodRecieved=false;
+
+    Player owningPlayer;
 
     public Integer coopWith[]=new Integer[2];
     public Integer commWith[]=new Integer[2];
@@ -31,10 +37,13 @@ public class Animal {
 
     public Vector<Card> features = new Vector<Card>();
 
-    public Animal(int owner, int number){
+    public Animal(int owner, int number, Player owningPlayer){
+        this.owningPlayer=owningPlayer;
         this.number=number;
         this.owner = owner;
         for(int i=0;i<2;i++)coopWith[i]=null;
+        for(int i=0;i<2;i++)commWith[i]=null;
+        for(int i=0;i<2;i++)symbiosis[i]=null;
     }
 
     public void resetFoodData(){
@@ -46,13 +55,16 @@ public class Animal {
         if(food==-1){
             this.food--;
         }
-        for(int i=0;i<food;i++) {
-            if(this.isFeeded()){
-                if(fat<fatTotal){
-                    fat++;
+        if(symbiosis[0]==null||owningPlayer.animals[symbiosis[0]].isFeeded()) {
+            for (int i = 0; i < food; i++) {
+                if (this.isFeeded()) {
+                    if (fat < fatTotal) {
+                        fat++;
+                    }
+                } else {
+                    this.food++;
                 }
-            }else {
-                this.food++;
+                foodRecieved = true;
             }
         }
     }
@@ -110,6 +122,8 @@ public class Animal {
         }else if(this.have(Card.CAMOUFLAGE) && !attacker.have(Card.SHARPSIGHT)){
             return false;
         }else if(!this.have(Card.AQUATIC) && attacker.have(Card.AQUATIC)){
+            return false;
+        }else if(this.symbiosis[0]!=null){
             return false;
         }else{
             return true;

@@ -30,6 +30,11 @@ public class FlagManager {
 
     public boolean getText;
 
+    public boolean useCooperation;
+    public boolean useCommunication;
+    public boolean askComm;
+    public boolean askCoop;
+
 
     public FlagManager(){
         printAnimalsSlots=false;
@@ -56,6 +61,11 @@ public class FlagManager {
 
         actionDone=false;
         getText = false;
+
+        useCooperation=true;
+        useCommunication=true;
+        askComm=false;
+        askCoop=false;
     }
 
     public void passOrEndRound(){
@@ -74,6 +84,22 @@ public class FlagManager {
         chooseAnimalAction=true;
         printFeedingChoices=false;
         printCancelButton=true;
+    }
+
+    public void cooperationDone(){
+        useCooperation = true;
+        askCoop = false;
+        printCancelButton = false;
+        printSelectedAnimal=false;
+        chooseAnimalForAction=false;
+    }
+
+    public void communicationDone(){
+        useCommunication = true;
+        askComm = false;
+        printCancelButton = false;
+        printSelectedAnimal=false;
+        chooseAnimalForAction=false;
     }
 
     public void targetChosen(){

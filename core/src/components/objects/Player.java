@@ -57,11 +57,25 @@ public class Player {
     }
 
     public void addAnimal(int slot){
-        animals[slot] = new Animal(number, slot);
+        animals[slot] = new Animal(number, slot, this);
         animalsNumber ++;
     }
 
-    public void killAnimal(int slot){
+    public void killAnimal(int slot) {
+        if (slot > 0) {
+            if (animals[slot - 1] != null) {
+                animals[slot - 1].commWith[1] = null;
+                animals[slot - 1].coopWith[1] = null;
+                animals[slot - 1].symbiosis[1] = null;
+            }
+        }
+        if (slot < 5) {
+            if (animals[slot + 1] != null) {
+                animals[slot + 1].commWith[0] = null;
+                animals[slot + 1].coopWith[0] = null;
+                animals[slot + 1].symbiosis[0] = null;
+            }
+        }
         animals[slot]=null;
         animalsNumber --;
     }

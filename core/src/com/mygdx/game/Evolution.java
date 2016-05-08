@@ -123,6 +123,10 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				player.animals[i].piracy = false;
 				player.animals[i].scavenger = false;
 				player.animals[i].pasturage = false;
+				player.animals[i].commUsed = false;
+				player.animals[i].coopUsed = false;
+				player.animals[i].foodRecieved = false;
+				player.animals[i].realFoodRecieved = false;
 				if (player.animals[i].hibernationUsed = false) {
 					player.animals[i].hibernation = false;
 				}
@@ -176,6 +180,21 @@ public class Evolution implements ApplicationListener, InputProcessor {
 			gameManager.state=GameState.BEGIN;
 			flagManager.chooseMainMenuOption=false;
 
+		}
+	}
+
+	//czy uzyc cechy podwojnej w lewo
+	public void askDouble(){
+		if(flagManager.askComm || flagManager.askCoop){
+			if(flagManager.askComm){
+				drawMessage("Use communication with animal on the left or right?");
+			}else{
+				drawMessage("Use cooperation with animal on the left or right?");
+			}
+			batch.draw(buttonManager.yes.getGraphic(), buttonManager.yes.getPositionX(), buttonManager.yes.getPositionY());
+			font.draw(batch, "Left", buttonManager.yes.getPositionX()+45, buttonManager.yes.getPositionY()+30);
+			batch.draw(buttonManager.no.getGraphic(), buttonManager.no.getPositionX(), buttonManager.no.getPositionY());
+			font.draw(batch, "Right", buttonManager.no.getPositionX()+45, buttonManager.no.getPositionY()+30);
 		}
 	}
 
@@ -265,7 +284,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	//rysuj opcje FEEDing faze
 	public void drawAnimalOptions(){
 		if (flagManager.printFeedingChoices) {
-			for (int i = 0; i < 6; i++) {
+			for (int i = 0; i < 8; i++) {
 				batch.draw(buttonManager.feedChoices[i].getGraphic(), buttonManager.feedChoices[i].getPositionX(), buttonManager.feedChoices[i].getPositionY());
 			}
 			card = textures.getTexture(Card.CHOICE);
@@ -275,7 +294,8 @@ public class Evolution implements ApplicationListener, InputProcessor {
 			font.draw(batch, "Pasturage", buttonManager.feedChoices[3].getPositionX() + 15, buttonManager.feedChoices[3].getPositionY() + 30);
 			font.draw(batch, "Hibernation", buttonManager.feedChoices[4].getPositionX() + 10, buttonManager.feedChoices[4].getPositionY() + 30);
 			font.draw(batch, "Scavenger", buttonManager.feedChoices[5].getPositionX() + 15, buttonManager.feedChoices[5].getPositionY() + 30);
-
+			font.draw(batch, "Cooperation", buttonManager.feedChoices[6].getPositionX() + 10, buttonManager.feedChoices[6].getPositionY() + 30);
+			font.draw(batch, "Communication", buttonManager.feedChoices[7].getPositionX() + 7, buttonManager.feedChoices[7].getPositionY() + 30);
 		}
 	}
 
@@ -373,6 +393,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				drawPlayerCards();
 				drawOtherAnimals();
 				drawMyAnimals();
+				askDouble();
 			}
 			batch.end();
 	}
@@ -439,6 +460,8 @@ public class Evolution implements ApplicationListener, InputProcessor {
 			playerAction.chooseAnimalAction();
 			playerAction.chooseTarget();
 			playerAction.choosePiracyTarget();
+			playerAction.useCommunication();
+			playerAction.useCooperation();
 		}
 		return false;
 	}
