@@ -155,6 +155,9 @@ public class GameManager{
                 if (command == Command.FEED) {
                     server.send(new byte[] {Command.FEED.getId(),data[1],data[2],data[3],(byte)turn});
                 }
+                if (command == Command.POISON) {
+                    server.send(new byte[] {Command.FEED.getId(),data[1],(byte)turn});
+                }
                 if (command == Command.KILL) {
                     server.send(new byte[] {Command.KILL.getId(),data[1],data[2],(byte)turn});
                 }

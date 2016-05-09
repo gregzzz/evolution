@@ -130,7 +130,7 @@ public class Animal {
         }
     }
 
-        //zwraca 0 jesli atak nieudany, 1 jesli udany, 2 jesli odrzucenie ogona
+        //zwraca 0 jesli atak nieudany, 1 jesli udany, 2 jesli odrzucenie ogona, 3 jesli toxic
     public int attack(Animal target){
         if(target.have(Card.SPEED)){
             Random generator = new Random();
@@ -152,7 +152,7 @@ public class Animal {
             return 2;
         }else if(target.have(Card.TOXIC)){
             this.poisoned=true;
-            return 1;
+            return 3;
         }else{
             return 1;
         }

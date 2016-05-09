@@ -213,7 +213,10 @@ public class PlayerAction {
                         }
                         if(otherPlayer.animals[j]!=player.animals[selectedAnimal] && otherPlayer.animals[j].canBeAttacked(player.animals[selectedAnimal]) && !protectedByMimicry(otherPlayer, selectedAnimal, j)){
                             int attackType=player.animals[selectedAnimal].attack(otherPlayer.animals[j]);
-                            if(attackType==1){
+                            if(attackType==1 || attackType==3){
+                                if(attackType==3){
+                                    gameManager.poison(selectedAnimal);
+                                }
                                 player.animals[selectedAnimal].feed(2);
                                 gameManager.feed(selectedAnimal,2);
                                 otherPlayer.killAnimal(j);

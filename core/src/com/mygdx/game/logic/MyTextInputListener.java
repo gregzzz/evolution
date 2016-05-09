@@ -20,6 +20,9 @@ public class MyTextInputListener implements Input.TextInputListener {
 
     @Override
     public void canceled () {
+        inputedText=null;
+        flagManager.inputed=true;
+
     }
 
     public String getIntputedText(){

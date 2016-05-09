@@ -170,11 +170,13 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		if(flagManager.login) {
 			flagManager.inputed=false;
 			flagManager.login=false;
-			Gdx.input.getTextInput(listener, "Username:", "Username", "");
+			Gdx.input.getTextInput(listener, "Username:", gameManager.playerName, "");
 			flagManager.password=true;
 		}
 		if(flagManager.password && flagManager.inputed) {
-			gameManager.playerName=listener.getIntputedText()+" ";
+			if(listener.getIntputedText()!=null) {
+				gameManager.playerName = listener.getIntputedText() + " ";
+			}
 			flagManager.inputed=false;
 			flagManager.password=false;
 			Gdx.input.getTextInput(listener, "Password:", "Password", "");
@@ -191,10 +193,12 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		if(flagManager.server) {
 			flagManager.inputed=false;
 			flagManager.server=false;
-			Gdx.input.getTextInput(listener, "Server Adress:", "localhost", "");
+			Gdx.input.getTextInput(listener, "Server Adress:", gameManager.serverAdress, "");
 		}
 		if(flagManager.inputed && !flagManager.server){
-            gameManager.serverAdress=listener.getIntputedText();
+			if(listener.getIntputedText()!=null) {
+				gameManager.serverAdress = listener.getIntputedText();
+			}
 			gameManager.state=GameState.BEGIN;
 			flagManager.chooseMainMenuOption=false;
 
@@ -349,14 +353,38 @@ public class Evolution implements ApplicationListener, InputProcessor {
 					font.draw(batch, "Perks: "+Integer.toString(otherPlayer.animals[i].features.size()), buttonManager.animalButtons[j][i].getPositionX() + 20, buttonManager.animalButtons[j][i].getPositionY() + 70);
 					font.draw(batch, "Food: "+Integer.toString(otherPlayer.animals[i].food)+"/"+Integer.toString(otherPlayer.animals[i].foodNeeded), buttonManager.animalButtons[j][i].getPositionX() + 15, buttonManager.animalButtons[j][i].getPositionY() + 50);
 					font.draw(batch, "Fat: "+Integer.toString(otherPlayer.animals[i].fat)+"/"+Integer.toString(otherPlayer.animals[i].fatTotal), buttonManager.animalButtons[j][i].getPositionX() + 20, buttonManager.animalButtons[j][i].getPositionY() + 30);
-					if(otherPlayer.animals[i].coopWith[1]!=null){
-						batch.draw(textures.getTexture(Card.COOP), buttonManager.animalButtons[j][i].getPositionX() + card.getWidth()-textures.getTexture(Card.COOP).getWidth()/2, buttonManager.animalButtons[j][i].getPositionY()-textures.getTexture(Card.COOP).getHeight());
+					if(j==1) {
+						if (otherPlayer.animals[i].coopWith[1] != null) {
+							batch.draw(textures.getTexture(Card.COOP), buttonManager.animalButtons[j][i].getPositionX() + card.getWidth() - textures.getTexture(Card.COOP).getWidth() / 2, buttonManager.animalButtons[j][i].getPositionY() - textures.getTexture(Card.COOP).getHeight());
+						}
+						if (otherPlayer.animals[i].commWith[1] != null) {
+							batch.draw(textures.getTexture(Card.COMM), buttonManager.animalButtons[j][i].getPositionX() + card.getWidth() - textures.getTexture(Card.COMM).getWidth() / 2, buttonManager.animalButtons[j][i].getPositionY() - textures.getTexture(Card.COMM).getHeight());
+						}
+						if (otherPlayer.animals[i].symbiosis[1] != null) {
+							batch.draw(textures.getTexture(Card.SYMB), buttonManager.animalButtons[j][i].getPositionX() + card.getWidth() - textures.getTexture(Card.SYMB).getWidth() / 2, buttonManager.animalButtons[j][i].getPositionY() - textures.getTexture(Card.SYMB).getHeight());
+						}
 					}
-					if(otherPlayer.animals[i].commWith[1]!=null){
-						batch.draw(textures.getTexture(Card.COMM), buttonManager.animalButtons[j][i].getPositionX() + card.getWidth()-textures.getTexture(Card.COMM).getWidth()/2, buttonManager.animalButtons[j][i].getPositionY()-textures.getTexture(Card.COMM).getHeight());
+					if(j==2) {
+						if (otherPlayer.animals[i].coopWith[1] != null) {
+							batch.draw(textures.getTexture(Card.COOP), buttonManager.animalButtons[j][i].getPositionX() + card.getWidth(), buttonManager.animalButtons[j][i].getPositionY() +card.getHeight() - textures.getTexture(Card.COOP).getHeight()/2);
+						}
+						if (otherPlayer.animals[i].commWith[1] != null) {
+							batch.draw(textures.getTexture(Card.COMM), buttonManager.animalButtons[j][i].getPositionX() + card.getWidth(), buttonManager.animalButtons[j][i].getPositionY() +card.getHeight() - textures.getTexture(Card.COOP).getHeight()/2);
+						}
+						if (otherPlayer.animals[i].symbiosis[1] != null) {
+							batch.draw(textures.getTexture(Card.SYMB), buttonManager.animalButtons[j][i].getPositionX() + card.getWidth(), buttonManager.animalButtons[j][i].getPositionY() +card.getHeight() - textures.getTexture(Card.COOP).getHeight()/2);
+						}
 					}
-					if(otherPlayer.animals[i].symbiosis[1]!=null){
-						batch.draw(textures.getTexture(Card.SYMB), buttonManager.animalButtons[j][i].getPositionX() + card.getWidth()-textures.getTexture(Card.SYMB).getWidth()/2, buttonManager.animalButtons[j][i].getPositionY()-textures.getTexture(Card.SYMB).getHeight());
+					if(j==3) {
+						if (otherPlayer.animals[i].coopWith[1] != null) {
+							batch.draw(textures.getTexture(Card.COOP), buttonManager.animalButtons[j][i].getPositionX() - textures.getTexture(Card.COOP).getWidth(), buttonManager.animalButtons[j][i].getPositionY() +card.getHeight() - textures.getTexture(Card.COOP).getHeight()/2);
+						}
+						if (otherPlayer.animals[i].commWith[1] != null) {
+							batch.draw(textures.getTexture(Card.COMM), buttonManager.animalButtons[j][i].getPositionX() - textures.getTexture(Card.COOP).getWidth(), buttonManager.animalButtons[j][i].getPositionY() +card.getHeight() - textures.getTexture(Card.COOP).getHeight()/2);
+						}
+						if (otherPlayer.animals[i].symbiosis[1] != null) {
+							batch.draw(textures.getTexture(Card.SYMB), buttonManager.animalButtons[j][i].getPositionX() - textures.getTexture(Card.COOP).getWidth(), buttonManager.animalButtons[j][i].getPositionY() +card.getHeight() - textures.getTexture(Card.COOP).getHeight()/2);
+						}
 					}
 				}
 			}

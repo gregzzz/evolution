@@ -13,7 +13,7 @@ public class GameManager {
     public Player player = new Player();
     public Vector<Player> otherPlayers = new Vector<Player>();
     public boolean turnStart=true;
-    public String playerName=null;
+    public String playerName="Username";
     public String serverAdress="localhost";
 
     public GameState state = GameState.BEGIN;
@@ -64,6 +64,9 @@ public class GameManager {
 
     public void feed(int animal, int amount) {
         c.send(new byte[]{Command.FEED.getId(), (byte) animal, (byte) amount, (byte) amountOfFood});
+    }
+    public void poison(int animal) {
+        c.send(new byte[]{Command.POISON.getId(), (byte) animal});
     }
 
     public void handleData(byte[] recv) {
@@ -161,6 +164,16 @@ public class GameManager {
                         // karmimy
                         otherPlayer.animals[recv[1]].feed(recv[2]);
                         amountOfFood=recv[3];
+                    }
+                }
+            }
+        }
+        else if (command == Command.POISON) {
+            if (recv[2] != player.number) {
+                for (Player otherPlayer : otherPlayers) {
+                    if (otherPlayer.number == recv[2]) {
+                        // karmimy
+                        otherPlayer.animals[recv[1]].poisoned=true;
                     }
                 }
             }
