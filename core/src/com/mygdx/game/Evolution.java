@@ -182,6 +182,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 			Gdx.input.getTextInput(listener, "Password:", "Password", "");
 		}
 		if(flagManager.inputed && !flagManager.password && !flagManager.login){
+			listener.setIntputedText(null);
 			gameManager.state=GameState.BEGIN;
 			flagManager.chooseMainMenuOption=false;
 
@@ -413,6 +414,31 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		}
 	}
 
+	//rysuj przycisk do pisania wiadomosci
+	public void drawChatbox(){
+		batch.draw(buttonManager.chat.getGraphic(), buttonManager.chat.getPositionX(), buttonManager.chat.getPositionY());
+		font.draw(batch, "Chat", buttonManager.chat.getPositionX() + 20, buttonManager.chat.getPositionY() + 30);
+		if(flagManager.chatboxPressed){
+			flagManager.inputed=false;
+			Gdx.input.getTextInput(listener, "Message:", "", "");
+			flagManager.chatboxPressed=false;
+		}
+		if(flagManager.inputed&&!flagManager.password && !flagManager.login) {
+			if(listener.getIntputedText()!=null) {
+				gameManager.chatMessage(listener.getIntputedText());
+				flagManager.inputed=false;
+			}
+		}
+	}
+
+	//wypisz otrzymana wiadomosc
+	public void drawChatMessage(){
+		if(gameManager.chatMessageDelivered){
+			batch.draw(buttonManager.chatMessage.getGraphic(), buttonManager.chatMessage.getPositionX(), buttonManager.chatMessage.getPositionY());
+			font.draw(batch, gameManager.messanger+": "+gameManager.chatMessageContent ,buttonManager.chatMessage.getPositionX() + 15, buttonManager.chatMessage.getPositionY() + 30 );
+		}
+	}
+
 	public void drawGame(){
 	//najpierw tlo
 			Gdx.gl.glClearColor(0, 0, 0, 0);
@@ -431,6 +457,8 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				drawFoodAmount();
 				drawWhoseTurn();
 				drawEndRoundAndPass();
+				drawChatbox();
+				drawChatMessage();
 				drawSelectedCard();
 				drawCancelButton();
 				drawSelectedAnimal();
@@ -493,6 +521,10 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 		if(gameManager.state==GameState.BEGIN){
 			playerAction.chooseMainMenuOption();
+		}
+
+		if(gameManager.state==GameState.FEEDING || gameManager.state==GameState.EVOLUTION){
+			playerAction.enterMessage();
 		}
 
 		if(gameManager.turn==player.number && gameManager.state==GameState.EVOLUTION){

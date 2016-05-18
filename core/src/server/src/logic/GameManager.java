@@ -112,6 +112,12 @@ public class GameManager{
                     else if (command == Command.KILL) {
                         server.send(new byte[] {Command.KILL.getId(),data[1],data[2],(byte)turn});
                     }
+
+                    else if (command == Command.CHAT) {
+                        String message=stringFromBytes(data, 2, data.length-2);
+                        server.send(concat(new byte[]{Command.CHAT.getId(),data[1]}, message.getBytes()));
+                    }
+
                     else if (command == Command.HOWMANYANIMALS) {
                         byte [] cards = {};
                         int amountOfCardsToSend;
@@ -181,6 +187,11 @@ public class GameManager{
                     server.send(new byte[] {Command.ENDROUND.getId(),(byte) turn});
                     nextOneTakeTurn();
                 }
+                if (command == Command.CHAT) {
+                    String message=stringFromBytes(data, 2, data.length-2);
+                    server.send(concat(new byte[]{Command.CHAT.getId(),data[1]}, message.getBytes()));
+                }
+
                 if (command == Command.HOWMANYANIMALS) {
                     byte [] cards = {};
                     int amountOfCardsToSend;

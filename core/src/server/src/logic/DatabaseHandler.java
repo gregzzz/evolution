@@ -1,53 +1,121 @@
-package server.src.logic;
-import java.sql.*;
+/*package server.src.logic;
+
+import java.net.UnknownHostException;
+import java.util.Date;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoException;
 
 public class DatabaseHandler {
-    // JDBC driver name and database URL
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost/";
-
-    //  Database credentials
-    static final String USER = "username";
-    static final String PASS = "password";
-
-    public static void main(String[] args) {
-        Connection conn = null;
-        Statement stmt = null;
+    MongoClient mongo;
+    DB db;
+    DBCollection table;
+    public DatabaseHandler(){
         try {
-            //STEP 2: Register JDBC driver
-            Class.forName("com.mysql.jdbc.Driver");
+            mongo = new MongoClient("localhost", 27017);
 
-            //STEP 3: Open a connection
-            System.out.println("Connecting to database...");
-            conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            /**** Get database ****/
+            // if database doesn't exists, MongoDB will create it for you
+            //db = mongo.getDB("evolution");
 
-            //STEP 4: Execute a query
-            System.out.println("Creating database...");
-            stmt = conn.createStatement();
+            /**** Get collection / table from 'testdb' ****/
+            // if collection doesn't exists, MongoDB will create it for you/*
+           /* table = db.getCollection("users");
 
-            String sql = "CREATE DATABASE STUDENTS";
-            stmt.executeUpdate(sql);
-            System.out.println("Database created successfully...");
-        } catch (SQLException se) {
-            //Handle errors for JDBC
-            se.printStackTrace();
-        } catch (Exception e) {
-            //Handle errors for Class.forName
+
+        } catch (UnknownHostException e) {
             e.printStackTrace();
-        } finally {
-            //finally block used to close resources
-            try {
-                if (stmt != null)
-                    stmt.close();
-            } catch (SQLException se2) {
-            }// nothing we can do
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException se) {
-                se.printStackTrace();
-            }//end finally try
-        }//end try
-        System.out.println("Goodbye!");
+        } catch (MongoException e) {
+            e.printStackTrace();
+        }
     }
-}
+
+    public boolean insert(String login, String email, String password){
+        BasicDBObject searchQuery = new BasicDBObject();
+        searchQuery.put("login", login);
+
+        DBCursor cursor = table.find(searchQuery);
+        if (cursor.hasNext()) {
+            return false;                               // niepowodzenie dodania bo juz jest ktos taki
+        }
+
+        searchQuery = new BasicDBObject();
+        searchQuery.put("email", email);
+
+        cursor = table.find(searchQuery);
+        if (cursor.hasNext()) {
+            return false;                               // niepowodzenie taki email juz jest
+        }
+
+        BasicDBObject document = new BasicDBObject();
+        document.put("login", login);
+        document.put("email", email);
+        document.put("password", password);
+        document.put("score", 0);
+        document.put("games", 0);
+        table.insert(document);
+
+        return true;
+    }
+
+    public boolean checkLoginAndPassword(String login, String password){
+        BasicDBObject searchQuery = new BasicDBObject();
+        searchQuery.put("login", login);
+        searchQuery.put("password", password);
+
+        DBCursor cursor = table.find(searchQuery);
+        if (cursor.hasNext()) {
+            System.out.println(cursor.next());
+            return true;
+        }
+        return false;
+    }
+    public int getScore(String login){
+        BasicDBObject searchQuery = new BasicDBObject();
+        searchQuery.put("login", login);
+
+        DBCursor cursor = table.find(searchQuery);
+        if (cursor.hasNext()) {
+            return (int)cursor.next().get("score");
+        }
+        return -1;              // brak takiego loginu mozna rzucic wyjatek
+    }
+
+    public int getGames(String login){
+        BasicDBObject searchQuery = new BasicDBObject();
+        searchQuery.put("login", login);
+
+        DBCursor cursor = table.find(searchQuery);
+        if (cursor.hasNext()) {
+            return (int)cursor.next().get("games");
+        }
+        return -1;              // brak takiego loginu mozna rzucic wyjatek
+    }
+
+    public void updateScore(String login, int points){
+        BasicDBObject newDocument1 = new BasicDBObject().append("$inc",
+                new BasicDBObject().append("score", points));
+        BasicDBObject newDocument2 = new BasicDBObject().append("$inc",
+                new BasicDBObject().append("games", 1));
+
+        table.update(new BasicDBObject().append("login", login), newDocument1);
+        table.update(new BasicDBObject().append("login", login), newDocument2);
+    }
+
+    public void printTable(){
+        DBCursor cursor = table.find();
+        while (cursor.hasNext()) {
+            System.out.println(cursor.next());
+        }
+    }
+
+    public void deleteAll(){
+        DBCursor cursor = table.find();
+        while (cursor.hasNext()) {
+            table.remove(cursor.next());
+        }
+    }
+}*/

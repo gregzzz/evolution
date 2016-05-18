@@ -1,5 +1,6 @@
 package com.mygdx.game;
 
+import com.badlogic.gdx.Gdx;
 import com.mygdx.game.logic.Mouse;
 import components.enums.Card;
 import com.mygdx.game.managers.*;
@@ -432,6 +433,15 @@ public class PlayerAction {
             if(buttonManager.menuButtons[5].isTouched(mouse)){
 
             }
+        }
+    }
+
+    public void enterMessage(){
+        if(buttonManager.chat.isTouched(mouse)){
+            flagManager.chatboxPressed=true;
+        }
+        if(buttonManager.chatMessage.isTouched(mouse)){
+            gameManager.chatMessageDelivered=false;
         }
     }
 }

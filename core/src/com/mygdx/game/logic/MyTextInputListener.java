@@ -28,4 +28,7 @@ public class MyTextInputListener implements Input.TextInputListener {
     public String getIntputedText(){
         return inputedText;
     }
+    public void setIntputedText(String text){
+        inputedText=text;
+    }
 }

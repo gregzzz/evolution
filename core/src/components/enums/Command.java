@@ -24,6 +24,7 @@ public enum Command {
     SCAVENGE(18),
     EVOLUTION2(19),
     POISON(20),
+    CHAT(21),
 
     NONE(-1);
 

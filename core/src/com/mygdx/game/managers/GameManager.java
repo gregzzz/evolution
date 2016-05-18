@@ -15,6 +15,9 @@ public class GameManager {
     public boolean turnStart=true;
     public String playerName="Username";
     public String serverAdress="localhost";
+    public String messanger;
+    public String chatMessageContent;
+    public boolean chatMessageDelivered;
 
     public GameState state = GameState.BEGIN;
     public Command command = Command.NONE;
@@ -67,6 +70,10 @@ public class GameManager {
     }
     public void poison(int animal) {
         c.send(new byte[]{Command.POISON.getId(), (byte) animal});
+    }
+
+    public void chatMessage(String message) {
+        c.send(concat(new byte[]{Command.CHAT.getId(), (byte)player.number}, message.getBytes()));
     }
 
     public void handleData(byte[] recv) {
@@ -123,6 +130,20 @@ public class GameManager {
         else if (command == Command.TURN) {
             turn = recv[1];
             turnStart=true;
+        }
+        else if (command == Command.CHAT) {
+            if (recv[1] != player.number) {
+                for (Player otherPlayer : otherPlayers) {
+                    if (otherPlayer.number == recv[1]) {
+                        messanger=otherPlayer.name;
+                    }
+                }
+            }
+            else{
+                messanger=player.name;
+            }
+            chatMessageContent=stringFromBytes(recv,2,recv.length-2);
+            chatMessageDelivered=true;
         }
         else if (command == Command.ADD) {
             if (recv[2] != player.number) {

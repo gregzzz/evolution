@@ -69,7 +69,7 @@ public class Player {
                 animals[slot - 1].symbiosis[1] = null;
             }
         }
-        if (slot < 5) {
+        if (slot < 4) {
             if (animals[slot + 1] != null) {
                 animals[slot + 1].commWith[0] = null;
                 animals[slot + 1].coopWith[0] = null;

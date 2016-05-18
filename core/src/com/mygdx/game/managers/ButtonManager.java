@@ -13,6 +13,8 @@ public class ButtonManager {
     public Button animalPlaces[] = new Button[5];
     public Button animalButtons[][] = new Button[4][5];
     public Button menuButtons[] = new Button[6];
+    public Button chat;
+    public Button chatMessage;
     public Button endRound;
     public Button pass;
     public Button cancelButton;
@@ -48,8 +50,11 @@ public class ButtonManager {
     }
 
     public void createButtons() {
-        Texture card = textures.getTexture(Card.CHOICE);
+        Texture card = textures.getTexture(Card.RAMKA);
+        chatMessage=new Button(card,(screenWidth - card.getWidth()) / 2, screenHeight/2 - card.getHeight()*4);
+        card = textures.getTexture(Card.CHOICE);
         yes=new Button(card, ((screenWidth - card.getWidth()) / 2) - card.getWidth()/2, (screenHeight - card.getHeight()) / 2 - card.getHeight());
+        chat=new Button(card, card.getWidth(), screenHeight-card.getHeight());
         no=new Button(card, ((screenWidth - card.getWidth()) / 2) + card.getWidth()/2 , (screenHeight - card.getHeight()) / 2 - card.getHeight());
         cancelButton = new Button(card, ((screenWidth - card.getWidth()) / 2), (screenHeight - card.getHeight()) / 2 - 2*card.getHeight());
         for (int i = 0; i < 3; i++) {

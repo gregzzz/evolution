@@ -21,6 +21,7 @@ public class FlagManager {
     public boolean password;
     public boolean inputed;
     public boolean server;
+    public boolean chatboxPressed;
 
     public boolean chooseMainMenuOption;
     public boolean lookingForGames;
@@ -57,6 +58,7 @@ public class FlagManager {
         password=false;
         inputed=false;
         server=true;
+        chatboxPressed=false;
 
         chooseMainMenuOption=false;
         lookingForGames=false;
