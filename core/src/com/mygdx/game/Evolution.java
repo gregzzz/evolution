@@ -91,21 +91,24 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		{
 			e.printStackTrace();
 		}
-		if(gameManager.state == GameState.LOGIN){
-			drawLogin();
-		}
-		if(gameManager.state == GameState.SERVER){
-			drawServer();
-		}
+		switch(gameManager.state){
+			case LOGIN:
+				drawLogin();
+				break;
+			case SERVER:
+				drawServer();
+				break;
+			case GAMEOVER:
+				drawGameOver();
+				break;
+			case BEGIN:
+				drawMenu();
+				break;
+			default:
+				drawGame();
+				break;
 
-		if(gameManager.state == GameState.BEGIN){
-			drawMenu();
 		}
-
-		if(gameManager.state != GameState.WAIT && gameManager.state != GameState.BEGIN && gameManager.state != GameState.LOGIN) {
-			drawGame();
-		}
-
 	}
 
 	//ramka z napisem
@@ -140,6 +143,58 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		}
 	}
 
+	public void drawGameOver(){
+		//najpierw tlo
+		Gdx.gl.glClearColor(0, 0, 0, 0);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		int mostPoints=0;
+		Player winner=player;
+		batch.begin();
+		// rysul tlo
+		batch.draw(textures.getTexture(Card.BACKGROUND1), 0, 0);
+		batch.draw(textures.getTexture(Card.BACKGROUND2), 0, 0);
+
+		batch.draw(buttonManager.cancelButton.getGraphic(), buttonManager.cancelButton.getPositionX(), buttonManager.cancelButton.getPositionY());
+		font.draw(batch, "End Game", buttonManager.cancelButton.getPositionX() + 15, buttonManager.cancelButton.getPositionY() + 30);
+
+		int playerPoints[]=new int[gameManager.otherPlayers.size()+1];
+
+		//liczenie punktow graczy
+		mostPoints+=player.animalsNumber();
+		for(int i=0;i<5;i++) {
+			if (player.animals[i]!=null){
+				mostPoints += player.animals[i].features.size();
+				mostPoints += player.animals[i].foodNeeded;
+			}
+		}
+		playerPoints[0]=mostPoints;
+
+		for(int j=0;j<gameManager.otherPlayers.size();j++) {
+			otherPlayer = gameManager.otherPlayers.elementAt(j);
+			playerPoints[j+1]+=otherPlayer.animalsNumber();
+			for(int i=0;i<5;i++) {
+				if (otherPlayer.animals[i]!=null){
+					playerPoints[j+1] += otherPlayer.animals[i].features.size();
+					playerPoints[j+1] += otherPlayer.animals[i].foodNeeded;
+				}
+			}
+			if(playerPoints[j+1]>mostPoints){
+				mostPoints=playerPoints[j+1];
+				winner=otherPlayer;
+			}
+		}
+
+		String message="Winner: "+winner.name+". Your points: "+Integer.toString(playerPoints[0]);
+		for(int i=0;i<gameManager.otherPlayers.size();i++){
+			message+=", "+gameManager.otherPlayers.elementAt(i).name+": "+Integer.toString(playerPoints[i+1])+" points";
+		}
+		drawMessage(message);
+		flagManager.printCancelButton=true;
+
+
+		batch.end();
+	}
+
 	public void drawMenu(){
 		//najpierw tlo
 		Gdx.gl.glClearColor(0, 0, 0, 0);
@@ -162,7 +217,9 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		//szukanie gry...
 		if(flagManager.lookingForGames){
 			drawMessage("Looking for a game...");
+			flagManager.printCancelButton=true;
 		}
+
 		batch.end();
 	}
 
@@ -200,6 +257,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 			if(listener.getIntputedText()!=null) {
 				gameManager.serverAdress = listener.getIntputedText();
 			}
+			listener.setIntputedText(null);
 			gameManager.state=GameState.BEGIN;
 			flagManager.chooseMainMenuOption=false;
 
@@ -521,6 +579,10 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 		if(gameManager.state==GameState.BEGIN){
 			playerAction.chooseMainMenuOption();
+		}
+
+		if(gameManager.state==GameState.GAMEOVER){
+			playerAction.returnToMenu();
 		}
 
 		if(gameManager.state==GameState.FEEDING || gameManager.state==GameState.EVOLUTION){

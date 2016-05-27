@@ -5,6 +5,7 @@ import components.objects.Player;
 import components.enums.*;
 import static components.fun.*;
 
+import java.io.*;
 import java.util.Vector;
 
 public class GameManager {
@@ -27,10 +28,60 @@ public class GameManager {
     //cialo dla padlinozercy
     public boolean corpse=false;
 
+    public void openConfiguration(){
+        try {
+            File file = new File("core/assets/conf.txt");
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            String line;
+            line = bufferedReader.readLine();
+            playerName=line;
+            line = bufferedReader.readLine();
+            line = bufferedReader.readLine();
+            serverAdress=line;
+            fileReader.close();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+    //zapisywanie w pliku ustawien gry
+    public void saveConfiguration(){
+        try {
+            File file = new File("core/assets/conf.txt");
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
+
+            BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(fileOutputStream));
+
+            bufferedWriter.write(playerName);
+            bufferedWriter.newLine();
+            bufferedWriter.write("Password");
+            bufferedWriter.newLine();
+            bufferedWriter.write(serverAdress);
+            bufferedWriter.newLine();
+
+
+            bufferedWriter.close();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public GameManager(){
+        openConfiguration();
+    }
+
     public void startClient() {
         if (!clientConnected) {
             clientConnected = true;
             c = new Client(serverAdress, 5055, this);
+        }
+    }
+
+    public void disconnect() {
+        if (clientConnected) {
+            clientConnected = false;
+            c = null;
         }
     }
 
@@ -159,10 +210,11 @@ public class GameManager {
         }
         else if (command == Command.KILL) {
             if (recv[3] != player.number) {
-                if (player.number == recv[1]) {
-                    // ubijamy
-                    player.killAnimal(recv[2]);
-                    corpse=true;
+                for (Player otherPlayer : otherPlayers) {
+                    if (otherPlayer.number == recv[1]) {
+                        otherPlayer.killAnimal(recv[2]);
+                        corpse = true;
+                    }
                 }
             }
         }

@@ -17,6 +17,7 @@ public enum GameState {
     OPTIONS(10),
     LOGIN(11),
     SERVER(12),
+    GAMEOVER(13),
 
     NONE(-1);
 

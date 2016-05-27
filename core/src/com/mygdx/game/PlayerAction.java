@@ -8,6 +8,7 @@ import components.enums.GameState;
 import components.objects.Animal;
 import components.objects.Player;
 
+
 public class PlayerAction {
     public FlagManager flagManager;
     public GameManager gameManager;
@@ -27,6 +28,17 @@ public class PlayerAction {
         this.mouse=mouse;
         this.buttonManager=buttonManager;
         this.player=gameManager.player;
+    }
+
+
+    //guzik do wracania do menu pod koniec gry
+    public void returnToMenu(){
+        if(buttonManager.cancelButton.isTouched(mouse)){
+            gameManager.state=GameState.BEGIN;
+            flagManager.lookingForGames=false;
+            flagManager.chooseMainMenuOption=false;
+            gameManager.disconnect();
+        }
     }
 
     //wybierz zwierze podczas fazy zywienia
@@ -420,6 +432,7 @@ public class PlayerAction {
                     flagManager.chooseMainMenuOption=true;
                     gameManager.startClient();
                     flagManager.lookingForGames=true;
+                    gameManager.saveConfiguration();
                 }
             }
             if(buttonManager.menuButtons[3].isTouched(mouse)){
@@ -444,4 +457,6 @@ public class PlayerAction {
             gameManager.chatMessageDelivered=false;
         }
     }
+
+
 }

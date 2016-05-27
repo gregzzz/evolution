@@ -1,4 +1,4 @@
-/*package server.src.logic;
+package server.src.logic;
 
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -23,7 +23,7 @@ public class DatabaseHandler {
 
             /**** Get collection / table from 'testdb' ****/
             // if collection doesn't exists, MongoDB will create it for you/*
-           /* table = db.getCollection("users");
+            table = db.getCollection("users");
 
 
         } catch (UnknownHostException e) {
@@ -73,6 +73,7 @@ public class DatabaseHandler {
         }
         return false;
     }
+    /*
     public int getScore(String login){
         BasicDBObject searchQuery = new BasicDBObject();
         searchQuery.put("login", login);
@@ -84,6 +85,7 @@ public class DatabaseHandler {
         return -1;              // brak takiego loginu mozna rzucic wyjatek
     }
 
+
     public int getGames(String login){
         BasicDBObject searchQuery = new BasicDBObject();
         searchQuery.put("login", login);
@@ -94,7 +96,7 @@ public class DatabaseHandler {
         }
         return -1;              // brak takiego loginu mozna rzucic wyjatek
     }
-
+*/
     public void updateScore(String login, int points){
         BasicDBObject newDocument1 = new BasicDBObject().append("$inc",
                 new BasicDBObject().append("score", points));
@@ -118,4 +120,4 @@ public class DatabaseHandler {
             table.remove(cursor.next());
         }
     }
-}*/
+}

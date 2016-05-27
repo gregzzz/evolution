@@ -219,24 +219,29 @@ public class GameManager{
 
     //rozdajemy karty za zwierzęta
     public void prepareForEvolution(){
-        // zerujemy tablice passow
-        whoPassed = new boolean[numberOfPlayers];
-        for(Player player: players){
-            if(player != null)
-                player.pass = false;
-        }
-        // i ustawiamy kolejke na tego kto zaczyna faze
-        if(whoBeginPhase==numberOfPlayers-1){
-            whoBeginPhase=0;
-            turn=0;
+        if(deck.getDeckSize()>6*players.length) {
+            // zerujemy tablice passow
+            whoPassed = new boolean[numberOfPlayers];
+            for (Player player : players) {
+                if (player != null)
+                    player.pass = false;
+            }
+            // i ustawiamy kolejke na tego kto zaczyna faze
+            if (whoBeginPhase == numberOfPlayers - 1) {
+                whoBeginPhase = 0;
+                turn = 0;
+            } else {
+                whoBeginPhase++;
+                turn = whoBeginPhase;
+            }
+            server.send(new byte[]{Command.HOWMANYANIMALS.getId()});
+            server.send(new byte[]{Command.TURN.getId(), (byte) turn});
+            server.send(new byte[]{Command.STATE.getId(), (byte) GameState.EVOLUTION.getId()});
+            state = GameState.EVOLUTION;
         }else{
-            whoBeginPhase++;
-            turn = whoBeginPhase;
+            server.send(new byte[]{Command.STATE.getId(), (byte) GameState.GAMEOVER.getId()});
+            state = GameState.GAMEOVER;
         }
-        server.send(new byte [] {Command.HOWMANYANIMALS.getId()});
-        server.send(new byte [] {Command.TURN.getId(), (byte)turn});
-        server.send(new byte [] {Command.STATE.getId(),(byte)GameState.EVOLUTION.getId()});
-        state = GameState.EVOLUTION;
 
     }
 
@@ -322,6 +327,10 @@ public class GameManager{
             Card s = deck.get(randInt);
             deck.removeElementAt(randInt);
             return s;
+        }
+
+        public int getDeckSize(){
+            return deck.size();
         }
     }
 }
