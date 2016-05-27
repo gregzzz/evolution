@@ -217,7 +217,6 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		//szukanie gry...
 		if(flagManager.lookingForGames){
 			drawMessage("Looking for a game...");
-			flagManager.printCancelButton=true;
 		}
 
 		batch.end();
@@ -232,7 +231,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		}
 		if(flagManager.password && flagManager.inputed) {
 			if(listener.getIntputedText()!=null) {
-				gameManager.playerName = listener.getIntputedText() + " ";
+				gameManager.playerName = listener.getIntputedText()+" ";
 			}
 			flagManager.inputed=false;
 			flagManager.password=false;
@@ -303,9 +302,11 @@ public class Evolution implements ApplicationListener, InputProcessor {
 			font.draw(batch, "Your Turn", screenWidth - 2 * card.getWidth() + 15, 5 + screenHeight - 25);
 		} else {
 			for (Player player : gameManager.otherPlayers) {
-				if (player.number == gameManager.turn)
-					if (player.name != null)
+				if (player.number == gameManager.turn) {
+					if (player.name != null) {
 						font.draw(batch, player.name, screenWidth - 2 * card.getWidth() + 15, 5 + screenHeight - 25);
+					}
+				}
 			}
 		}
 	}
@@ -407,7 +408,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		for(int j=1;j<gameManager.otherPlayers.size()+1;j++){
 			otherPlayer = gameManager.otherPlayers.elementAt(j-1);
 			for (int i = 0; i < 5; i++) {
-				if (buttonManager.animalButtons[j][i] != null) {
+				if (buttonManager.animalButtons[j][i] != null && otherPlayer.animals[i]!=null) {
 					batch.draw(card, buttonManager.animalButtons[j][i].getPositionX(), buttonManager.animalButtons[j][i].getPositionY());
 					font.draw(batch, "Perks: "+Integer.toString(otherPlayer.animals[i].features.size()), buttonManager.animalButtons[j][i].getPositionX() + 20, buttonManager.animalButtons[j][i].getPositionY() + 70);
 					font.draw(batch, "Food: "+Integer.toString(otherPlayer.animals[i].food)+"/"+Integer.toString(otherPlayer.animals[i].foodNeeded), buttonManager.animalButtons[j][i].getPositionX() + 15, buttonManager.animalButtons[j][i].getPositionY() + 50);

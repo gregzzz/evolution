@@ -29,7 +29,7 @@ public class GameManager{
     public int nowTurn;
     private boolean [] whoPassed;
 
-    Deck deck = new Deck();
+    Deck deck;
 
     private int amountOfFood;
 
@@ -38,6 +38,7 @@ public class GameManager{
         numberOfPlayers = n;
         clients = r;
         players = new Player[n];
+        deck = new Deck();
 
     }
 
@@ -162,7 +163,7 @@ public class GameManager{
                     server.send(new byte[] {Command.FEED.getId(),data[1],data[2],data[3],(byte)turn});
                 }
                 if (command == Command.POISON) {
-                    server.send(new byte[] {Command.FEED.getId(),data[1],(byte)turn});
+                    server.send(new byte[] {Command.POISON.getId(),data[1],(byte)turn});
                 }
                 if (command == Command.KILL) {
                     server.send(new byte[] {Command.KILL.getId(),data[1],data[2],(byte)turn});
@@ -316,7 +317,7 @@ public class GameManager{
         public Deck(){
             //deck
             for(int i=1;i<=20;i++){
-                for(int j=0;j<4;j++) {
+                for(int j=0;j<players.length;j++) {
                     deck.addElement(Card.fromInt(i));
                 }
             }

@@ -53,7 +53,7 @@ public class GameManager {
 
             BufferedWriter bufferedWriter = new BufferedWriter(new OutputStreamWriter(fileOutputStream));
 
-            bufferedWriter.write(playerName);
+            bufferedWriter.write(playerName.substring(0,playerName.length()-1));
             bufferedWriter.newLine();
             bufferedWriter.write("Password");
             bufferedWriter.newLine();
@@ -215,6 +215,11 @@ public class GameManager {
                         otherPlayer.killAnimal(recv[2]);
                         corpse = true;
                     }
+                }
+                if (player.number == recv[1]) {
+                    // ubijamy
+                    player.killAnimal(recv[2]);
+                    corpse=true;
                 }
             }
         }

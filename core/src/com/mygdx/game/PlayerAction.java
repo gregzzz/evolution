@@ -241,6 +241,8 @@ public class PlayerAction {
                                 player.animals[selectedAnimal].feed(1);
                                 gameManager.feed(selectedAnimal,1);
                                 flagManager.actionDone=true;
+                            }else{
+                                flagManager.actionDone=true;
                             }
                             flagManager.targetChosen();
                         }
