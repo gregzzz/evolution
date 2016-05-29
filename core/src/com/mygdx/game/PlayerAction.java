@@ -8,6 +8,8 @@ import components.enums.GameState;
 import components.objects.Animal;
 import components.objects.Player;
 
+import java.util.Random;
+
 
 public class PlayerAction {
     public FlagManager flagManager;
@@ -238,6 +240,16 @@ public class PlayerAction {
                                 buttonManager.updateAnimalButtons();
                                 flagManager.actionDone=true;
                             }else if(attackType==2){
+                                Random generator = new Random();
+                                int randInt=generator.nextInt(otherPlayer.animals[j].features.size());
+                                if(otherPlayer.animals[j].features.elementAt(randInt)==Card.MASSIVEC || otherPlayer.animals[j].features.elementAt(randInt)==Card.MASSIVEF){
+                                    otherPlayer.animals[j].foodNeeded--;
+                                }
+                                if(otherPlayer.animals[j].features.elementAt(randInt)==Card.PARASITEC || otherPlayer.animals[j].features.elementAt(randInt)==Card.PARASITEF){
+                                    otherPlayer.animals[j].foodNeeded-=2;
+                                }
+                                otherPlayer.animals[j].removeFeature(randInt);
+                                gameManager.tailToss(otherPlayer.number, j, randInt);
                                 player.animals[selectedAnimal].feed(1);
                                 gameManager.feed(selectedAnimal,1);
                                 flagManager.actionDone=true;
@@ -431,6 +443,8 @@ public class PlayerAction {
             }
             if(buttonManager.menuButtons[2].isTouched(mouse)){
                 if(gameManager.playerName!=null) {
+                    flagManager.login=false;
+                    flagManager.password=false;
                     flagManager.chooseMainMenuOption=true;
                     gameManager.startClient();
                     flagManager.lookingForGames=true;

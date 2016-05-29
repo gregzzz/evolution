@@ -137,7 +137,12 @@ public class GameManager{
                     }
                     else if (command == Command.PASS) {
                         //ktos pasuje
-                        client.player.pass = true;
+                        for(Player player: players){
+                            if(player.number==turn) {
+                                player.pass = true;
+                            }
+                        }
+
                         server.send(new byte[] {Command.PASS.getId(),(byte) turn});
                         if(!everyonePassed()){
                             nextOneTakeTurn();
@@ -171,13 +176,20 @@ public class GameManager{
                 if (command == Command.STEAL) {
                     server.send(new byte[] {Command.STEAL.getId(),data[1],data[2],(byte)turn});
                 }
+                if (command == Command.TAILTOSS) {
+                    server.send(new byte[] {Command.TAILTOSS.getId(),data[1],data[2],data[3],(byte)turn});
+                }
                 if (command == Command.SCAVENGE) {
                     server.send(new byte[] {Command.SCAVENGE.getId(),(byte)turn});
                 }
 
                 if (command == Command.PASS) {
                     //ktos pasuje
-                    client.player.pass = true;
+                    for(Player player: players){
+                        if(player.number==turn) {
+                            player.pass = true;
+                        }
+                    }
                     server.send(new byte[] {Command.PASS.getId(),(byte) turn});
                     if(!everyonePassed()){
                         nextOneTakeTurn();

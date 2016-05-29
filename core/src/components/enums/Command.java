@@ -25,6 +25,7 @@ public enum Command {
     EVOLUTION2(19),
     POISON(20),
     CHAT(21),
+    TAILTOSS(22),
 
     NONE(-1);
 

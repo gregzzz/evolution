@@ -127,6 +127,10 @@ public class GameManager {
         c.send(concat(new byte[]{Command.CHAT.getId(), (byte)player.number}, message.getBytes()));
     }
 
+    public void tailToss(int player,int animal, int feature){
+        c.send(new byte[]{Command.TAILTOSS.getId(), (byte) player, (byte)animal, (byte)feature });
+    }
+
     public void handleData(byte[] recv) {
         // jesli chcesz sprawdzic caly napis uzywasz recvData
         // jesli jego czesc uzywasz recv
@@ -225,8 +229,25 @@ public class GameManager {
         }
         else if (command == Command.STEAL) {
             if (recv[3] != player.number) {
+                for (Player otherPlayer : otherPlayers) {
+                    if (otherPlayer.number == recv[1]) {
+                        otherPlayer.animals[recv[2]].feed(-1);
+                    }
+                }
                 if (player.number == recv[1]) {
                     player.animals[recv[2]].feed(-1);
+                }
+            }
+        }
+        else if (command == Command.TAILTOSS) {
+            if (recv[4] != player.number) {
+                for (Player otherPlayer : otherPlayers) {
+                    if (otherPlayer.number == recv[1]) {
+                        otherPlayer.animals[recv[2]].removeFeature((int)recv[3]);
+                    }
+                }
+                if (player.number == recv[1]) {
+                    player.animals[recv[2]].removeFeature((int)recv[3]);
                 }
             }
         }

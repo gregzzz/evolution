@@ -165,6 +165,9 @@ public class Evolution implements ApplicationListener, InputProcessor {
 			if (player.animals[i]!=null){
 				mostPoints += player.animals[i].features.size();
 				mostPoints += player.animals[i].foodNeeded;
+				if(player.animals[i].commWith[1]!=null)mostPoints++;
+				if(player.animals[i].coopWith[1]!=null)mostPoints++;
+				if(player.animals[i].symbiosis[1]!=null)mostPoints++;
 			}
 		}
 		playerPoints[0]=mostPoints;
@@ -176,6 +179,9 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				if (otherPlayer.animals[i]!=null){
 					playerPoints[j+1] += otherPlayer.animals[i].features.size();
 					playerPoints[j+1] += otherPlayer.animals[i].foodNeeded;
+					if(otherPlayer.animals[i].commWith[1]!=null)mostPoints++;
+					if(otherPlayer.animals[i].coopWith[1]!=null)mostPoints++;
+					if(otherPlayer.animals[i].symbiosis[1]!=null)mostPoints++;
 				}
 			}
 			if(playerPoints[j+1]>mostPoints){
