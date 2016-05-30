@@ -16,6 +16,7 @@ public class FlagManager {
     public boolean printSelectedAnimal;
     public boolean printFeedingChoices;
     public boolean printCancelButton;
+    public boolean printTurnMessage;
 
     public boolean login;
     public boolean password;
@@ -44,6 +45,7 @@ public class FlagManager {
         printSelectedAnimal=false;
         printFeedingChoices=false;
         printCancelButton=false;
+        printTurnMessage=false;
 
         chooseCardFromHand=false;
         chooseAction=true;
@@ -77,11 +79,6 @@ public class FlagManager {
         printFeedingChoices = false;
     }
 
-    public void chooseAnimalForAction(){
-        printSelectedAnimal=true;
-        printFeedingChoices=true;
-        chooseAnimalAction=false;
-    }
 
     public void chooseTarget(){
         chooseAnimalForAction=true;
@@ -151,7 +148,7 @@ public class FlagManager {
     }
 
     public void chooseCard(){
-        chooseAction = false;
+
         printChoosenCard = true;
         printSelectedAnimal=false;
     }

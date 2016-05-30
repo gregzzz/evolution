@@ -46,6 +46,7 @@ public class PlayerAction {
     //wybierz zwierze podczas fazy zywienia
     public void chooseAnimalForAction(){
         if(!flagManager.chooseAnimalForAction){
+            //wybor zwierzecia
             for(int i=0;i<4;i++) {
                 for (int j = 0; j < 5; j++) {
                     if (buttonManager.animalButtons[i][j] != null && buttonManager.animalButtons[i][j].isTouched(mouse)) {
@@ -53,17 +54,30 @@ public class PlayerAction {
                             otherPlayer = gameManager.otherPlayers.elementAt(i - 1);
                             selectedAnimal = j;
                             flagManager.printSelectedAnimal=true;
-                            flagManager.printFeedingChoices=false;
-                            flagManager.chooseAnimalAction=true;
+                            flagManager.printFeedingChoices = false;
+                            flagManager.chooseAnimalAction = true;
                         } else if(player.animals[j].symbiosis[0]==null || player.animals[j-1].isFeeded()) {
-                            flagManager.chooseAnimalForAction();
+                            flagManager.printSelectedAnimal=true;
+                            if(gameManager.turn==player.number) {
+                                flagManager.printFeedingChoices = true;
+                                flagManager.chooseAnimalAction = false;
+                            }
                             selectedAnimal = j;
                             otherPlayer=player;
                         }
                     }
                 }
             }
-            if(buttonManager.pass.isTouched(mouse)){
+            //opis karty
+            for (int i = 0; i < player.cardsNumber(); i++) {
+                if (buttonManager.cardButtons[i].isTouched(mouse)) {
+                    chosenCard = i;
+                    flagManager.chooseCard();
+                    flagManager.printFeedingChoices=false;
+                    flagManager.chooseAnimalAction=true;
+                }
+            }
+            if(buttonManager.pass.isTouched(mouse)&&gameManager.turn==player.number){
                 boolean allAnimalsFeeded=true;
                 for(int i=0;i<5;i++){
                     if(player.animals[i]!=null && !player.animals[i].isFeeded()){
@@ -77,7 +91,7 @@ public class PlayerAction {
                     chosenCard = 99;
                 }
             }
-            if(buttonManager.endRound.isTouched(mouse)){
+            if(buttonManager.endRound.isTouched(mouse)&&gameManager.turn==player.number){
                 boolean allAnimalsFeeded=true;
                 for(int i=0;i<5;i++){
                     if(player.animals[i]!=null && !player.animals[i].isFeeded()){
@@ -406,9 +420,13 @@ public class PlayerAction {
                 if (buttonManager.cardButtons[i].isTouched(mouse)) {
                     chosenCard = i;
                     flagManager.chooseCard();
+                    //jesli twoja tura to mozemy cos z ta karta zrobic
+                    if(gameManager.turn==player.number){
+                        flagManager.chooseAction = false;
+                    }
                 }
             }
-            if(buttonManager.pass.isTouched(mouse)&&player.animalsNumber()>0){
+            if(gameManager.turn==player.number&&buttonManager.pass.isTouched(mouse)&&player.animalsNumber()>0){
                 gameManager.pass();
                 flagManager.printSelectedAnimal=false;
                 chosenCard=99;

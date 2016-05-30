@@ -28,6 +28,8 @@ public class Animal {
     public boolean foodRecieved=false;
     public boolean realFoodRecieved=false;
 
+    public boolean speedProtected[]=new boolean[5];
+
     Player owningPlayer;
 
     public Integer coopWith[]=new Integer[2];
@@ -38,12 +40,19 @@ public class Animal {
     public Vector<Card> features = new Vector<Card>();
 
     public Animal(int owner, int number, Player owningPlayer){
+        resetSpeedData();
         this.owningPlayer=owningPlayer;
         this.number=number;
         this.owner = owner;
         for(int i=0;i<2;i++)coopWith[i]=null;
         for(int i=0;i<2;i++)commWith[i]=null;
         for(int i=0;i<2;i++)symbiosis[i]=null;
+    }
+
+    public void resetSpeedData(){
+        for(int i=0;i<5;i++){
+            speedProtected[i]=false;
+        }
     }
 
     public void resetFoodData(){
@@ -135,6 +144,7 @@ public class Animal {
         if(target.have(Card.SPEED)){
             Random generator = new Random();
             if(generator.nextInt(2)==1){
+                target.speedProtected[this.number]=true;
                 return 0;
             }else{
                 return 1;

@@ -118,10 +118,32 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		font.draw(batch, text ,(screenWidth - card.getWidth()) / 2 + 15, (screenHeight - card.getHeight()) / 2 + 30 );
 	}
 
+    public void drawYourTurnMessage(){
+		if(flagManager.printTurnMessage) {
+			String yourTurnMessage;
+			if (gameManager.state == GameState.EVOLUTION) {
+				yourTurnMessage = "Your turn, EVOLUTION PHASE";
+			} else {
+				yourTurnMessage = "Your turn, FEEDING PHASE";
+			}
+			drawMessage(yourTurnMessage);
+		}
+    }
+
 	public void startOfTurnCleanup(){
 		gameManager.turnStart=false;
-		buttonManager.updateAnimalButtons();
 		flagManager.actionDone=false;
+		flagManager.printTurnMessage=true;
+
+        //odblokowanie szybkosci
+        for(int i=0;i<gameManager.otherPlayers.size();i++) {
+            otherPlayer = gameManager.otherPlayers.elementAt(i);
+            for (int j = 0; j < 5; j++) {
+                if (otherPlayer.animals[j] != null) {
+                    otherPlayer.animals[j].resetSpeedData();
+                }
+            }
+        }
 
 		//odblokowanie cech
 		for(int i=0;i<5;i++){
@@ -286,7 +308,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 	//ilosc jedzenia
 	public void drawFoodAmount(){
-
+		card=textures.getTexture(Card.CHOICE);
 		batch.draw(card, screenWidth - card.getWidth(), 100);
 		if(gameManager.state==GameState.EVOLUTION){
 			if(gameManager.otherPlayers.size()==1) {
@@ -303,6 +325,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 	//czyja tura
 	public void drawWhoseTurn(){
+		card=textures.getTexture(Card.CHOICE);
 		batch.draw(card, screenWidth - 2 * card.getWidth(), screenHeight - card.getHeight());
 		if (gameManager.turn == player.number) {
 			font.draw(batch, "Your Turn", screenWidth - 2 * card.getWidth() + 15, 5 + screenHeight - 25);
@@ -330,19 +353,22 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		if (flagManager.printChoosenCard) {
 			for (int i = 0; i < player.cardsNumber(); i++) {
 				if (buttonManager.cardButtons[i]!=null && buttonManager.cardButtons[i].isTouched(mouse)) {
-					card = textures.getTexture(player.getCards(i));
-					batch.draw(card, (screenWidth - card.getWidth()) / 2, card.getHeight() + (screenHeight - card.getHeight()) / 2);
-					//opis karty
-					drawMessage(infomanager.getDescription(player.getCards(i)));
+                    card = textures.getTexture(player.getCards(i));
+                    batch.draw(card, (screenWidth - card.getWidth()) / 2, card.getHeight() + (screenHeight - card.getHeight()) / 2);
+                    //opis karty
+                    drawMessage(infomanager.getDescription(player.getCards(i)));
 
-					batch.draw(buttonManager.cardChoices[0].getGraphic(), buttonManager.cardChoices[0].getPositionX(), buttonManager.cardChoices[0].getPositionY());
-					batch.draw(buttonManager.cardChoices[1].getGraphic(), buttonManager.cardChoices[1].getPositionX(), buttonManager.cardChoices[1].getPositionY());
-					batch.draw(buttonManager.cardChoices[2].getGraphic(), buttonManager.cardChoices[2].getPositionX(), buttonManager.cardChoices[2].getPositionY());
-					card = textures.getTexture(Card.CHOICE);
-					font.draw(batch, "Add Animal", ((screenWidth - card.getWidth()) / 2) - card.getWidth() + 10, ((screenHeight - card.getHeight()) / 2) - 20);
-					font.draw(batch, "Add Perk 1", ((screenWidth - card.getWidth()) / 2) + 10, ((screenHeight - card.getHeight()) / 2) - 20);
-					font.draw(batch, "Add Perk 2", ((screenWidth - card.getWidth()) / 2) + card.getWidth() + 10, ((screenHeight - card.getHeight()) / 2) - 20);
-				}
+                    //opcje rysujemy tylko podczas kolejki gracza
+                    if (player.number == gameManager.turn&&gameManager.state==GameState.EVOLUTION) {
+                        batch.draw(buttonManager.cardChoices[0].getGraphic(), buttonManager.cardChoices[0].getPositionX(), buttonManager.cardChoices[0].getPositionY());
+                        batch.draw(buttonManager.cardChoices[1].getGraphic(), buttonManager.cardChoices[1].getPositionX(), buttonManager.cardChoices[1].getPositionY());
+                        batch.draw(buttonManager.cardChoices[2].getGraphic(), buttonManager.cardChoices[2].getPositionX(), buttonManager.cardChoices[2].getPositionY());
+                        card = textures.getTexture(Card.CHOICE);
+                        font.draw(batch, "Add Animal", ((screenWidth - card.getWidth()) / 2) - card.getWidth() + 10, ((screenHeight - card.getHeight()) / 2) - 20);
+                        font.draw(batch, "Add Perk 1", ((screenWidth - card.getWidth()) / 2) + 10, ((screenHeight - card.getHeight()) / 2) - 20);
+                        font.draw(batch, "Add Perk 2", ((screenWidth - card.getWidth()) / 2) + card.getWidth() + 10, ((screenHeight - card.getHeight()) / 2) - 20);
+                    }
+                }
 			}
 		}
 	}
@@ -506,19 +532,27 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 	public void drawGame(){
 	//najpierw tlo
-			Gdx.gl.glClearColor(0, 0, 0, 0);
-			Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-		if(gameManager.turnStart){
-			startOfTurnCleanup();
-		}
+        Gdx.gl.glClearColor(0, 0, 0, 0);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-			batch.begin();
-			// rysul tlo
-			batch.draw(textures.getTexture(Card.BACKGROUND1), 0, 0);
-			batch.draw(textures.getTexture(Card.BACKGROUND2), 0, 0);
+
+
+        batch.begin();
+        // rysul tlo
+        batch.draw(textures.getTexture(Card.BACKGROUND1), 0, 0);
+        batch.draw(textures.getTexture(Card.BACKGROUND2), 0, 0);
+
+        if(gameManager.turnStart){
+            startOfTurnCleanup();
+        }
+        if(gameManager.newTurn){
+            gameManager.newTurn=false;
+            buttonManager.updateAnimalButtons();
+        }
 
 			if (gameManager.state == GameState.EVOLUTION || gameManager.state == GameState.FEEDING) {
 				card = textures.getTexture(Card.CHOICE);
+				drawYourTurnMessage();
 				drawFoodAmount();
 				drawWhoseTurn();
 				drawEndRoundAndPass();
@@ -594,16 +628,21 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 		if(gameManager.state==GameState.FEEDING || gameManager.state==GameState.EVOLUTION){
 			playerAction.enterMessage();
+			flagManager.printTurnMessage=false;
 		}
 
+        if( gameManager.state==GameState.EVOLUTION){
+            playerAction.chooseCardFromHand();
+        }
+		if(gameManager.state==GameState.FEEDING){
+			playerAction.chooseAnimalForAction();
+		}
 		if(gameManager.turn==player.number && gameManager.state==GameState.EVOLUTION){
-			playerAction.chooseCardFromHand();
 			playerAction.chooseAction();
 			playerAction.chooseAnimalPlace();
 			playerAction.chooseMyAnimal();
 		}
 		if(gameManager.turn==player.number && gameManager.state==GameState.FEEDING){
-			playerAction.chooseAnimalForAction();
 			playerAction.chooseAnimalAction();
 			playerAction.chooseTarget();
 			playerAction.choosePiracyTarget();

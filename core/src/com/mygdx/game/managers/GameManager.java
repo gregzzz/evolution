@@ -13,7 +13,8 @@ public class GameManager {
     Client c;
     public Player player = new Player();
     public Vector<Player> otherPlayers = new Vector<Player>();
-    public boolean turnStart=true;
+    public boolean turnStart=false;
+    public boolean newTurn=false;
     public String playerName="Username";
     public String serverAdress="localhost";
     public String messanger;
@@ -184,7 +185,10 @@ public class GameManager {
         // ustawia czyja tura
         else if (command == Command.TURN) {
             turn = recv[1];
-            turnStart=true;
+            newTurn=true;
+            if(recv[1]==player.number) {
+                turnStart = true;
+            }
         }
         else if (command == Command.CHAT) {
             if (recv[1] != player.number) {
