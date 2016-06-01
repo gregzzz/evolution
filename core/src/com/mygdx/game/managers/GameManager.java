@@ -177,8 +177,10 @@ public class GameManager {
         else if (command == Command.STATE) {
             if( recv[1] == GameState.ERROR.getId()){
                 c.send(new byte[] {Command.GETGAME.getId()});
-            }
-            else {
+            }else if( recv[1] == GameState.GAMEOVER.getId()){
+                state = GameState.fromInt(recv[1]);
+                turnStart=true;
+            } else {
                 state = GameState.fromInt(recv[1]);
             }
         }
@@ -327,10 +329,10 @@ public class GameManager {
             for (int i = 0; i < 5; i++) {
                 if (otherPlayer.animals[i] != null) {
                     otherPlayer.animals[i].eatFat();
-                    if (otherPlayer.animals[i].isFeeded() && !otherPlayer.animals[i].poisoned) {
-                        otherPlayer.animals[i].resetFoodData();
-                    } else {
+                    if (!otherPlayer.animals[i].isFeeded() || otherPlayer.animals[i].poisoned) {
                         otherPlayer.killAnimal(i);
+                    } else {
+                        otherPlayer.animals[i].resetFoodData();
                     }
                 }
             }

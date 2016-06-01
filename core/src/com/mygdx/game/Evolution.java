@@ -182,7 +182,12 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		font.draw(batch, "End Game", buttonManager.cancelButton.getPositionX() + 15, buttonManager.cancelButton.getPositionY() + 30);
 
 		int playerPoints[]=new int[gameManager.otherPlayers.size()+1];
-		gameManager.hungerDeaths();
+
+		//jesli pierwsze powtorzenie tej petli
+		if(gameManager.turnStart){
+			gameManager.hungerDeaths();
+			gameManager.turnStart=false;
+		}
 
 		//liczenie punktow graczy
 		mostPoints+=player.animalsNumber();
