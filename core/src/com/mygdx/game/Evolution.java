@@ -151,8 +151,10 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				player.animals[i].piracy = false;
 				player.animals[i].scavenger = false;
 				player.animals[i].pasturage = false;
-				player.animals[i].commUsed = false;
-				player.animals[i].coopUsed = false;
+				for(int j=0;j<2;j++) {
+					player.animals[i].commUsed[j] = false;
+					player.animals[i].coopUsed[j]=false;
+				}
 				player.animals[i].foodRecieved = false;
 				player.animals[i].realFoodRecieved = false;
 				if (player.animals[i].hibernationUsed = false) {
@@ -180,6 +182,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		font.draw(batch, "End Game", buttonManager.cancelButton.getPositionX() + 15, buttonManager.cancelButton.getPositionY() + 30);
 
 		int playerPoints[]=new int[gameManager.otherPlayers.size()+1];
+		gameManager.hungerDeaths();
 
 		//liczenie punktow graczy
 		mostPoints+=player.animalsNumber();
@@ -384,12 +387,14 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	//rysuj wybrane zwierze
 	public void drawSelectedAnimal(){
 		if (flagManager.printSelectedAnimal) {
-			for (int i = 0; i < playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size(); i++) {
-				card = textures.getTexture(playerAction.otherPlayer.animals[playerAction.selectedAnimal].getFeature(i));
-				if (playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size() % 2 == 0) {
-					batch.draw(card, ((screenWidth - playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size()) / 2) + card.getWidth() * (i - (playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size()) / 2), card.getHeight() + (screenHeight - card.getHeight()) / 2);
-				} else {
-					batch.draw(card, ((screenWidth - playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size()) / 2) + card.getWidth() * (i - (playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size()) / 2) - card.getWidth() / 2, card.getHeight() + (screenHeight - card.getHeight()) / 2);
+			if(playerAction.otherPlayer.animals[playerAction.selectedAnimal]!=null) {
+				for (int i = 0; i < playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size(); i++) {
+					card = textures.getTexture(playerAction.otherPlayer.animals[playerAction.selectedAnimal].getFeature(i));
+					if (playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size() % 2 == 0) {
+						batch.draw(card, ((screenWidth - playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size()) / 2) + card.getWidth() * (i - (playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size()) / 2), card.getHeight() + (screenHeight - card.getHeight()) / 2);
+					} else {
+						batch.draw(card, ((screenWidth - playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size()) / 2) + card.getWidth() * (i - (playerAction.otherPlayer.animals[playerAction.selectedAnimal].features.size()) / 2) - card.getWidth() / 2, card.getHeight() + (screenHeight - card.getHeight()) / 2);
+					}
 				}
 			}
 		}

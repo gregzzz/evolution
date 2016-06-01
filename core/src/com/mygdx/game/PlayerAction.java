@@ -112,22 +112,24 @@ public class PlayerAction {
         if(!flagManager.useCommunication) {
             Animal boostedAnimal;
             flagManager.askComm = true;
-            if (buttonManager.yes.isTouched(mouse)&&player.animals[selectedAnimal].commWith[0]!=null) {
+            if (buttonManager.yes.isTouched(mouse)&&player.animals[selectedAnimal].commWith[0]!=null&&!player.animals[selectedAnimal].commUsed[0]) {
                 boostedAnimal=player.animals[selectedAnimal-1];
                 if (!boostedAnimal.isFeeded() || boostedAnimal.fat < boostedAnimal.fatTotal && (player.animals[selectedAnimal].symbiosis[0]==null || player.animals[selectedAnimal-1].isFeeded())) {
                     gameManager.amountOfFood--;
                     boostedAnimal.feed(1);
                     gameManager.feed(selectedAnimal - 1, 1);
-                    player.animals[selectedAnimal].commUsed=true;
+                    player.animals[selectedAnimal].commUsed[0]=true;
+                    player.animals[selectedAnimal-1].commUsed[1]=true;
                     flagManager.communicationDone();
                 }
-            } else if (buttonManager.no.isTouched(mouse)&&player.animals[selectedAnimal].commWith[1]!=null) {
+            } else if (buttonManager.no.isTouched(mouse)&&player.animals[selectedAnimal].commWith[1]!=null&&!player.animals[selectedAnimal].commUsed[0]) {
                 boostedAnimal=player.animals[selectedAnimal+1];
                 if (!boostedAnimal.isFeeded() || boostedAnimal.fat < boostedAnimal.fatTotal && (player.animals[selectedAnimal].symbiosis[0]==null || player.animals[selectedAnimal-1].isFeeded())) {
                     gameManager.amountOfFood--;
                     boostedAnimal.feed(1);
                     gameManager.feed(selectedAnimal + 1, 1);
-                    player.animals[selectedAnimal].commUsed=true;
+                    player.animals[selectedAnimal].commUsed[1]=true;
+                    player.animals[selectedAnimal+1].commUsed[0]=true;
                     flagManager.communicationDone();
                 }
             } else if (buttonManager.cancelButton.isTouched(mouse)) {
@@ -140,20 +142,22 @@ public class PlayerAction {
         if(!flagManager.useCooperation) {
             Animal boostedAnimal;
             flagManager.askCoop = true;
-            if (buttonManager.yes.isTouched(mouse)&&player.animals[selectedAnimal].coopWith[0]!=null) {
+            if (buttonManager.yes.isTouched(mouse)&&player.animals[selectedAnimal].coopWith[0]!=null&&!player.animals[selectedAnimal].coopUsed[0]) {
                 boostedAnimal=player.animals[selectedAnimal-1];
                 if (!boostedAnimal.isFeeded() || boostedAnimal.fat < boostedAnimal.fatTotal) {
                     boostedAnimal.feed(1);
                     gameManager.feed(selectedAnimal - 1, 1);
-                    player.animals[selectedAnimal].coopUsed=true;
+                    player.animals[selectedAnimal].coopUsed[0]=true;
+                    player.animals[selectedAnimal-1].coopUsed[1]=true;
                     flagManager.cooperationDone();
                 }
-            } else if (buttonManager.no.isTouched(mouse)&&player.animals[selectedAnimal].coopWith[1]!=null) {
+            } else if (buttonManager.no.isTouched(mouse)&&player.animals[selectedAnimal].coopWith[1]!=null&&!player.animals[selectedAnimal].coopUsed[1]) {
                 boostedAnimal=player.animals[selectedAnimal+1];
                 if (!boostedAnimal.isFeeded() || boostedAnimal.fat < boostedAnimal.fatTotal) {
                     boostedAnimal.feed(1);
                     gameManager.feed(selectedAnimal + 1, 1);
-                    player.animals[selectedAnimal].coopUsed=true;
+                    player.animals[selectedAnimal].coopUsed[1]=true;
+                    player.animals[selectedAnimal+1].coopUsed[0]=true;
                     flagManager.cooperationDone();
                 }
             } else if (buttonManager.cancelButton.isTouched(mouse)) {
@@ -202,11 +206,11 @@ public class PlayerAction {
                 gameManager.corpse=false;
                 gameManager.scavenge();
                 //kooperacja
-            }else if(buttonManager.feedChoices[6].isTouched(mouse) && (player.animals[selectedAnimal].coopWith[0]!=null ||  player.animals[selectedAnimal].coopWith[1]!=null) && player.animals[selectedAnimal].foodRecieved && !player.animals[selectedAnimal].coopUsed){
+            }else if(buttonManager.feedChoices[6].isTouched(mouse) && (player.animals[selectedAnimal].coopWith[0]!=null ||  player.animals[selectedAnimal].coopWith[1]!=null) && player.animals[selectedAnimal].foodRecieved && (!player.animals[selectedAnimal].coopUsed[0]||!player.animals[selectedAnimal].coopUsed[1])){
                 flagManager.chooseTarget();
                 flagManager.useCooperation=false;
                 //komunikacja
-            }else if(buttonManager.feedChoices[7].isTouched(mouse) && (player.animals[selectedAnimal].commWith[0]!=null ||  player.animals[selectedAnimal].commWith[1]!=null) && player.animals[selectedAnimal].realFoodRecieved && !player.animals[selectedAnimal].commUsed && gameManager.amountOfFood>0){
+            }else if(buttonManager.feedChoices[7].isTouched(mouse) && (player.animals[selectedAnimal].commWith[0]!=null ||  player.animals[selectedAnimal].commWith[1]!=null) && player.animals[selectedAnimal].realFoodRecieved && (!player.animals[selectedAnimal].commUsed[0]||!player.animals[selectedAnimal].commUsed[1]) && gameManager.amountOfFood>0){
                 flagManager.chooseTarget();
                 flagManager.useCommunication=false;
             }
@@ -256,12 +260,6 @@ public class PlayerAction {
                             }else if(attackType==2){
                                 Random generator = new Random();
                                 int randInt=generator.nextInt(otherPlayer.animals[j].features.size());
-                                if(otherPlayer.animals[j].features.elementAt(randInt)==Card.MASSIVEC || otherPlayer.animals[j].features.elementAt(randInt)==Card.MASSIVEF){
-                                    otherPlayer.animals[j].foodNeeded--;
-                                }
-                                if(otherPlayer.animals[j].features.elementAt(randInt)==Card.PARASITEC || otherPlayer.animals[j].features.elementAt(randInt)==Card.PARASITEF){
-                                    otherPlayer.animals[j].foodNeeded-=2;
-                                }
                                 otherPlayer.animals[j].removeFeature(randInt);
                                 gameManager.tailToss(otherPlayer.number, j, randInt);
                                 player.animals[selectedAnimal].feed(1);

@@ -316,7 +316,7 @@ public class GameManager {
         }
     }
 
-    private void hungerDeaths(){
+    public void hungerDeaths(){
         Player otherPlayer;
         for(int j=0; j<otherPlayers.size()+1;j++) {
             if(j!=0) {

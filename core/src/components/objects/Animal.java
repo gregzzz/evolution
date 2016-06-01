@@ -22,8 +22,6 @@ public class Animal {
     public boolean hibernation=false;
     public boolean hibernationUsed=false;
     public boolean scavenger=false;
-    public boolean commUsed=false;
-    public boolean coopUsed=false;
 
     public boolean foodRecieved=false;
     public boolean realFoodRecieved=false;
@@ -34,6 +32,8 @@ public class Animal {
 
     public Integer coopWith[]=new Integer[2];
     public Integer commWith[]=new Integer[2];
+    public boolean commUsed[]=new boolean[2];
+    public boolean coopUsed[]=new boolean[2];
     public Integer symbiosis[]=new Integer[2];
 
 
@@ -44,9 +44,13 @@ public class Animal {
         this.owningPlayer=owningPlayer;
         this.number=number;
         this.owner = owner;
-        for(int i=0;i<2;i++)coopWith[i]=null;
-        for(int i=0;i<2;i++)commWith[i]=null;
-        for(int i=0;i<2;i++)symbiosis[i]=null;
+        for(int i=0;i<2;i++){
+            coopWith[i]=null;
+            commWith[i]=null;
+            coopUsed[i]=false;
+            commUsed[i]=false;
+            symbiosis[i]=null;
+        }
     }
 
     public void resetSpeedData(){
@@ -116,7 +120,19 @@ public class Animal {
     }
 
     public void removeFeature(int cardNumber){
-        features.remove(cardNumber);
+        if(features.elementAt(cardNumber)==Card.MASSIVEC||features.elementAt(cardNumber)==Card.MASSIVEF){
+            foodNeeded--;
+        }
+        if(features.elementAt(cardNumber)==Card.CARNIVORE){
+            foodNeeded--;
+            carnivore=false;
+        }
+        if(features.elementAt(cardNumber)==Card.FAT){
+            fatTotal--;
+        }
+        if(features.elementAt(cardNumber)==Card.PARASITEC||features.elementAt(cardNumber)==Card.PARASITEF) {
+            features.remove(cardNumber);
+        }
     }
 
     public boolean canBeAttacked(Animal attacker){
@@ -125,6 +141,8 @@ public class Animal {
         }else if(this.have(Card.MASSIVEF) && (!attacker.have(Card.MASSIVEF) && !attacker.have(Card.MASSIVEC))){
             return false;
         }else if(this.have(Card.ROAR) && this.isFeeded()){
+            return false;
+        }else if(speedProtected[attacker.number]){
             return false;
         }else if(this.have(Card.AQUATIC) && !attacker.have(Card.AQUATIC)){
             return false;
@@ -150,15 +168,6 @@ public class Animal {
                 return 1;
             }
         }else if(target.have(Card.TAILTOSS)){
-            Random generator = new Random();
-            int randInt=generator.nextInt(target.features.size());
-            if(target.features.elementAt(randInt)==Card.MASSIVEC || target.features.elementAt(randInt)==Card.MASSIVEF){
-                target.foodNeeded--;
-            }
-            if(target.features.elementAt(randInt)==Card.PARASITEC || target.features.elementAt(randInt)==Card.PARASITEF){
-                target.foodNeeded-=2;
-            }
-            target.removeFeature(randInt);
             return 2;
         }else if(target.have(Card.TOXIC)){
             this.poisoned=true;
