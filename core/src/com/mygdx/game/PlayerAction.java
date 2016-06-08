@@ -120,7 +120,10 @@ public class PlayerAction {
                     gameManager.feed(selectedAnimal - 1, 1);
                     player.animals[selectedAnimal].commUsed[0]=true;
                     player.animals[selectedAnimal-1].commUsed[1]=true;
+                    boostedAnimal.realFoodRecieved=true;
                     flagManager.communicationDone();
+                    selectedAnimal--;
+                    checkDouble();
                 }
             } else if (buttonManager.no.isTouched(mouse)&&player.animals[selectedAnimal].commWith[1]!=null&&!player.animals[selectedAnimal].commUsed[0]) {
                 boostedAnimal=player.animals[selectedAnimal+1];
@@ -130,7 +133,10 @@ public class PlayerAction {
                     gameManager.feed(selectedAnimal + 1, 1);
                     player.animals[selectedAnimal].commUsed[1]=true;
                     player.animals[selectedAnimal+1].commUsed[0]=true;
+                    boostedAnimal.realFoodRecieved=true;
                     flagManager.communicationDone();
+                    selectedAnimal++;
+                    checkDouble();
                 }
             } else if (buttonManager.cancelButton.isTouched(mouse)) {
                 flagManager.communicationDone();
@@ -150,6 +156,8 @@ public class PlayerAction {
                     player.animals[selectedAnimal].coopUsed[0]=true;
                     player.animals[selectedAnimal-1].coopUsed[1]=true;
                     flagManager.cooperationDone();
+                    selectedAnimal--;
+                    checkDouble();
                 }
             } else if (buttonManager.no.isTouched(mouse)&&player.animals[selectedAnimal].coopWith[1]!=null&&!player.animals[selectedAnimal].coopUsed[1]) {
                 boostedAnimal=player.animals[selectedAnimal+1];
@@ -159,6 +167,8 @@ public class PlayerAction {
                     player.animals[selectedAnimal].coopUsed[1]=true;
                     player.animals[selectedAnimal+1].coopUsed[0]=true;
                     flagManager.cooperationDone();
+                    selectedAnimal++;
+                    checkDouble();
                 }
             } else if (buttonManager.cancelButton.isTouched(mouse)) {
                 flagManager.cooperationDone();
@@ -166,6 +176,18 @@ public class PlayerAction {
         }
     }
 
+    //bardzo grube warunki sprawdzajace czy mozna uzyc kooperacji lub komunikacji
+    public void checkDouble() {
+        Animal animal=player.animals[selectedAnimal];
+        if (((animal.coopWith[0] != null && !animal.coopUsed[0] && (!player.animals[selectedAnimal-1].isFeeded()||player.animals[selectedAnimal-1].fat<player.animals[selectedAnimal-1].fatTotal))||(animal.coopWith[1]!=null && !animal.coopUsed[1] && (!player.animals[selectedAnimal+1].isFeeded()||player.animals[selectedAnimal+1].fat<player.animals[selectedAnimal+1].fatTotal))) && animal.foodRecieved) {
+            flagManager.chooseTarget();
+            flagManager.useCooperation = false;
+        }
+        if (((animal.commWith[0] != null && !animal.commUsed[0] && (!player.animals[selectedAnimal-1].isFeeded()||player.animals[selectedAnimal-1].fat<player.animals[selectedAnimal-1].fatTotal))||(animal.commWith[1]!=null && !animal.commUsed[1] && (!player.animals[selectedAnimal+1].isFeeded()||player.animals[selectedAnimal+1].fat<player.animals[selectedAnimal+1].fatTotal))) && animal.realFoodRecieved && gameManager.amountOfFood > 0) {
+            flagManager.chooseTarget();
+            flagManager.useCommunication = false;
+        }
+    }
     //wybierz co robisz zwirzeciem podczas fazy zywienia
     public void chooseAnimalAction(){
         if(!flagManager.chooseAnimalAction){
@@ -177,6 +199,7 @@ public class PlayerAction {
                     gameManager.feed(selectedAnimal, 1);
                     flagManager.actionDone = true;
                     player.animals[selectedAnimal].realFoodRecieved=true;
+                    checkDouble();
                 }
                 //drapieznik
             }else if(buttonManager.feedChoices[1].isTouched(mouse) && player.animals[selectedAnimal].carnivore&&!player.animals[selectedAnimal].isFeeded() && !flagManager.actionDone){
@@ -205,14 +228,7 @@ public class PlayerAction {
                 gameManager.feed(selectedAnimal,1);
                 gameManager.corpse=false;
                 gameManager.scavenge();
-                //kooperacja
-            }else if(buttonManager.feedChoices[6].isTouched(mouse) && (player.animals[selectedAnimal].coopWith[0]!=null ||  player.animals[selectedAnimal].coopWith[1]!=null) && player.animals[selectedAnimal].foodRecieved && (!player.animals[selectedAnimal].coopUsed[0]||!player.animals[selectedAnimal].coopUsed[1])){
-                flagManager.chooseTarget();
-                flagManager.useCooperation=false;
-                //komunikacja
-            }else if(buttonManager.feedChoices[7].isTouched(mouse) && (player.animals[selectedAnimal].commWith[0]!=null ||  player.animals[selectedAnimal].commWith[1]!=null) && player.animals[selectedAnimal].realFoodRecieved && (!player.animals[selectedAnimal].commUsed[0]||!player.animals[selectedAnimal].commUsed[1]) && gameManager.amountOfFood>0){
-                flagManager.chooseTarget();
-                flagManager.useCommunication=false;
+                checkDouble();
             }
         }
     }
@@ -257,6 +273,7 @@ public class PlayerAction {
                                 gameManager.corpse=true;
                                 buttonManager.updateAnimalButtons();
                                 flagManager.actionDone=true;
+                                checkDouble();
                             }else if(attackType==2){
                                 Random generator = new Random();
                                 int randInt=generator.nextInt(otherPlayer.animals[j].features.size());
@@ -265,6 +282,7 @@ public class PlayerAction {
                                 player.animals[selectedAnimal].feed(1);
                                 gameManager.feed(selectedAnimal,1);
                                 flagManager.actionDone=true;
+                                checkDouble();
                             }else{
                                 flagManager.actionDone=true;
                             }
@@ -298,6 +316,7 @@ public class PlayerAction {
                             gameManager.steal(otherPlayer.number,j);
                             flagManager.piracyTargetChosen();
                             player.animals[selectedAnimal].piracy=true;
+                            checkDouble();
                         }else{
                             flagManager.piracyTargetChosen();
                         }
@@ -458,13 +477,13 @@ public class PlayerAction {
 
             }
             if(buttonManager.menuButtons[2].isTouched(mouse)){
-                if(gameManager.playerName!=null) {
+                if(gameManager.configuration.playerName!=null) {
                     flagManager.login=false;
                     flagManager.password=false;
                     flagManager.chooseMainMenuOption=true;
                     gameManager.startClient();
                     flagManager.lookingForGames=true;
-                    gameManager.saveConfiguration();
+                    gameManager.configuration.saveConfiguration();
                 }
             }
             if(buttonManager.menuButtons[3].isTouched(mouse)){

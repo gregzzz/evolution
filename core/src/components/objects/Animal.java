@@ -128,11 +128,15 @@ public class Animal {
             carnivore=false;
         }
         if(features.elementAt(cardNumber)==Card.FAT){
+            if(fat>=fatTotal){
+                fat--;
+            }
             fatTotal--;
         }
         if(features.elementAt(cardNumber)==Card.PARASITEC||features.elementAt(cardNumber)==Card.PARASITEF) {
-            features.remove(cardNumber);
+            foodNeeded-=2;
         }
+        features.remove(cardNumber);
     }
 
     public boolean canBeAttacked(Animal attacker){

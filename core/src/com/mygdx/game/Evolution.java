@@ -10,10 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
-import com.mygdx.game.logic.Button;
-import com.mygdx.game.logic.Keyboard;
-import com.mygdx.game.logic.Mouse;
-import com.mygdx.game.logic.MyTextInputListener;
+import com.mygdx.game.logic.*;
 import com.mygdx.game.managers.*;
 import components.objects.Player;
 import components.enums.GameState;
@@ -48,6 +45,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	FlagManager flagManager=new FlagManager();
 	GameManager gameManager=new GameManager();
 	TextureManager textures;
+	AutoPlayer autoPlayer;
 	LayoutManager layout = new LayoutManager(textures);
 	InfoManager infomanager = new InfoManager();
 	ButtonManager buttonManager;
@@ -76,6 +74,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 
 		buttonManager.createButtons();
 		playerAction=new PlayerAction(flagManager, gameManager, mouse, buttonManager);
+		autoPlayer=new AutoPlayer(playerAction);
 
 		Gdx.input.setInputProcessor(this);
 	}
@@ -105,6 +104,8 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				drawMenu();
 				break;
 			default:
+				autoPlayer.evolutionPhasePass();
+				autoPlayer.feedingPhasePass();
 				drawGame();
 				break;
 
@@ -262,12 +263,12 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		if(flagManager.login) {
 			flagManager.inputed=false;
 			flagManager.login=false;
-			Gdx.input.getTextInput(listener, "Username:", gameManager.playerName, "");
+			Gdx.input.getTextInput(listener, "Username:", gameManager.configuration.playerName, "");
 			flagManager.password=true;
 		}
 		if(flagManager.password && flagManager.inputed) {
 			if(listener.getIntputedText()!=null) {
-				gameManager.playerName = listener.getIntputedText()+" ";
+				gameManager.configuration.playerName = listener.getIntputedText()+" ";
 			}
 			flagManager.inputed=false;
 			flagManager.password=false;
@@ -286,11 +287,11 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		if(flagManager.server) {
 			flagManager.inputed=false;
 			flagManager.server=false;
-			Gdx.input.getTextInput(listener, "Server Adress:", gameManager.serverAdress, "");
+			Gdx.input.getTextInput(listener, "Server Adress:", gameManager.configuration.serverAdress, "");
 		}
 		if(flagManager.inputed && !flagManager.server){
 			if(listener.getIntputedText()!=null) {
-				gameManager.serverAdress = listener.getIntputedText();
+				gameManager.configuration.serverAdress = listener.getIntputedText();
 			}
 			listener.setIntputedText(null);
 			gameManager.state=GameState.BEGIN;
@@ -299,7 +300,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		}
 	}
 
-	//czy uzyc cechy podwojnej w lewo
+	//czy uzyc cechy podwojnej w lewo czy w prawo
 	public void askDouble(){
 		if(flagManager.askComm || flagManager.askCoop){
 			if(flagManager.askComm){
@@ -307,10 +308,14 @@ public class Evolution implements ApplicationListener, InputProcessor {
 			}else{
 				drawMessage("Use cooperation with animal on the left or right?");
 			}
-			batch.draw(buttonManager.yes.getGraphic(), buttonManager.yes.getPositionX(), buttonManager.yes.getPositionY());
-			font.draw(batch, "Left", buttonManager.yes.getPositionX()+45, buttonManager.yes.getPositionY()+30);
-			batch.draw(buttonManager.no.getGraphic(), buttonManager.no.getPositionX(), buttonManager.no.getPositionY());
-			font.draw(batch, "Right", buttonManager.no.getPositionX()+45, buttonManager.no.getPositionY()+30);
+			if((!flagManager.askComm&&gameManager.player.animals[playerAction.selectedAnimal].coopWith[0]!=null)||(flagManager.askComm&&gameManager.player.animals[playerAction.selectedAnimal].commWith[0]!=null)) {
+				batch.draw(buttonManager.yes.getGraphic(), buttonManager.yes.getPositionX(), buttonManager.yes.getPositionY());
+				font.draw(batch, "Left", buttonManager.yes.getPositionX() + 45, buttonManager.yes.getPositionY() + 30);
+			}
+			if((!flagManager.askComm&&gameManager.player.animals[playerAction.selectedAnimal].coopWith[1]!=null)||(flagManager.askComm&&gameManager.player.animals[playerAction.selectedAnimal].commWith[1]!=null)) {
+				batch.draw(buttonManager.no.getGraphic(), buttonManager.no.getPositionX(), buttonManager.no.getPositionY());
+				font.draw(batch, "Right", buttonManager.no.getPositionX() + 45, buttonManager.no.getPositionY() + 30);
+			}
 		}
 	}
 
