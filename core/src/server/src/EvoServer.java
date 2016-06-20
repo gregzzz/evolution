@@ -196,7 +196,7 @@ public class EvoServer extends Thread{
     public static void main(String [] args){
         //serwer ustawiony na jednego gracza
         int port = 5055;
-        int number = 2;
+        int number = 3;
         try{
             Thread t = new EvoServer(port,number);
             t.start();

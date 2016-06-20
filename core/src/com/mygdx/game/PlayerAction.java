@@ -179,11 +179,11 @@ public class PlayerAction {
     //bardzo grube warunki sprawdzajace czy mozna uzyc kooperacji lub komunikacji
     public void checkDouble() {
         Animal animal=player.animals[selectedAnimal];
-        if (((animal.coopWith[0] != null && !animal.coopUsed[0] && (!player.animals[selectedAnimal-1].isFeeded()||player.animals[selectedAnimal-1].fat<player.animals[selectedAnimal-1].fatTotal))||(animal.coopWith[1]!=null && !animal.coopUsed[1] && (!player.animals[selectedAnimal+1].isFeeded()||player.animals[selectedAnimal+1].fat<player.animals[selectedAnimal+1].fatTotal))) && animal.foodRecieved) {
+        if (((animal.coopWith[0] != null && !animal.coopUsed[0] && (!player.animals[selectedAnimal-1].isFeeded()||!player.animals[selectedAnimal-1].fatFilled()))||(animal.coopWith[1]!=null && !animal.coopUsed[1] && (!player.animals[selectedAnimal+1].isFeeded()||!player.animals[selectedAnimal+1].fatFilled()))) && animal.foodRecieved) {
             flagManager.chooseTarget();
             flagManager.useCooperation = false;
         }
-        if (((animal.commWith[0] != null && !animal.commUsed[0] && (!player.animals[selectedAnimal-1].isFeeded()||player.animals[selectedAnimal-1].fat<player.animals[selectedAnimal-1].fatTotal))||(animal.commWith[1]!=null && !animal.commUsed[1] && (!player.animals[selectedAnimal+1].isFeeded()||player.animals[selectedAnimal+1].fat<player.animals[selectedAnimal+1].fatTotal))) && animal.realFoodRecieved && gameManager.amountOfFood > 0) {
+        if (((animal.commWith[0] != null && !animal.commUsed[0] && (!player.animals[selectedAnimal-1].isFeeded()||!player.animals[selectedAnimal-1].fatFilled()))||(animal.commWith[1]!=null && !animal.commUsed[1] && (!player.animals[selectedAnimal+1].isFeeded()||!player.animals[selectedAnimal+1].fatFilled()))) && animal.realFoodRecieved && gameManager.amountOfFood > 0) {
             flagManager.chooseTarget();
             flagManager.useCommunication = false;
         }

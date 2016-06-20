@@ -104,7 +104,6 @@ public class Evolution implements ApplicationListener, InputProcessor {
 				drawMenu();
 				break;
 			default:
-				autoPlayer.evolutionPhasePass();
 				autoPlayer.feedingPhasePass();
 				drawGame();
 				break;
@@ -135,6 +134,8 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		gameManager.turnStart=false;
 		flagManager.actionDone=false;
 		flagManager.printTurnMessage=true;
+
+		autoPlayer.evolutionPhasePass();
 
         //odblokowanie szybkosci
         for(int i=0;i<gameManager.otherPlayers.size();i++) {
@@ -268,7 +269,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 		}
 		if(flagManager.password && flagManager.inputed) {
 			if(listener.getIntputedText()!=null) {
-				gameManager.configuration.playerName = listener.getIntputedText()+" ";
+				gameManager.configuration.playerName = listener.getIntputedText();
 			}
 			flagManager.inputed=false;
 			flagManager.password=false;
@@ -413,7 +414,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
 	//rysuj opcje FEEDing faze
 	public void drawAnimalOptions(){
 		if (flagManager.printFeedingChoices) {
-			for (int i = 0; i < 8; i++) {
+			for (int i = 0; i < 6; i++) {
 				batch.draw(buttonManager.feedChoices[i].getGraphic(), buttonManager.feedChoices[i].getPositionX(), buttonManager.feedChoices[i].getPositionY());
 			}
 			card = textures.getTexture(Card.CHOICE);
@@ -423,8 +424,6 @@ public class Evolution implements ApplicationListener, InputProcessor {
 			font.draw(batch, "Pasturage", buttonManager.feedChoices[3].getPositionX() + 15, buttonManager.feedChoices[3].getPositionY() + 30);
 			font.draw(batch, "Hibernation", buttonManager.feedChoices[4].getPositionX() + 10, buttonManager.feedChoices[4].getPositionY() + 30);
 			font.draw(batch, "Scavenger", buttonManager.feedChoices[5].getPositionX() + 15, buttonManager.feedChoices[5].getPositionY() + 30);
-			font.draw(batch, "Cooperation", buttonManager.feedChoices[6].getPositionX() + 10, buttonManager.feedChoices[6].getPositionY() + 30);
-			font.draw(batch, "Communication", buttonManager.feedChoices[7].getPositionX() + 7, buttonManager.feedChoices[7].getPositionY() + 30);
 		}
 	}
 

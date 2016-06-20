@@ -97,6 +97,14 @@ public class Animal {
         }
     }
 
+    public boolean fatFilled(){
+        if(fat>=fatTotal){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
     public void addFeature(Card cardName){
         if(cardName==Card.CARNIVORE){
             carnivore=true;

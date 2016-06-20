@@ -9,7 +9,7 @@ import com.badlogic.gdx.graphics.Texture;
 public class ButtonManager {
     public Button cardButtons[] = new Button[12];
     public Button cardChoices[] = new Button[3];
-    public Button feedChoices[] = new Button[8];
+    public Button feedChoices[] = new Button[6];
     public Button animalPlaces[] = new Button[5];
     public Button animalButtons[][] = new Button[4][5];
     public Button menuButtons[] = new Button[6];
@@ -63,10 +63,6 @@ public class ButtonManager {
         }
         for (int i = 0; i < 6; i++) {
             feedChoices[i] = new Button(card, (screenWidth / 2) + (i - 3) * card.getWidth(), (screenHeight - card.getHeight()) / 2 - card.getHeight());
-
-        }
-        for (int i = 6; i < 8; i++) {
-            feedChoices[i] = new Button(card, (screenWidth / 2) + (i - 7) * card.getWidth(), (screenHeight - card.getHeight()) / 2 - 2*card.getHeight());
 
         }
 
