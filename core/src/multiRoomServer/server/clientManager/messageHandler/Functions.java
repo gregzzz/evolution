@@ -1,10 +1,10 @@
-package components;
+package multiRoomServer.server.clientManager.messageHandler;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 
-public class fun {
+public class Functions {
     public static byte[] concat(byte[] a, byte[] b){
         int aLen = a.length;
         int bLen = b.length;

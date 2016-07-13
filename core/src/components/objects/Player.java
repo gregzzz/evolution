@@ -3,6 +3,8 @@ package components.objects;
 import components.enums.Card;
 import components.objects.Animal;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Vector;
 
 
@@ -10,6 +12,7 @@ public class Player {
     public int number;
     public String name;
 
+    public Queue<byte[]> recv = new LinkedList<>();
     public boolean pass = false;
 
     public Player() {}

@@ -1,10 +1,13 @@
 
 package com.mygdx.game.logic;
 import com.mygdx.game.managers.GameManager;
+import components.enums.Code;
+import static components.fun.*;
 
 
 import java.net.*;
 import java.io.*;
+import java.util.Arrays;
 
 public class Client extends Thread {
     private String serverName;
@@ -12,7 +15,15 @@ public class Client extends Thread {
     Socket client;
     GameManager manager;
     //gameManager
-
+    public void login(){
+        byte[] message2 = { Code.AUTHORIZATION.getId() };
+        String login2 = "tobi";
+        message2 = concat(message2,addZeros(login2.getBytes(),10));
+        String password2 = "tobi";
+        message2 = concat(message2,addZeros(password2.getBytes(),10));
+        send(message2);
+        send(new byte[]{Code.FINDROOM.getId()});
+    }
     public Client(String s,int p, GameManager m){
         serverName = s;
         port = p;
@@ -56,6 +67,7 @@ public class Client extends Thread {
         public void run(){
             // petala odbierajaca dane
             connect();
+            login();
             byte[] message;
             try {
                 while(true) {
@@ -67,7 +79,9 @@ public class Client extends Thread {
                         message = new byte[length];
                         in.readFully(message, 0, message.length); // read the message
                         manager.handleData(message);
+                        System.out.println("server: " + Arrays.toString(message));
                     }
+
                 }
             } catch (IOException e) {
                 System.out.println("Connection lost.");

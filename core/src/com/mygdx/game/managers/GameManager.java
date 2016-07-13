@@ -278,6 +278,14 @@ public class GameManager {
                 }
             }
         }
+        else{
+            Code code = Code.fromInt((int) recv[0]);
+            System.out.println(code);
+            switch (code) {
+                case ID:
+                    player.number = recv[1];
+            }
+        }
     }
 
     public void hungerDeaths(){
