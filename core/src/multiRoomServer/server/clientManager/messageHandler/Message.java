@@ -1,7 +1,7 @@
 package multiRoomServer.server.clientManager.messageHandler;
 
 
-import multiRoomServer.enums.Code;
+import components.enums.Code;
 
 /**
  * Created by kopec on 2016-07-11.
@@ -11,7 +11,10 @@ public class Message {
     public byte[] data;
 
     private Code code;
-
+    public Message(Code c, int id){
+        code = c;
+        clientId = id;
+    }
     public Message(byte[] recvData, int id){
         data = recvData;
         clientId = id;
@@ -24,6 +27,7 @@ public class Message {
         return Functions.stringFromBytes(data,start,end);
     }
 
+    public static byte[] fromCode(Code i) { return new byte[]{(byte) i.getId()};}
     public static byte[] id(int id){
         return new byte [] { Code.ID.getId(),(byte)id};
     }

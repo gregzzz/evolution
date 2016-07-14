@@ -16,6 +16,7 @@ public enum Code {
     CREATEROOM(111),
     DELETEROOM(112),
     FINDROOM(113),
+    LEAVEROOM(114),
 
     GAME(120),
 

@@ -30,7 +30,7 @@ public class RoomManager {
         rooms.put(client,room);
     }
     public void leaveRoom(Client client){
-
+        rooms.get(client).removeClient(client);
     }
     public void sendRooms(Client client){
 

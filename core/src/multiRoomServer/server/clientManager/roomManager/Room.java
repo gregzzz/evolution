@@ -1,5 +1,6 @@
 package multiRoomServer.server.clientManager.roomManager;
 
+import multiRoomServer.server.AdminInrterface;
 import multiRoomServer.server.clientManager.roomManager.game.Game;
 import multiRoomServer.server.clientManager.Client;
 
@@ -15,7 +16,8 @@ public class Room {
     public int averagePoints;
     public boolean full = false;
     private int id;
-    private boolean startGame = false;
+
+
     private Vector<Client> clients = new Vector<>();
     public Game game = new Game(clients);
 
@@ -23,7 +25,8 @@ public class Room {
         clients.addElement(client);
         size = sizeOfRoom;
         id = roomId;
-        System.out.println("client <"+client.getClientId()+"> created room <"+id+">");
+        if(AdminInrterface.printLogs)
+            System.out.println("client <"+client.getClientId()+"> created room <"+id+">");
     }
 
     public void addClient(Client client){
@@ -32,11 +35,20 @@ public class Room {
         if(clients.size() == size) {
             game.start();
             full = true;
-            System.out.println("game in room <"+id+"> has started");
+            if(AdminInrterface.printLogs)
+                System.out.println("game in room <"+id+"> has started");
         }
     }
 
     public void removeClient(Client client){
-
+        clients.remove(client);
+        if(AdminInrterface.printLogs)
+            System.out.println("client <"+client.getClientId()+"> left room <"+id+">");
+        full = false;
+        if(clients.size() == 0){
+            game.interrupt(); //?
+            if(AdminInrterface.printLogs)
+                System.out.println("romm <"+id+"> is now closed");
+        }
     }
 }

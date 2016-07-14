@@ -25,7 +25,7 @@ public class GameManager{
     private Command command = Command.NONE;
 
     public Map<Client, Player> players = new HashMap<>();
-    public GameState state = GameState.BEGIN;
+    public GameState state;
 
     private int whoBeginPhase;
     private int turn;
@@ -42,16 +42,16 @@ public class GameManager{
     {
         for(Client client: clients) {
             Player player =  new Player();
-            players.put(client, player);
             player.number = client.getClientId();
             player.numberOfCards = 6;
-
+            players.put(client, player);
         }
-        deck = new Deck();
         server.send(new byte [] {Command.GETNAME.getId()});
-        // wyslij wszystkim ze zaczynamy gre
+
+        state = GameState.BEGIN;
         server.send(new byte[] {Command.STATE.getId(),(byte)GameState.BEGIN.getId()});
-        // wyslij wszystkim ich karty
+
+        deck = new Deck();
         for(Client client:clients){
             byte [] cards = {};
             for(int card = 0; card < 6 ; card++){
@@ -59,13 +59,15 @@ public class GameManager{
             }
             server.send(concat(new byte []{Command.CARDS.getId(),(byte)client.getClientId()},cards));
         }
-        server.send(new byte [] {Command.TURN.getId(),(byte)clients.get(0).getClientId()});
+
         turn = 0;
+        server.send(new byte [] {Command.TURN.getId(),(byte)clients.get(turn).getClientId()});
+
         whoBeginPhase = turn;
         nowTurn = turn;
-        // przechodzimy do rozgrywki
-        server.send(new byte [] {Command.STATE.getId(),(byte)GameState.EVOLUTION.getId()});
+
         state = GameState.EVOLUTION;
+        server.send(new byte [] {Command.STATE.getId(),(byte)GameState.EVOLUTION.getId()});
     }
 
     public void evolutionPhase() {
@@ -84,7 +86,8 @@ public class GameManager{
 
                     server.send(concat(new byte[] {Command.NAME.getId(),
                             (byte)client.getClientId()}, players.get(client).name.getBytes() ));
-                } else if(command == Command.GETGAME){
+                }
+                if(command == Command.GETGAME){
                     //id
                     client.send(new byte[] {Command.ID.getId(),(byte)client.getClientId()});
                     //imie
@@ -96,26 +99,26 @@ public class GameManager{
                     client.send(concat(new byte []{Command.CARDS.getId(),(byte)client.getClientId()},cards));
 
                 }
-                else if (command == Command.EVOLUTION) {
+                if (command == Command.EVOLUTION) {
                     //dodaj ceche
                     server.send(new byte[] {Command.EVOLUTION.getId(),(byte)client.getClientId(),data[1] , data[2], data[3]});
                     nextOneTakeTurn();
                 }
-                else if (command == Command.EVOLUTION2) {
+                if (command == Command.EVOLUTION2) {
                     //dodaj ceche
                     server.send(new byte[] {Command.EVOLUTION2.getId(),(byte)client.getClientId(),data[1] , data[2], (byte)clients.elementAt(turn).getClientId()});
                     nextOneTakeTurn();
                 }
-                else if (command == Command.KILL) {
+                if (command == Command.KILL) {
                     server.send(new byte[] {Command.KILL.getId(),data[1],data[2],(byte)clients.elementAt(turn).getClientId()});
                 }
 
-                else if (command == Command.CHAT) {
+                if (command == Command.CHAT) {
                     String message=stringFromBytes(data, 2, data.length-2);
                     server.send(concat(new byte[]{Command.CHAT.getId(),data[1]}, message.getBytes()));
                 }
 
-                else if (command == Command.HOWMANYANIMALS) {
+                if (command == Command.HOWMANYANIMALS) {
                     byte [] cards = {};
                     int amountOfCardsToSend;
                     //ile wyslac kart
@@ -131,7 +134,7 @@ public class GameManager{
                     //wyslanie
                     server.send(concat(new byte []{Command.CARDS.getId(),data[3]},cards));
                 }
-                else if (command == Command.PASS) {
+                if (command == Command.PASS) {
                     if(client.getClientId() == clients.elementAt(turn).getClientId())
                         players.get(client).pass = true;
 
@@ -215,7 +218,6 @@ public class GameManager{
 
     }
 
-    //rozdajemy karty za zwierzęta
     public void prepareForEvolution(){
         if(deck.getDeckSize()>6*players.size()) {
             for (Player player : players.values()) {
@@ -234,65 +236,64 @@ public class GameManager{
             server.send(new byte[]{Command.TURN.getId(), (byte)clients.elementAt(turn).getClientId()});
             server.send(new byte[]{Command.STATE.getId(), (byte) GameState.EVOLUTION.getId()});
             state = GameState.EVOLUTION;
-        }else{
+        }
+        else{
             server.send(new byte[]{Command.STATE.getId(), (byte) GameState.GAMEOVER.getId()});
             state = GameState.GAMEOVER;
         }
 
     }
 
-    //funckja ustawiajaca ilosc jedzenia i przygotowujemy faze zywienia
     public void setFoodAndPrepareFeedingPhase(){
-        // napisz funckje do ustalania ilosci jedzenia
         if(numberOfPlayers==2) {
             amountOfFood = randomGenerator.nextInt(6) + 3;
-        }else if(numberOfPlayers==3){
+        }
+        else if(numberOfPlayers==3){
             amountOfFood = randomGenerator.nextInt(6)+ randomGenerator.nextInt(6) + 2;
         }
         else if(numberOfPlayers==4){
             amountOfFood = randomGenerator.nextInt(6)+ randomGenerator.nextInt(6) + 4;
         }
+
         server.send(new byte[] {Command.FOOD.getId(),(byte) amountOfFood});
 
-        for(Player player: players.values()){
+        for(Player player: players.values())
             if(player != null)
                 player.pass = false;
-        }
-        // i ustawiamy kolejke na tego kto zaczyna faze
+
         turn = whoBeginPhase;
         server.send(new byte [] {Command.TURN.getId(), (byte)clients.elementAt(turn).getClientId()});
-        server.send(new byte [] {Command.STATE.getId(),(byte)GameState.FEEDING.getId()});
+
         state = GameState.FEEDING;
+        server.send(new byte [] {Command.STATE.getId(),(byte)GameState.FEEDING.getId()});
     }
 
     public boolean everyonePassed(){
-        for(Player player: players.values()) {
+        for(Player player: players.values())
             if (!player.pass)
                 return false;
-        }
         return true;
 
     }
     public void nextOneTakeTurn(){
-        turn += 1;
-        if (turn >= numberOfPlayers) {
+        if (++turn >= numberOfPlayers)
             turn = 0;
-        }
-        if(players.get(clients.elementAt(turn)).pass){
+        if(players.get(clients.elementAt(turn)).pass)
             nextOneTakeTurn();
-        }
         server.send(new byte[] {Command.TURN.getId(),(byte)clients.elementAt(turn).getClientId()});
+    }
+    public void gameOver(){
+        server.send(new byte[]{Command.STATE.getId(), (byte) GameState.GAMEOVER.getId()});
+        state = GameState.GAMEOVER;
     }
 
     public class Deck{
         public Vector<Card> deck= new Vector<Card>();
 
         public Deck(){
-            for(int i=1;i<=20;i++){
-                for(int j=0;j<players.size();j++) {
+            for(int i=1;i<=20;i++)
+                for(int j=0;j<players.size();j++)
                     deck.addElement(Card.fromInt(i));
-                }
-            }
         }
         public Card getCardFromDeck(){
             int randInt = randomGenerator.nextInt(deck.size()-1);

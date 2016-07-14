@@ -1,6 +1,8 @@
 package multiRoomServer.server.clientManager;
 
 
+import components.enums.Code;
+import multiRoomServer.server.AdminInrterface;
 import multiRoomServer.server.clientManager.messageHandler.Message;
 
 import java.io.DataInputStream;
@@ -13,6 +15,7 @@ import java.util.Arrays;
  * Created by kopec on 2016-07-11.
  */
 public class Client {
+    private Client me;
     public Socket socket;
     public boolean authenticated = false;
 
@@ -25,6 +28,7 @@ public class Client {
     public int games;
 
     public Client (Socket socketObject, int playerId, ClientManager clientsManager){
+        me = this;
         manager = clientsManager;
         socket = socketObject;
         id = playerId;
@@ -38,8 +42,10 @@ public class Client {
             out.writeInt(s.length);
             out.write(s);
         } catch (IOException e) {
-            //!!!!
-            e.printStackTrace();
+            manager.handleAuthenticated(new Message(Code.LEAVEROOM, id));
+            manager.handleAuthenticated(new Message(Code.LOGOUT, id));
+            manager.removeClient(me);
+            close();
         }
     }
     public int getClientId() {
@@ -67,12 +73,15 @@ public class Client {
                         in.readFully(recvData, 0, recvData.length);
                         id = getClientId();
                         manager.messages.offer(new Message(recvData,id));
-                        System.out.println("client <" + id + ">: " + Arrays.toString(recvData));
+                        if(AdminInrterface.printLogs)
+                            System.out.println("client <" + id + ">: " + Arrays.toString(recvData));
                     }
                 }
             }catch(IOException e){
-                //!!!!!!!
-                e.printStackTrace();
+                manager.handleAuthenticated(new Message(Code.LEAVEROOM, id));
+                manager.handleAuthenticated(new Message(Code.LOGOUT, id));
+                manager.removeClient(me);
+                close();
             }
         }
     }

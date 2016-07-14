@@ -1,7 +1,9 @@
 package components.enums;
 
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+
 public enum Command {
     GET(0),
     NAME(1),

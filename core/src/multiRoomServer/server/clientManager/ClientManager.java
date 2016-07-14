@@ -1,6 +1,5 @@
 package multiRoomServer.server.clientManager;
 
-import multiRoomServer.enums.Code;
 import multiRoomServer.server.clientManager.messageHandler.Authorization;
 import multiRoomServer.server.clientManager.messageHandler.Message;
 import multiRoomServer.server.clientManager.messageHandler.Registration;
@@ -79,6 +78,7 @@ public class ClientManager extends Thread{
                 roomManager.createRoom(client, message);
                 break;
             case DELETEROOM:
+            case LEAVEROOM:
                 roomManager.leaveRoom(client);
                 break;
             default:

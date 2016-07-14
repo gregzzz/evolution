@@ -23,18 +23,21 @@ public class Game extends Thread {
         game = new GameManager(this,clients);
 
         while(true){
-            if(game.state == GameState.EVOLUTION){
+            if(size != clients.size())
+                game.gameOver();
+
+            if(game.state == GameState.EVOLUTION)
                 game.evolutionPhase();
-            }
-            else if(game.state == GameState.FEEDING){
+
+            else if(game.state == GameState.FEEDING)
                 game.feedingPhase();
-            }
-            if(game.everyonePassed() && game.state == GameState.EVOLUTION){
+
+            if(game.everyonePassed() && game.state == GameState.EVOLUTION)
                 game.setFoodAndPrepareFeedingPhase();
-            }
-            if(game.everyonePassed() && game.state ==GameState.FEEDING){
+
+            if(game.everyonePassed() && game.state ==GameState.FEEDING)
                 game.prepareForEvolution();
-            }
+
             sleep(10);
         }
     }
