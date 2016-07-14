@@ -33,7 +33,7 @@ public class ServerMain extends Thread {
                 Client client = new Client(serverSocket.accept(),clientId++,clientManager);
                 clientManager.addClient(client);
 
-                System.out.println("Just connected to " + client.socket.getRemoteSocketAddress());
+                AdminInterface.printLog("Just connected to " + client.socket.getRemoteSocketAddress());
             } catch (SocketTimeoutException s) {
                 System.out.println("Socket timed out!");
                 break;

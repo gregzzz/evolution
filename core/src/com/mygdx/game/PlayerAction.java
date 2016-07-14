@@ -1,9 +1,8 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.Gdx;
 import com.mygdx.game.logic.Mouse;
-import components.enums.Card;
 import com.mygdx.game.managers.*;
+import components.enums.Card;
 import components.enums.GameState;
 import components.objects.Animal;
 import components.objects.Player;
@@ -36,7 +35,7 @@ public class PlayerAction {
     //guzik do wracania do menu pod koniec gry
     public void returnToMenu(){
         if(buttonManager.cancelButton.isTouched(mouse)){
-            gameManager.state=GameState.BEGIN;
+            gameManager.state= GameState.BEGIN;
             flagManager.lookingForGames=false;
             flagManager.chooseMainMenuOption=false;
             gameManager.disconnect();

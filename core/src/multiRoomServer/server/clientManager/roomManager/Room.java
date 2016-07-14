@@ -25,13 +25,12 @@ public class Room {
         clients.addElement(client);
         size = sizeOfRoom;
         id = roomId;
-        if(AdminInterface.printLogs)
-            System.out.println("client <"+client.getClientId()+"> created room <"+id+">");
+         AdminInterface.printLog("client <"+client.getClientId()+"> created room <"+id+">");
     }
 
     public void addClient(Client client){
         clients.addElement(client);
-        System.out.println("client <"+client.getClientId()+"> joined room <"+id+">");
+        AdminInterface.printLog("client <"+client.getClientId()+"> joined room <"+id+">");
         if(clients.size() == size) {
             game.start();
             full = true;
@@ -42,13 +41,10 @@ public class Room {
 
     public void removeClient(Client client){
         clients.remove(client);
-        if(AdminInterface.printLogs)
-            System.out.println("client <"+client.getClientId()+"> left room <"+id+">");
+        AdminInterface.printLog("client <"+client.getClientId()+"> left room <"+id+">");
         full = false;
         if(clients.size() == 0){
-            game.interrupt(); //?
-            if(AdminInterface.printLogs)
-                System.out.println("romm <"+id+"> is now closed");
+            AdminInterface.printLog("romm <"+id+"> is now closed");
         }
     }
 }

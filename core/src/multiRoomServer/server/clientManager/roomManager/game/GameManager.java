@@ -4,8 +4,8 @@ import components.enums.Card;
 import components.enums.Command;
 import components.enums.GameState;
 import components.objects.Player;
+import multiRoomServer.server.AdminInterface;
 import multiRoomServer.server.clientManager.Client;
-import multiRoomServer.server.clientManager.roomManager.Room;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,12 +34,10 @@ public class GameManager{
     public GameManager(Game game, Vector<Client> clientsVector){
         server = game;
         clients = clientsVector;
-        numberOfPlayers = clients.size();
-
-        setGame();
     }
     public void setGame()
     {
+        numberOfPlayers = clients.size();
         for(Client client: clients) {
             Player player =  new Player();
             player.number = client.getClientId();
@@ -75,7 +73,7 @@ public class GameManager{
             if (players.get(client).recv.peek() != null) {
                 byte [] data = players.get(client).recv.poll();
                 command = Command.fromInt(data[0]);
-                System.out.println(command);
+                AdminInterface.printLog(command.toString());
 
                 if (command == Command.ADD) {
                     server.send(new byte[] {Command.ADD.getId(),data[1],data[2]});
@@ -153,7 +151,7 @@ public class GameManager{
             if (players.get(client).recv.peek()!=null) {
                 byte [] data = players.get(client).recv.poll();
                 command = Command.fromInt(data[0]);
-                System.out.println(command);
+                AdminInterface.printLog(command.toString());
 
                 if (command == Command.FEED) {
                     server.send(new byte[] {Command.FEED.getId(),data[1],data[2],data[3],(byte)client.getClientId()});

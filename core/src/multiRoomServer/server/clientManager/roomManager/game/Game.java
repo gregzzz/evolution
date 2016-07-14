@@ -1,8 +1,8 @@
 package multiRoomServer.server.clientManager.roomManager.game;
 
+import components.enums.GameState;
 import multiRoomServer.server.clientManager.Client;
 
-import components.enums.GameState;
 import multiRoomServer.server.clientManager.messageHandler.Message;
 
 import java.util.Vector;
@@ -17,11 +17,11 @@ public class Game extends Thread {
 
     public Game(Vector<Client> c){
         clients = c;
-        size = clients.size();
+        game = new GameManager(this,clients);
     }
     public void run(){
-        game = new GameManager(this,clients);
-
+        game.setGame();
+        size = clients.size();
         while(true){
             if(size != clients.size())
                 game.gameOver();

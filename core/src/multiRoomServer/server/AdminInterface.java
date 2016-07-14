@@ -18,7 +18,7 @@ public class AdminInterface extends Thread {
     private ServerMain server;
     private ClientManager manager;
     private AdminClient admin;
-    public static boolean printLogs = true;
+    public static Boolean printLogs = new Boolean(false);
 
     private Scanner scan = new Scanner(System.in);
 
@@ -29,15 +29,16 @@ public class AdminInterface extends Thread {
     public void run(){
         String option = "";
         admin = new AdminClient("localhost",5055);
-        while(!option.equals("close")){
+
+        while(!option.equals("c")){
             option = scan.next();
-            if(option.equals("insert")) {
+            if(option.equals("i")) {
                 addUser();
             }
-            if(option.equals("print")){
+            if(option.equals("p")){
                 printLogs = true;
             }
-            if(option.equals("stop print")){
+            if(option.equals("s")){
                 printLogs = false;
             }
         }
@@ -52,13 +53,19 @@ public class AdminInterface extends Thread {
         message = concat(message, addZeros(password.getBytes(), 10));
         admin.send(message);
     }
+    public static void printLog(String logMessage){
+        synchronized(printLogs){
+            if(printLogs){
+                System.out.println(logMessage);
+            }
+        }
+    }
 }
 
-class AdminClient extends Thread {
+class AdminClient {
     private String serverName;
     private int port;
     Socket client;
-
     public AdminClient(String s,int p){
         serverName = s;
         port = p;
@@ -79,11 +86,7 @@ class AdminClient extends Thread {
     public void connect(){
         try
         {
-            System.out.println("Connecting to " + serverName +
-                    " on port " + port);
             client = new Socket(serverName, port);
-            System.out.println("Just connected to "
-                    + client.getRemoteSocketAddress());
         }catch(IOException e) {
             e.printStackTrace();
         }
@@ -101,11 +104,10 @@ class AdminClient extends Thread {
                     if(length>0) {
                         message = new byte[length];
                         in.readFully(message, 0, message.length); // read the message
-                        System.out.println("Server: "+ Arrays.toString(message));
+                        AdminInterface.printLog("Server: "+ Arrays.toString(message));
                     }
                 }
             } catch (IOException e) {
-                System.out.println("Connection lost.");
             }
 
         }

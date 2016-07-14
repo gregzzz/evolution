@@ -30,7 +30,10 @@ public class RoomManager {
         rooms.put(client,room);
     }
     public void leaveRoom(Client client){
-        rooms.get(client).removeClient(client);
+        if(rooms.containsKey(client)) {
+            rooms.get(client).removeClient(client);
+            rooms.remove(client);
+        }
     }
     public void sendRooms(Client client){
 

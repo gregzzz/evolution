@@ -9,17 +9,13 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.math.Vector2;
 import com.mygdx.game.logic.*;
 import com.mygdx.game.managers.*;
-import components.objects.Player;
-import components.enums.GameState;
 import components.enums.Card;
+import components.enums.GameState;
+import components.objects.Player;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 
 import java.util.*;
 
@@ -373,7 +369,7 @@ public class Evolution implements ApplicationListener, InputProcessor {
                     drawMessage(infomanager.getDescription(player.getCards(i)));
 
                     //opcje rysujemy tylko podczas kolejki gracza
-                    if (player.number == gameManager.turn&&gameManager.state==GameState.EVOLUTION) {
+                    if (player.number == gameManager.turn&&gameManager.state== GameState.EVOLUTION) {
                         batch.draw(buttonManager.cardChoices[0].getGraphic(), buttonManager.cardChoices[0].getPositionX(), buttonManager.cardChoices[0].getPositionY());
                         batch.draw(buttonManager.cardChoices[1].getGraphic(), buttonManager.cardChoices[1].getPositionX(), buttonManager.cardChoices[1].getPositionY());
                         batch.draw(buttonManager.cardChoices[2].getGraphic(), buttonManager.cardChoices[2].getPositionX(), buttonManager.cardChoices[2].getPositionY());

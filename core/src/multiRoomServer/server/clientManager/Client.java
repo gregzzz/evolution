@@ -1,7 +1,6 @@
 package multiRoomServer.server.clientManager;
 
 
-import components.enums.Code;
 import multiRoomServer.server.AdminInterface;
 import multiRoomServer.server.clientManager.messageHandler.Message;
 
@@ -15,7 +14,7 @@ import java.util.Arrays;
  * Created by kopec on 2016-07-11.
  */
 public class Client {
-    private Client me;
+    Client me;
     public Socket socket;
     public boolean authenticated = false;
 
@@ -42,7 +41,7 @@ public class Client {
             out.writeInt(s.length);
             out.write(s);
         } catch (IOException e) {
-
+            manager.removeClient(this);
         }
     }
     public int getClientId() {
@@ -70,13 +69,11 @@ public class Client {
                         in.readFully(recvData, 0, recvData.length);
                         id = getClientId();
                         manager.messages.offer(new Message(recvData,id));
-                        System.out.println(AdminInterface.printLogs);
-                        if(AdminInterface.printLogs)
-                            System.out.println("client <" + id + ">: " + Arrays.toString(recvData));
+                        AdminInterface.printLog("client <" + id + ">: " + Arrays.toString(recvData));
                     }
                 }
             }catch(IOException e){
-
+                manager.removeClient(me);
             }
         }
     }

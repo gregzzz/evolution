@@ -1,7 +1,6 @@
 package components.objects;
 
 import components.enums.Card;
-import components.objects.Animal;
 
 import java.util.LinkedList;
 import java.util.Queue;

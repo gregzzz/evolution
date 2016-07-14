@@ -31,15 +31,12 @@ public class ClientManager extends Thread{
         numberOfClients ++;
         newClient.send(Message.id(newClient.getClientId()));
     }
-    public boolean removeClient(Client client){
-        for(Client c: clients.values())
-            if(c == client){
-                c.close();
-                clients.remove(c);
+    public void removeClient(Client client){
+                roomManager.leaveRoom(client);
+                client.close();
+                clients.remove(client.getClientId(),client);
                 numberOfClients --;
-                return true;
-            }
-        return false;
+
     }
     public void run()
     {
