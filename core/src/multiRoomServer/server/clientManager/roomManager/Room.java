@@ -1,6 +1,6 @@
 package multiRoomServer.server.clientManager.roomManager;
 
-import multiRoomServer.server.AdminInrterface;
+import multiRoomServer.server.AdminInterface;
 import multiRoomServer.server.clientManager.roomManager.game.Game;
 import multiRoomServer.server.clientManager.Client;
 
@@ -25,7 +25,7 @@ public class Room {
         clients.addElement(client);
         size = sizeOfRoom;
         id = roomId;
-        if(AdminInrterface.printLogs)
+        if(AdminInterface.printLogs)
             System.out.println("client <"+client.getClientId()+"> created room <"+id+">");
     }
 
@@ -35,19 +35,19 @@ public class Room {
         if(clients.size() == size) {
             game.start();
             full = true;
-            if(AdminInrterface.printLogs)
+            if(AdminInterface.printLogs)
                 System.out.println("game in room <"+id+"> has started");
         }
     }
 
     public void removeClient(Client client){
         clients.remove(client);
-        if(AdminInrterface.printLogs)
+        if(AdminInterface.printLogs)
             System.out.println("client <"+client.getClientId()+"> left room <"+id+">");
         full = false;
         if(clients.size() == 0){
             game.interrupt(); //?
-            if(AdminInrterface.printLogs)
+            if(AdminInterface.printLogs)
                 System.out.println("romm <"+id+"> is now closed");
         }
     }

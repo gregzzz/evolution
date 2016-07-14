@@ -12,7 +12,7 @@ public class ServerMain extends Thread {
     private ServerSocket serverSocket;
     private Database database = new Database();
     private ClientManager clientManager = new ClientManager();
-    private AdminInrterface admin = new AdminInrterface(this, clientManager);
+    private AdminInterface admin = new AdminInterface(this, clientManager);
 
     public ServerMain(int socketNumber){
         try {
@@ -28,7 +28,7 @@ public class ServerMain extends Thread {
         clientManager.start();
         admin.start();
         System.out.println("Waiting for clients on port " + serverSocket.getLocalPort() + " ...");
-        while(AdminInrterface.serverRun) {
+        while(true) {
             try {
                 Client client = new Client(serverSocket.accept(),clientId++,clientManager);
                 clientManager.addClient(client);
