@@ -1,10 +1,11 @@
 package multiRoomServer.server.clientManager;
 
+import multiRoomServer.server.ServerMain;
 import multiRoomServer.server.clientManager.messageHandler.Authorization;
 import multiRoomServer.server.clientManager.messageHandler.Message;
 import multiRoomServer.server.clientManager.messageHandler.Registration;
 import multiRoomServer.server.clientManager.roomManager.RoomManager;
-import multiRoomServer.server.clientManager.messageHandler.Messager;
+import multiRoomServer.server.clientManager.messageHandler.Messanger;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -24,7 +25,7 @@ public class ClientManager extends Thread{
 
     private Authorization authorization = new Authorization();
     private Registration registration = new Registration();
-    private Messager messager = new Messager();
+    private Messanger messanger = new Messanger();
 
     public void addClient(Client newClient){
         clients.put(newClient.getClientId(),newClient);
@@ -40,7 +41,7 @@ public class ClientManager extends Thread{
     }
     public void run()
     {
-         while(true) {
+         while(ServerMain.serverUp) {
             if (messages.peek() != null) {
                 Message message = messages.poll();
                 if (clients.get(message.clientId).authenticated)
@@ -54,6 +55,7 @@ public class ClientManager extends Thread{
                  Thread.currentThread().interrupt();
              }
         }
+
     }
 
     public void handleAuthenticated(Message message){
@@ -63,7 +65,7 @@ public class ClientManager extends Thread{
                 authorization.logout(client);
                 break;
             case MESSAGE:
-                messager.serve(message);
+                messanger.serve(message);
                 break;
             case FINDROOM:
                 roomManager.findRoom(client);
@@ -92,5 +94,9 @@ public class ClientManager extends Thread{
                 registration.serve(client, message);
                 break;
         }
+    }
+
+    public int getNumberOfClients(){
+        return numberOfClients;
     }
 }

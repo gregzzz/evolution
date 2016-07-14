@@ -8,6 +8,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 import java.util.Scanner;
 import static multiRoomServer.server.clientManager.messageHandler.Functions.*;
@@ -17,8 +18,9 @@ import static multiRoomServer.server.clientManager.messageHandler.Functions.*;
 public class AdminInterface extends Thread {
     private ServerMain server;
     private ClientManager manager;
-    private AdminClient admin;
-    public static Boolean printLogs = new Boolean(false);
+    public AdminClient admin;
+    public static Boolean printLogs = false;
+    public boolean serverRun = true;
 
     private Scanner scan = new Scanner(System.in);
 
@@ -32,16 +34,23 @@ public class AdminInterface extends Thread {
 
         while(!option.equals("c")){
             option = scan.next();
-            if(option.equals("i")) {
+            if(option.equals("i")) { // insert user
                 addUser();
             }
-            if(option.equals("p")){
+            else if(option.equals("p")){ // print logs
                 printLogs = true;
             }
-            if(option.equals("s")){
+            else if(option.equals("s")){ // stop printing logs
                 printLogs = false;
             }
+            else if(option.equals("d")){ // print database
+                Database.getDatabase().printTable();
+            }
+            else if(option.equals("n")){
+                System.out.println(manager.getNumberOfClients()+" clients connected to server");
+            }
         }
+        ServerMain.serverUp = false;
     }
     public void addUser(){
         byte[] message = {104};
@@ -54,23 +63,22 @@ public class AdminInterface extends Thread {
         admin.send(message);
     }
     public static void printLog(String logMessage){
-        synchronized(printLogs){
-            if(printLogs){
-                System.out.println(logMessage);
-            }
+        if(printLogs){
+            System.out.println(logMessage);
         }
     }
 }
 
 class AdminClient {
     private String serverName;
+    public ClientRecv t;
     private int port;
     Socket client;
     public AdminClient(String s,int p){
         serverName = s;
         port = p;
         connect();
-        Thread t = new ClientRecv();
+        t = new ClientRecv();
         t.start();
     }
 
@@ -87,6 +95,7 @@ class AdminClient {
         try
         {
             client = new Socket(serverName, port);
+            client.setSoTimeout(1000);
         }catch(IOException e) {
             e.printStackTrace();
         }
@@ -94,22 +103,25 @@ class AdminClient {
 
     public class ClientRecv extends Thread{
 
-        public void run(){
+        public void run() {
             byte[] message;
-            try {
-                while(true) {
-
+            while (ServerMain.serverUp) {
+                try {
                     DataInputStream in = new DataInputStream(client.getInputStream());
                     int length = in.readInt();
-                    if(length>0) {
+                    if (length > 0) {
                         message = new byte[length];
                         in.readFully(message, 0, message.length); // read the message
-                        AdminInterface.printLog("Server: "+ Arrays.toString(message));
+                        AdminInterface.printLog("Server: " + Arrays.toString(message));
                     }
+                } catch (SocketTimeoutException s){
+                    if(!ServerMain.serverUp)
+                        break;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    break;
                 }
-            } catch (IOException e) {
             }
-
         }
     }
 }

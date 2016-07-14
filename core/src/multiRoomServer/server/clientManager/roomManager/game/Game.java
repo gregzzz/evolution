@@ -1,6 +1,7 @@
 package multiRoomServer.server.clientManager.roomManager.game;
 
 import components.enums.GameState;
+import multiRoomServer.server.ServerMain;
 import multiRoomServer.server.clientManager.Client;
 
 import multiRoomServer.server.clientManager.messageHandler.Message;
@@ -22,9 +23,11 @@ public class Game extends Thread {
     public void run(){
         game.setGame();
         size = clients.size();
-        while(true){
-            if(size != clients.size())
+        while(ServerMain.serverUp){
+            if(size != clients.size()) {
                 game.gameOver();
+                break;
+            }
 
             if(game.state == GameState.EVOLUTION)
                 game.evolutionPhase();

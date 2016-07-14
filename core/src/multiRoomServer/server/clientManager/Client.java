@@ -2,12 +2,15 @@ package multiRoomServer.server.clientManager;
 
 
 import multiRoomServer.server.AdminInterface;
+import multiRoomServer.server.ServerMain;
 import multiRoomServer.server.clientManager.messageHandler.Message;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.Arrays;
 
 /**
@@ -29,7 +32,14 @@ public class Client {
     public Client (Socket socketObject, int playerId, ClientManager clientsManager){
         me = this;
         manager = clientsManager;
+
+
         socket = socketObject;
+        try {
+            socket.setSoTimeout(1000);
+        }catch (SocketException s){
+            s.printStackTrace();
+        }
         id = playerId;
 
         Thread t = new ClientHandler();
@@ -60,21 +70,25 @@ public class Client {
     public class ClientHandler extends Thread{
         public void run(){
             byte [] recvData;
-            try{
-                while(true){
-                    DataInputStream in = new DataInputStream(socket.getInputStream());
-                    int length = in.readInt();
-                    if(length>0) {
-                        recvData = new byte[length];
-                        in.readFully(recvData, 0, recvData.length);
-                        id = getClientId();
-                        manager.messages.offer(new Message(recvData,id));
-                        AdminInterface.printLog("client <" + id + ">: " + Arrays.toString(recvData));
+
+                while(ServerMain.serverUp){
+                    try {
+                        DataInputStream in = new DataInputStream(socket.getInputStream());
+                        int length = in.readInt();
+                        if (length > 0) {
+                            recvData = new byte[length];
+                            in.readFully(recvData, 0, recvData.length);
+                            id = getClientId();
+                            manager.messages.offer(new Message(recvData, id));
+                            AdminInterface.printLog("client <" + id + ">: " + Arrays.toString(recvData));
+                        }
+                    }catch(SocketTimeoutException s){
+
+                    }catch(IOException e){
+                        manager.removeClient(me);
                     }
                 }
-            }catch(IOException e){
-                manager.removeClient(me);
-            }
+
         }
     }
 }

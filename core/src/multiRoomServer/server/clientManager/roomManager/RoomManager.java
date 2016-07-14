@@ -18,7 +18,7 @@ public class RoomManager {
     }
     public void findRoom(Client client){
         for(Room room: rooms.values())
-            if(Math.abs(room.averagePoints - client.points) <= pointsDifference && !room.full ) {
+            if(Math.abs(room.averagePoints - client.points) <= pointsDifference && !room.started ) {
                 room.addClient(client);
                 rooms.put(client,room);
                 return;

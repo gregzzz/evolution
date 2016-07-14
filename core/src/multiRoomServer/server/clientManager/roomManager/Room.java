@@ -15,8 +15,8 @@ public class Room {
     public int size;
     public int averagePoints;
     public boolean full = false;
+    public boolean started = false;
     private int id;
-
 
     private Vector<Client> clients = new Vector<>();
     public Game game = new Game(clients);
@@ -33,6 +33,7 @@ public class Room {
         AdminInterface.printLog("client <"+client.getClientId()+"> joined room <"+id+">");
         if(clients.size() == size) {
             game.start();
+            started = true;
             full = true;
             if(AdminInterface.printLogs)
                 System.out.println("game in room <"+id+"> has started");

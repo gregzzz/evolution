@@ -14,10 +14,12 @@ public class ServerMain extends Thread {
     private ClientManager clientManager = new ClientManager();
     private AdminInterface admin = new AdminInterface(this, clientManager);
 
+    public static Boolean serverUp = true;
+
     public ServerMain(int socketNumber){
         try {
             serverSocket = new ServerSocket(socketNumber);
-            serverSocket.setSoTimeout(1000000);
+            serverSocket.setSoTimeout(1000);
         } catch(IOException e){
             e.printStackTrace();
         }
@@ -28,25 +30,26 @@ public class ServerMain extends Thread {
         clientManager.start();
         admin.start();
         System.out.println("Waiting for clients on port " + serverSocket.getLocalPort() + " ...");
-        while(true) {
+        while(serverUp) {
             try {
                 Client client = new Client(serverSocket.accept(),clientId++,clientManager);
                 clientManager.addClient(client);
 
                 AdminInterface.printLog("Just connected to " + client.socket.getRemoteSocketAddress());
             } catch (SocketTimeoutException s) {
-                System.out.println("Socket timed out!");
-                break;
+
             } catch (IOException e) {
                 e.printStackTrace();
                 break;
             }
         }
+        System.out.println("Bye bye : )");
     }
 
     public static void main(String [] args){
         Thread server = new ServerMain(5055);
         server.start();
     }
+
 }
 
